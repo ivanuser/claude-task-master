@@ -7297,5 +7297,472 @@
       "updated": "2025-07-22T09:38:19.341Z",
       "description": "Tasks for cc-kiro-hooks context"
     }
+  },
+  "web-dashboard": {
+    "tasks": [
+      {
+        "id": 11,
+        "title": "Setup Web Dashboard Project Architecture",
+        "description": "Create the foundational architecture for the Task Master Web Dashboard including project structure, development environment, and core dependencies",
+        "details": "Initialize a new web application structure within the existing Task Master project. Create apps/dashboard directory with Next.js framework. Setup package.json with React, Next.js, Tailwind CSS, and core dependencies. Configure TypeScript, ESLint, and development scripts. Create initial folder structure: components/, pages/api/, lib/, hooks/, types/, and utils/. Setup environment configuration for development and production. Integrate with existing Task Master core modules and maintain consistency with current codebase architecture.",
+        "testStrategy": "Verify project builds successfully, all dependencies install correctly, development server starts without errors, TypeScript compilation passes, and basic routing works. Test integration with existing Task Master CLI tools.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize Next.js Application Structure",
+            "description": "Create apps/dashboard directory and initialize Next.js project with proper configuration",
+            "dependencies": [],
+            "details": "Create apps/dashboard directory structure. Initialize Next.js project using create-next-app with TypeScript template. Configure next.config.js for monorepo setup and integration with existing build tools. Setup proper package.json with workspace configuration.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Install Core Dependencies and Development Tools",
+            "description": "Install and configure React, Next.js, Tailwind CSS, TypeScript, and essential development dependencies",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Install React 18+, Next.js 14+, Tailwind CSS, TypeScript, ESLint, and Prettier. Configure package.json with proper versions and peer dependencies. Setup development and build scripts. Install additional utilities like clsx, lucide-react for icons.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Configure TypeScript and ESLint Settings",
+            "description": "Setup TypeScript configuration and ESLint rules consistent with existing codebase",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "Configure tsconfig.json with strict TypeScript settings and path mappings. Setup ESLint configuration extending existing project rules. Configure Prettier integration. Setup type checking and linting scripts in package.json.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Setup Tailwind CSS Configuration",
+            "description": "Configure Tailwind CSS with custom theme and design system integration",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "Initialize tailwind.config.js with custom color palette and typography. Setup CSS imports in globals.css. Configure responsive breakpoints and component utilities. Integrate with existing Task Master design patterns if any.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Create Initial Folder Structure",
+            "description": "Establish organized directory structure for components, pages, utilities, and types",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "Create directory structure: components/, pages/api/, lib/, hooks/, types/, utils/, styles/. Setup index files for clean imports. Create initial layout components and page templates. Establish naming conventions consistent with Next.js best practices.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Configure Environment and Development Setup",
+            "description": "Setup environment variables, development scripts, and local development configuration",
+            "dependencies": [
+              "11.4",
+              "11.5"
+            ],
+            "details": "Create .env.local template with required environment variables. Configure development server settings. Setup hot reloading and fast refresh. Configure environment-specific settings for development, staging, and production.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Integrate with Existing Task Master Core Modules",
+            "description": "Setup imports and integration points with existing CLI tools and core functionality",
+            "dependencies": [
+              "11.6"
+            ],
+            "details": "Configure module resolution for importing from ../.. core modules. Setup type definitions for existing Task Master interfaces. Create wrapper functions for CLI integration. Test integration with task-manager.js and other core modules.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Verify Build System and Initial Testing Setup",
+            "description": "Ensure project builds successfully and setup basic testing infrastructure",
+            "dependencies": [
+              "11.7"
+            ],
+            "details": "Test Next.js build process and verify no compilation errors. Setup basic Jest and React Testing Library configuration. Create initial smoke tests for main components. Verify development server starts correctly and hot reloading works. Test TypeScript compilation and linting passes.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Implement Database Schema and Migration System",
+        "description": "Design and implement the PostgreSQL database schema for multi-project task management with migration system",
+        "details": "Setup PostgreSQL database with tables: Projects (id, name, git_url, owner_id, created_at, updated_at), Tasks (id, project_id, task_id, title, status, priority, data_json), Users (id, email, github_id, gitlab_id, created_at), ProjectMembers (project_id, user_id, role, access_level), SyncHistory (id, project_id, commit_sha, sync_status, updated_at). Use Prisma ORM for schema management and migrations. Create database connection pooling with appropriate indices for performance. Implement seed data scripts for development. Setup Redis for caching layer.",
+        "testStrategy": "Test database schema creation, migration rollback/forward, connection pooling under load, data integrity constraints, and index performance. Verify seed data loads correctly and Redis caching functions properly.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Setup PostgreSQL Database and Connection Configuration",
+            "description": "Install and configure PostgreSQL database with proper connection settings and environment variables",
+            "dependencies": [],
+            "details": "Install PostgreSQL locally or configure cloud database. Setup connection strings, environment variables for database credentials. Configure connection pooling parameters and SSL settings. Test database connectivity and basic operations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Initialize Prisma ORM and Project Setup",
+            "description": "Install Prisma, configure Prisma client, and setup initial project structure for database management",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "Install Prisma CLI and client packages. Initialize Prisma in project with proper configuration. Setup prisma schema file structure. Configure Prisma client generation and type safety. Setup development scripts for Prisma commands.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Design Core Database Schema Models",
+            "description": "Create Prisma schema definitions for Projects, Tasks, Users, ProjectMembers, and SyncHistory tables",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "Define Projects table with id, name, git_url, owner_id, timestamps. Create Tasks table with id, project_id, task_id, title, status, priority, data_json fields. Design Users table with id, email, github_id, gitlab_id, timestamps. Setup ProjectMembers junction table with roles and access levels. Create SyncHistory table for git synchronization tracking.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Database Relationships and Constraints",
+            "description": "Define foreign key relationships, constraints, and validation rules between database tables",
+            "dependencies": [
+              "12.3"
+            ],
+            "details": "Setup foreign key relationships between Projects-Users, Projects-Tasks, Users-ProjectMembers. Add database constraints for data integrity (unique, not null, check constraints). Define cascading delete rules for related records. Implement enum types for status and priority fields.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Create Database Indexing Strategy",
+            "description": "Design and implement database indices for optimal query performance across all tables",
+            "dependencies": [
+              "12.4"
+            ],
+            "details": "Create indices on frequently queried columns (project_id, user_id, status, priority). Setup composite indices for complex queries. Add partial indices for filtered queries. Create unique indices for business logic constraints. Analyze query patterns and optimize index strategy.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Database Migration System",
+            "description": "Setup Prisma migration system with rollback capabilities and migration management",
+            "dependencies": [
+              "12.5"
+            ],
+            "details": "Configure Prisma migrate for development and production environments. Create initial migration files. Implement migration rollback strategies. Setup migration naming conventions and documentation. Create migration validation and testing procedures.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Configure Connection Pooling and Performance Optimization",
+            "description": "Implement database connection pooling with optimal configuration for concurrent access",
+            "dependencies": [
+              "12.6"
+            ],
+            "details": "Configure Prisma connection pool settings (pool size, timeout, max connections). Setup connection lifecycle management. Implement query optimization strategies. Configure prepared statement caching. Setup monitoring for connection pool health and performance metrics.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Setup Redis Caching Layer",
+            "description": "Install and configure Redis for caching frequently accessed data and session management",
+            "dependencies": [
+              "12.7"
+            ],
+            "details": "Install Redis server and Node.js client libraries. Configure Redis connection and authentication. Design caching strategy for projects, tasks, and user data. Implement cache invalidation patterns. Setup Redis clustering for high availability if needed.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create Database Access Layer and Repository Pattern",
+            "description": "Implement data access layer with repository pattern for clean separation of concerns",
+            "dependencies": [
+              "12.8"
+            ],
+            "details": "Create repository classes for each entity (ProjectRepository, TaskRepository, UserRepository). Implement CRUD operations with proper error handling. Add query methods for complex business logic. Setup transaction management for multi-table operations. Implement caching integration in repositories.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Develop Seed Data Scripts and Development Tools",
+            "description": "Create comprehensive seed data scripts for development environment with realistic test data",
+            "dependencies": [
+              "12.9"
+            ],
+            "details": "Create seed scripts for users, projects, tasks, and relationships. Generate realistic test data with proper foreign key relationships. Implement data cleanup and reset scripts. Create development utilities for database management. Setup different seed data sets for various testing scenarios.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Implement Data Migration from File-Based System",
+            "description": "Create migration tools to transfer existing Task Master JSON data to PostgreSQL database",
+            "dependencies": [
+              "12.10"
+            ],
+            "details": "Build data import tools to read existing .taskmaster/tasks.json files. Create mapping logic from JSON structure to relational database schema. Implement data validation and transformation during migration. Handle edge cases and data inconsistencies. Create rollback procedures for migration failures.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 12,
+            "title": "Setup Database Testing and Validation Suite",
+            "description": "Create comprehensive test suite for database operations, migrations, and performance validation",
+            "dependencies": [
+              "12.11"
+            ],
+            "details": "Create unit tests for repository classes and database operations. Implement integration tests for migration system. Setup performance tests for query optimization validation. Create tests for connection pooling under load. Implement data integrity and constraint validation tests. Setup automated testing for Redis caching functionality.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Build OAuth Authentication System",
+        "description": "Implement OAuth 2.0 authentication with GitHub and GitLab integration for secure user authentication",
+        "details": "Integrate NextAuth.js with GitHub and GitLab OAuth providers. Create authentication API routes (/api/auth/[...nextauth].js). Implement JWT token management with secure session handling. Create user management system with role-based access control (RBAC). Setup middleware for protected routes and API endpoints. Create user profile management with linked git accounts. Handle OAuth callback security and user data synchronization.",
+        "testStrategy": "Test OAuth flow with both GitHub and GitLab, token refresh mechanisms, session security, RBAC permissions, logout functionality, and edge cases like revoked tokens or expired sessions.",
+        "priority": "high",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Setup NextAuth.js Configuration",
+            "description": "Install and configure NextAuth.js with basic setup for OAuth authentication",
+            "dependencies": [],
+            "details": "Install NextAuth.js package and create initial configuration file. Setup environment variables for OAuth providers. Configure NextAuth.js options including session strategy, JWT settings, and basic callbacks.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Configure GitHub OAuth Provider",
+            "description": "Setup GitHub OAuth application and integrate with NextAuth.js",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Create GitHub OAuth application in developer settings. Configure client ID, client secret, and callback URLs. Setup GitHub provider configuration in NextAuth.js with required scopes for user profile and repository access.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Configure GitLab OAuth Provider",
+            "description": "Setup GitLab OAuth application and integrate with NextAuth.js",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Create GitLab OAuth application in user settings. Configure application ID, secret, and redirect URIs. Setup GitLab provider configuration in NextAuth.js with appropriate scopes for user data and repository access.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create Authentication API Routes",
+            "description": "Implement NextAuth.js API routes for authentication handling",
+            "dependencies": [
+              "13.2",
+              "13.3"
+            ],
+            "details": "Create /api/auth/[...nextauth].js dynamic API route. Implement authentication handlers for signin, callback, signout, and session management. Configure route options and error handling.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement JWT Token Management",
+            "description": "Setup secure JWT token handling with custom callbacks",
+            "dependencies": [
+              "13.4"
+            ],
+            "details": "Configure JWT strategy with custom signing and encryption. Implement JWT callback to include user data and permissions. Setup token refresh mechanism and secure token storage. Handle token expiration and renewal.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Build User Management System",
+            "description": "Create user database schema and management functions",
+            "dependencies": [
+              "13.5"
+            ],
+            "details": "Design user database schema with OAuth account linking. Implement user creation, update, and retrieval functions. Create user profile model with GitHub/GitLab account associations. Setup user data synchronization from OAuth providers.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Role-Based Access Control (RBAC)",
+            "description": "Create RBAC system with roles and permissions management",
+            "dependencies": [
+              "13.6"
+            ],
+            "details": "Define user roles (admin, user, viewer) and permissions structure. Implement role assignment and checking functions. Create middleware for role-based route protection. Setup permission checking utilities for UI components.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Create Authentication Middleware",
+            "description": "Implement middleware for protecting routes and API endpoints",
+            "dependencies": [
+              "13.7"
+            ],
+            "details": "Create authentication middleware to verify user sessions. Implement route protection for both pages and API endpoints. Setup redirect logic for unauthenticated users. Create higher-order components for protected pages.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Build User Profile Management",
+            "description": "Create user profile pages and account management functionality",
+            "dependencies": [
+              "13.8"
+            ],
+            "details": "Build user profile page displaying linked OAuth accounts. Implement account linking/unlinking functionality for GitHub and GitLab. Create profile editing capabilities and preferences management. Setup user data synchronization controls.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Implement Security and Session Handling",
+            "description": "Add comprehensive security measures and session management",
+            "dependencies": [
+              "13.9"
+            ],
+            "details": "Implement CSRF protection and secure session handling. Setup OAuth callback security validation. Add rate limiting for authentication endpoints. Implement secure logout with token invalidation. Create session monitoring and cleanup mechanisms.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Create Git Integration and Repository Scanning",
+        "description": "Implement git repository integration for automatic project discovery and task file synchronization",
+        "details": "Build GitHub and GitLab API clients using official SDKs. Implement repository scanning to detect .taskmaster/ directories. Create project auto-discovery algorithm with pagination for large organizations. Setup webhook endpoints for real-time git push notifications. Implement secure webhook validation using GitHub/GitLab signatures. Create background job system using Bull/BullMQ for processing git events. Handle rate limiting and API quotas gracefully.",
+        "testStrategy": "Test repository scanning across different organization sizes, webhook payload validation, concurrent git API requests, rate limit handling, and webhook security. Verify auto-discovery finds all Task Master projects correctly.",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Develop Real-time Sync Engine",
+        "description": "Build the core synchronization engine for real-time task updates across git repositories and database",
+        "details": "Create sync service that processes webhook events and updates database in real-time. Implement conflict resolution for concurrent updates to task files. Build task file parser that handles Task Master's tagged task system and legacy format. Create queue system for processing sync jobs with retry mechanisms. Implement WebSocket connections for live updates to connected clients. Handle branch awareness for Task Master's tag system mapped to git branches. Add comprehensive error handling and logging.",
+        "testStrategy": "Test concurrent sync operations, conflict resolution scenarios, WebSocket connection stability, queue processing reliability, parsing of different task file formats, and error recovery mechanisms. Performance test with high-frequency webhook events.",
+        "priority": "high",
+        "dependencies": [
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Build Portfolio Dashboard Interface",
+        "description": "Create the main dashboard interface showing overview of all projects with filtering and search capabilities",
+        "details": "Design and implement responsive dashboard UI using React, Next.js, and Tailwind CSS. Create project grid/list views with status indicators, task counts, and last activity timestamps. Implement advanced filtering by project status, activity, tags, and ownership. Add search functionality with fuzzy matching. Create drag-and-drop organization capabilities. Build project status widgets showing completion rates, active tasks, and health indicators. Implement infinite scrolling for large project lists.",
+        "testStrategy": "Test responsive design across devices, filtering performance with large datasets, search accuracy and speed, drag-and-drop functionality, infinite scrolling behavior, and UI accessibility compliance.",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement Project Detail and Task Management Views",
+        "description": "Create detailed project views with full Task Master functionality integrated into the web interface",
+        "details": "Build project detail pages with complete task breakdown and management capabilities. Implement task status updates, priority changes, and dependency management through web interface. Create task editing modal with rich text support for details and test strategies. Build subtask expansion and collapse functionality. Implement drag-and-drop task reorganization. Add bulk task operations (status changes, priority updates). Create task filtering and sorting within projects. Integrate with existing Task Master CLI command equivalents through API.",
+        "testStrategy": "Test all task CRUD operations, drag-and-drop task reordering, bulk operations performance, rich text editing, task filtering accuracy, and integration with backend Task Master logic. Verify feature parity with CLI commands.",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Create REST API and WebSocket Infrastructure",
+        "description": "Build comprehensive REST API and WebSocket system for all dashboard functionality with rate limiting and security",
+        "details": "Create RESTful API endpoints for all project and task operations using Next.js API routes. Implement OpenAPI/Swagger documentation for API endpoints. Setup WebSocket server for real-time updates using Socket.io or native WebSockets. Implement API rate limiting and request throttling. Add comprehensive input validation using Zod schemas. Create API versioning strategy. Implement caching layers for frequently accessed data. Add API monitoring and analytics.",
+        "testStrategy": "Test all API endpoints with comprehensive request/response validation, rate limiting behavior, WebSocket connection handling under load, API documentation accuracy, input validation edge cases, and caching effectiveness.",
+        "priority": "high",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Build Analytics and Reporting Dashboard",
+        "description": "Create comprehensive analytics system for tracking productivity, project health, and cross-project insights",
+        "details": "Design analytics data models for tracking task completion rates, velocity metrics, and project health indicators. Implement data aggregation jobs for generating reports and insights. Create interactive charts and visualizations using Chart.js or D3.js. Build customizable dashboard widgets for key metrics. Implement report export functionality in multiple formats (PDF, CSV, JSON). Create team productivity comparisons and individual performance tracking. Add trend analysis and predictive insights.",
+        "testStrategy": "Test data aggregation accuracy, chart rendering performance, report export functionality, dashboard customization, and analytics calculations. Verify insights provide meaningful and actionable information.",
+        "priority": "medium",
+        "dependencies": [
+          17,
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Implement Team Collaboration and Access Control",
+        "description": "Build comprehensive team management system with role-based permissions and collaborative features",
+        "details": "Create team invitation and member management system. Implement granular role-based access control with custom permission sets. Build project sharing functionality with different access levels (read, write, admin). Create activity feeds showing real-time project and task changes. Implement notification system for task updates and mentions. Add commenting system for collaborative task discussion. Create audit logging for security and compliance. Build team dashboard views with aggregated metrics.",
+        "testStrategy": "Test permission enforcement across all features, team invitation workflows, activity feed real-time updates, notification delivery, commenting functionality, and audit log accuracy. Verify security isolation between teams and projects.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-03T15:12:16.372Z",
+      "updated": "2025-09-03T15:28:02.725Z",
+      "description": "Tasks for web-dashboard context"
+    }
   }
 }
