@@ -1,0 +1,226 @@
+// Task Master Dashboard - Prisma Schema
+// Database schema for multi-project task management system
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// JSON types will be handled as Prisma.JsonValue
+
+// Core User model for authentication and authorization
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  
+  // OAuth provider information
+  githubId  String?  @unique
+  gitlabId  String?  @unique
+  
+  // User preferences
+  settings  Json     @default("{}")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  projects  ProjectMember[]
+  syncHistory SyncHistory[]
+  
+  @@map("users")
+}
+
+// Project model representing individual Task Master projects
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  
+  // Git integration
+  gitUrl      String?
+  gitBranch   String   @default("main")
+  gitProvider String?  // 'github', 'gitlab', etc.
+  
+  // Task Master tag
+  tag         String   @unique
+  
+  // Project status and metadata
+  status      ProjectStatus @default(ACTIVE)
+  visibility  ProjectVisibility @default(PRIVATE)
+  settings    Json      @default("{}")
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  lastSyncAt  DateTime?
+  
+  // Relations
+  tasks       Task[]
+  members     ProjectMember[]
+  syncHistory SyncHistory[]
+  
+  // Indexes
+  @@index([tag])
+  @@index([status])
+  @@index([createdAt])
+  @@map("projects")
+}
+
+// Task model representing individual tasks from Task Master
+model Task {
+  id          String   @id @default(cuid())
+  
+  // Task Master specific fields
+  taskId      String   // Original task ID from Task Master (e.g., "1.2.3")
+  title       String
+  description String
+  
+  // Task metadata
+  status      TaskStatus @default(PENDING)
+  priority    TaskPriority @default(MEDIUM)
+  complexity  Int?
+  
+  // Task data from Task Master (JSON stored)
+  data        Json      // Complete task object from Task Master
+  details     String?   // Implementation details
+  testStrategy String?  // Testing strategy
+  
+  // Relations
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Dependencies (self-referencing many-to-many)
+  dependencies     Task[] @relation("TaskDependencies")
+  dependentTasks   Task[] @relation("TaskDependencies")
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Compound unique constraint
+  @@unique([projectId, taskId])
+  @@index([projectId])
+  @@index([status])
+  @@index([priority])
+  @@index([taskId])
+  @@map("tasks")
+}
+
+// Project membership and access control
+model ProjectMember {
+  id        String   @id @default(cuid())
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Access control
+  role      ProjectRole @default(MEMBER)
+  permissions Json     @default("{}")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, projectId])
+  @@map("project_members")
+}
+
+// Sync history for tracking git synchronization
+model SyncHistory {
+  id        String   @id @default(cuid())
+  
+  // Relations
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Sync metadata
+  commitSha String?
+  syncType  SyncType @default(MANUAL)
+  status    SyncStatus @default(PENDING)
+  
+  // Sync results
+  tasksAdded    Int @default(0)
+  tasksUpdated  Int @default(0)
+  tasksRemoved  Int @default(0)
+  
+  // Error information
+  errorMessage  String?
+  syncData      Json?    // Additional sync metadata
+  
+  // Timestamps
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+  
+  @@index([projectId])
+  @@index([status])
+  @@index([startedAt])
+  @@map("sync_history")
+}
+
+// Enums
+enum ProjectStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+  DELETED
+}
+
+enum ProjectVisibility {
+  PUBLIC
+  PRIVATE
+  INTERNAL
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+  BLOCKED
+  DEFERRED
+  CANCELLED
+  REVIEW
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ProjectRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum SyncType {
+  MANUAL
+  AUTOMATIC
+  WEBHOOK
+  SCHEDULED
+}
+
+enum SyncStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}

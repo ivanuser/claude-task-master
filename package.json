@@ -9,7 +9,10 @@
 		"task-master-mcp": "mcp-server/server.js",
 		"task-master-ai": "mcp-server/server.js"
 	},
-	"workspaces": ["apps/*", "."],
+	"workspaces": [
+		"apps/*",
+		"."
+	],
 	"scripts": {
 		"test": "node --experimental-vm-modules node_modules/.bin/jest",
 		"test:fails": "node --experimental-vm-modules node_modules/.bin/jest --onlyFailures",
@@ -65,7 +68,7 @@
 		"cli-table3": "^0.6.5",
 		"commander": "^11.1.0",
 		"cors": "^2.8.5",
-		"dotenv": "^16.3.1",
+		"dotenv": "^16.6.1",
 		"express": "^4.21.2",
 		"fastmcp": "^3.5.0",
 		"figlet": "^1.8.0",
