@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import SessionProvider from '@/components/providers/SessionProvider'
 
 export const metadata: Metadata = {
   title: 'Task Master Dashboard',
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className='bg-gray-50 text-gray-900'>
-        <div id='root'>{children}</div>
+        <SessionProvider>
+          <div id='root'>{children}</div>
+        </SessionProvider>
       </body>
     </html>
   )

@@ -12,6 +12,8 @@ async function main() {
 		create: {
 			email: 'admin@taskmaster.dev',
 			name: 'Task Master Admin',
+			role: 'ADMIN',
+			isActive: true,
 			settings: {
 				theme: 'light',
 				notifications: true,
