@@ -2,7 +2,7 @@
 
 import { useRBAC } from "@/hooks/useRBAC";
 import { Permission, ProjectPermission } from "@/lib/rbac";
-import { ProjectRole } from "../../../../generated/prisma";
+import { ProjectRole } from "../../../generated/prisma";
 
 interface PermissionGuardProps {
   permission?: Permission;

@@ -1,4 +1,4 @@
-import { UserRole, ProjectRole } from "../../../generated/prisma";
+import { UserRole, ProjectRole } from "../../generated/prisma";
 
 // System-wide permissions
 export enum Permission {

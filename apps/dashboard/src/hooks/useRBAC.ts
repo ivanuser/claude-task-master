@@ -1,6 +1,6 @@
 import { useAuth } from "./useAuth";
 import { RBAC, Permission, ProjectPermission } from "@/lib/rbac";
-import { UserRole, ProjectRole } from "../../../generated/prisma";
+import { UserRole, ProjectRole } from "../../generated/prisma";
 
 export function useRBAC() {
   const { user } = useAuth();
