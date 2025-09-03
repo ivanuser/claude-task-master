@@ -10,8 +10,8 @@ export interface Task {
   details?: string
   testStrategy?: string
   complexity?: number
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   projectId?: string
 }
 
@@ -31,14 +31,15 @@ export interface Project {
   name: string
   description?: string
   gitUrl?: string
-  ownerId: string
+  branch?: string
+  ownerId?: string
   status: ProjectStatus
-  tags: string[]
-  tasksCount: number
-  completedTasksCount: number
-  lastSyncAt?: Date
-  createdAt: Date
-  updatedAt: Date
+  tags?: string[]
+  taskCount: number
+  completedTaskCount: number
+  lastSync?: string
+  createdAt: string
+  updatedAt: string
 }
 
 export type ProjectStatus = 'active' | 'inactive' | 'archived'

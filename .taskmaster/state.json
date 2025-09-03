@@ -1,9 +1,9 @@
 {
-  "currentTag": "web-dashboard",
-  "lastSwitched": "2025-09-03T15:12:23.744Z",
-  "branchTagMapping": {
-    "v017-adds": "v017-adds",
-    "next": "next"
-  },
-  "migrationNoticeShown": true
+	"currentTag": "web-dashboard",
+	"lastSwitched": "2025-09-03T15:12:23.744Z",
+	"branchTagMapping": {
+		"v017-adds": "v017-adds",
+		"next": "next"
+	},
+	"migrationNoticeShown": true
 }
