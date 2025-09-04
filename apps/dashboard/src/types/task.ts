@@ -14,4 +14,6 @@ export interface Task {
   dueDate?: string;
   tags?: string[];
   complexity?: number;
+  projectId?: string;
+  projectName?: string;
 }
