@@ -344,7 +344,7 @@ export function ActivityFeed({
               </p>
               {activity.metadata?.comment && (
                 <p className="mt-1 text-sm text-gray-600">
-                  "{activity.metadata.comment}"
+                  &quot;{activity.metadata.comment}&quot;
                 </p>
               )}
             </div>

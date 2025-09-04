@@ -1,3 +1,4 @@
+import React from 'react';
 import { 
   Team, 
   TeamMember, 
@@ -271,19 +272,19 @@ export function withAuth<P extends object>(
     fallback?: React.ComponentType;
   }
 ): React.ComponentType<P> {
-  return (props: P) => {
+  return function WithAuthComponent(props: P) {
     const auth = useAuth();
 
     // Check authentication
     if (options?.requireAuth && !auth.isAuthenticated) {
       const Fallback = options.fallback;
-      return Fallback ? <Fallback /> : null;
+      return Fallback ? React.createElement(Fallback) : null;
     }
 
     // Check role
     if (options?.requireRole && !auth.hasRole(options.requireRole)) {
       const Fallback = options.fallback;
-      return Fallback ? <Fallback /> : null;
+      return Fallback ? React.createElement(Fallback) : null;
     }
 
     // Check permission
@@ -291,11 +292,11 @@ export function withAuth<P extends object>(
       const { resource, action } = options.requirePermission;
       if (!auth.hasPermission(resource, action)) {
         const Fallback = options.fallback;
-        return Fallback ? <Fallback /> : null;
+        return Fallback ? React.createElement(Fallback) : null;
       }
     }
 
-    return <Component {...props} />;
+    return React.createElement(Component, props);
   };
 }
 

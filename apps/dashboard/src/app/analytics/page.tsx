@@ -5,7 +5,7 @@ import {
   ChartBarIcon, 
   ClipboardDocumentListIcon,
   UserGroupIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   DocumentArrowDownIcon,
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
@@ -195,7 +195,7 @@ export default function AnalyticsPage() {
           value={`${summary.performance.averageVelocity.toFixed(1)}/day`}
           changeLabel="tasks per day"
           trend="stable"
-          icon={<TrendingUpIcon className="w-8 h-8" />}
+          icon={<ArrowTrendingUpIcon className="w-8 h-8" />}
           color="purple"
         />
         <MetricCard

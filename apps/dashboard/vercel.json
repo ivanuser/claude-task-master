@@ -1,0 +1,25 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "env": {
+    "NODE_ENV": "production",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "DATABASE_URL": "postgresql://demo:demo@localhost:5432/demo",
+    "NEXTAUTH_SECRET": "demo-secret-vercel-build-only-not-functional",
+    "NEXTAUTH_URL": "https://claude-task-master-dashboard.vercel.app"
+  },
+  "functions": {
+    "src/app/api/*/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/dashboard",
+      "permanent": false
+    }
+  ]
+}

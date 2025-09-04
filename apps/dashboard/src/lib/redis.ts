@@ -14,7 +14,7 @@ export function createRedisClient(): Redis {
 		password: process.env.REDIS_PASSWORD || undefined,
 		retryDelayOnFailover: 100,
 		enableReadyCheck: false,
-		maxRetriesPerRequest: 3,
+		maxRetriesPerRequest: null, // Required for BullMQ
 		lazyConnect: true,
 		keepAlive: 30000,
 		connectTimeout: 10000,

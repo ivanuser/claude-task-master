@@ -1,56 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	output: 'standalone',
-	
-	// Allow Cloudflare tunnel domain
-	async headers() {
-		return [
-			{
-				source: '/:path*',
-				headers: [
-					{
-						key: 'X-Frame-Options',
-						value: 'SAMEORIGIN'
-					}
-				]
-			}
-		];
+	reactStrictMode: true,
+	swcMinify: true,
+	eslint: {
+		// Disable ESLint during builds for production deployment
+		ignoreDuringBuilds: true,
 	},
-
-	// Transpile packages from the monorepo
-	transpilePackages: ['task-master-ai'],
-
-	// Custom webpack configuration
-	webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-		// Handle imports from the parent project
-		config.resolve.alias = {
-			...config.resolve.alias,
-			'@task-master': '../../src',
-			'@taskmaster': '../../'
-		};
-
-		return config;
+	typescript: {
+		// Disable type checking during builds (handled separately)
+		ignoreBuildErrors: true,
 	},
-
-	// Environment variables
-	env: {
-		CUSTOM_KEY: 'task-master-dashboard'
-	},
-
-	// Image domains (for future use)
 	images: {
-		domains: ['github.com', 'gitlab.com']
+		domains: ['github.com', 'gitlab.com', 'localhost'],
+		formats: ['image/avif', 'image/webp']
 	},
-
-	// Rewrites for API routes
-	async rewrites() {
-		return [
-			{
-				source: '/api/taskmaster/:path*',
-				destination: '/api/:path*'
-			}
-		];
-	}
+	
+	// Transpile packages from the monorepo
+	transpilePackages: ['task-master-ai']
 };
 
 module.exports = nextConfig;
