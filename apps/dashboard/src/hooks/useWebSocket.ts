@@ -54,10 +54,8 @@ export function useWebSocket(config: WebSocketConfig = {}): UseWebSocketReturn {
     setState(prev => ({ ...prev, connecting: true, error: null }));
 
     try {
-      const token = await getSessionToken();
-      if (!token) {
-        throw new Error('No authentication token available');
-      }
+      // Mock token for now since auth isn't set up
+      const token = 'mock-token';
 
       const socket = io(url, {
         auth: { token },
@@ -143,7 +141,7 @@ export function useWebSocket(config: WebSocketConfig = {}): UseWebSocketReturn {
         error: error instanceof Error ? error.message : 'Connection failed',
       }));
     }
-  }, [user, url, reconnectAttempts, reconnectDelay, getSessionToken]);
+  }, [user, url, reconnectAttempts, reconnectDelay]); // Removed getSessionToken
 
   // Disconnect from WebSocket server
   const disconnect = useCallback(() => {
@@ -254,14 +252,19 @@ export function useWebSocket(config: WebSocketConfig = {}): UseWebSocketReturn {
 
   // Auto-connect on mount if enabled
   useEffect(() => {
-    if (autoConnect && user && !socketRef.current) {
-      connect();
+    if (autoConnect && !socketRef.current) {
+      // Don't auto-connect for now since WebSocket server isn't running
+      // connect();
     }
 
     return () => {
-      disconnect();
+      // Clean up on unmount or when dependencies change
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, [autoConnect, user, connect, disconnect]);
+  }, [autoConnect]); // Simplified deps
 
   // Cleanup on unmount
   useEffect(() => {

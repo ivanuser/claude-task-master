@@ -1,6 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	output: 'standalone',
+	
+	// Allow Cloudflare tunnel domain
+	async headers() {
+		return [
+			{
+				source: '/:path*',
+				headers: [
+					{
+						key: 'X-Frame-Options',
+						value: 'SAMEORIGIN'
+					}
+				]
+			}
+		];
+	},
 
 	// Transpile packages from the monorepo
 	transpilePackages: ['task-master-ai'],
