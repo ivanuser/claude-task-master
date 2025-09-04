@@ -1,30 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/database';
+import { projectQuerySchema, createProjectSchema } from '@/lib/validations/project';
+import { withRateLimit } from '@/lib/middleware/rate-limit';
 
+// GET /api/projects - List all projects
 export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const search = searchParams.get('search') || '';
-    const sortBy = searchParams.get('sortBy') || 'lastActivity';
-    const sortOrder = searchParams.get('sortOrder') || 'desc';
-    const ownership = searchParams.get('ownership') || 'all';
-    const statusFilters = searchParams.getAll('status');
-    const tagFilters = searchParams.getAll('tags');
+  return withRateLimit(request, async () => {
+    try {
+    // Parse and validate query parameters
+    const searchParams = Object.fromEntries(request.nextUrl.searchParams);
+    const query = projectQuerySchema.parse({
+      ...searchParams,
+      status: request.nextUrl.searchParams.getAll('status'),
+      tags: request.nextUrl.searchParams.getAll('tags'),
+    });
 
     // Build where clause
     const where: any = {};
     
-    if (search) {
+    if (query.search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { description: { contains: query.search, mode: 'insensitive' } },
       ];
     }
 
-    if (statusFilters.length > 0) {
-      where.status = { in: statusFilters };
+    if (query.status && query.status.length > 0) {
+      where.status = { in: query.status };
+    }
+
+    if (query.tags && query.tags.length > 0) {
+      where.tags = { hasSome: query.tags };
     }
 
     // For now, return mock data until the database is properly set up
@@ -106,23 +113,23 @@ export async function GET(request: NextRequest) {
     // Apply filters
     let filteredProjects = mockProjects;
     
-    if (search) {
-      const searchLower = search.toLowerCase();
+    if (query.search) {
+      const searchLower = query.search.toLowerCase();
       filteredProjects = filteredProjects.filter(p => 
         p.name.toLowerCase().includes(searchLower) || 
         p.description.toLowerCase().includes(searchLower)
       );
     }
 
-    if (statusFilters.length > 0) {
+    if (query.status && query.status.length > 0) {
       filteredProjects = filteredProjects.filter(p => 
-        statusFilters.includes(p.status)
+        query.status!.includes(p.status as any)
       );
     }
 
-    if (tagFilters.length > 0) {
+    if (query.tags && query.tags.length > 0) {
       filteredProjects = filteredProjects.filter(p => 
-        p.tags.some(tag => tagFilters.includes(tag))
+        p.tags.some(tag => query.tags!.includes(tag))
       );
     }
 
@@ -130,7 +137,7 @@ export async function GET(request: NextRequest) {
     filteredProjects.sort((a, b) => {
       let aVal: any, bVal: any;
       
-      switch (sortBy) {
+      switch (query.sortBy) {
         case 'name':
           aVal = a.name;
           bVal = b.name;
@@ -152,7 +159,7 @@ export async function GET(request: NextRequest) {
           bVal = b.lastActivity;
       }
 
-      if (sortOrder === 'desc') {
+      if (query.sortOrder === 'desc') {
         return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
       } else {
         return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
@@ -160,21 +167,73 @@ export async function GET(request: NextRequest) {
     });
 
     // Paginate
-    const start = (page - 1) * limit;
-    const paginatedProjects = filteredProjects.slice(start, start + limit);
+    const start = (query.page - 1) * query.limit;
+    const paginatedProjects = filteredProjects.slice(start, start + query.limit);
 
     return NextResponse.json({
       projects: paginatedProjects,
       total: filteredProjects.length,
-      page,
-      limit,
-      hasMore: start + limit < filteredProjects.length,
+      page: query.page,
+      limit: query.limit,
+      hasMore: start + query.limit < filteredProjects.length,
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request parameters', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
     console.error('Failed to fetch projects:', error);
     return NextResponse.json(
       { error: 'Failed to fetch projects' },
       { status: 500 }
     );
   }
+  });
+}
+
+// POST /api/projects - Create a new project
+export async function POST(request: NextRequest) {
+  return withRateLimit(request, async () => {
+    try {
+    const body = await request.json();
+    const validatedData = createProjectSchema.parse(body);
+
+    // Mock project creation
+    const newProject = {
+      id: Date.now().toString(),
+      ...validatedData,
+      totalTasks: 0,
+      completedTasks: 0,
+      memberCount: 1,
+      lastActivity: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      owner: {
+        id: '1',
+        name: 'Current User',
+        email: 'user@example.com',
+      },
+      isTaskMasterProject: true,
+      hasCustomRules: false,
+    };
+
+    return NextResponse.json(newProject, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request body', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
+    console.error('Failed to create project:', error);
+    return NextResponse.json(
+      { error: 'Failed to create project' },
+      { status: 500 }
+    );
+  }
+  });
 }

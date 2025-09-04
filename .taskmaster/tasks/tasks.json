@@ -7728,7 +7728,7 @@
         "dependencies": [
           15
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -7742,7 +7742,7 @@
           17,
           18
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -7755,13 +7755,13 @@
         "dependencies": [
           19
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-09-03T15:12:16.372Z",
-      "updated": "2025-09-04T03:06:57.728Z",
+      "updated": "2025-09-04T11:42:31.093Z",
       "description": "Tasks for web-dashboard context"
     }
   }
