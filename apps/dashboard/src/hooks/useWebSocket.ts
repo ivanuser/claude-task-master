@@ -1,6 +1,18 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
+
+interface UseWebSocketState {
+  connected: boolean
+}
 
 interface UseWebSocketReturn {
+  socket: WebSocket | null
+  state: UseWebSocketState
+  subscribeToProject: (projectId: string) => Promise<void>
+  unsubscribeFromProject: (projectId: string) => void
+  triggerSync: (projectId: string) => Promise<void>
+  getSyncStatus: (projectId: string) => void
+  on: (event: string, callback: (data: any) => void) => void
+  off: (event: string, callback: (data: any) => void) => void
   subscribe: (channel: string, callback: (data: any) => void) => void
   unsubscribe: (channel: string, callback: (data: any) => void) => void
   isConnected: boolean
@@ -10,7 +22,7 @@ interface UseWebSocketReturn {
 export function useWebSocket(): UseWebSocketReturn {
   const ws = useRef<WebSocket | null>(null)
   const callbacks = useRef<Map<string, Set<(data: any) => void>>>(new Map())
-  const isConnected = useRef<boolean>(false)
+  const [isConnected, setIsConnected] = useState<boolean>(false)
 
   const connect = useCallback(() => {
     if (ws.current?.readyState === WebSocket.OPEN) return
@@ -22,7 +34,7 @@ export function useWebSocket(): UseWebSocketReturn {
       ws.current = new WebSocket(wsUrl)
 
       ws.current.onopen = () => {
-        isConnected.current = true
+        setIsConnected(true)
         console.log('WebSocket connected')
       }
 
@@ -47,7 +59,7 @@ export function useWebSocket(): UseWebSocketReturn {
       }
 
       ws.current.onclose = () => {
-        isConnected.current = false
+        setIsConnected(false)
         console.log('WebSocket disconnected')
         // Attempt to reconnect after 3 seconds
         setTimeout(() => {
@@ -57,11 +69,11 @@ export function useWebSocket(): UseWebSocketReturn {
 
       ws.current.onerror = (error) => {
         console.error('WebSocket error:', error)
-        isConnected.current = false
+        setIsConnected(false)
       }
     } catch (error) {
       console.error('Failed to create WebSocket connection:', error)
-      isConnected.current = false
+      setIsConnected(false)
     }
   }, [])
 
@@ -90,6 +102,32 @@ export function useWebSocket(): UseWebSocketReturn {
     }
   }, [])
 
+  // Additional methods expected by useRealtimeSync
+  const subscribeToProject = useCallback(async (projectId: string): Promise<void> => {
+    // For now, this is a no-op since we don't have a real WebSocket server
+    console.log('Subscribing to project:', projectId)
+  }, [])
+
+  const unsubscribeFromProject = useCallback((projectId: string) => {
+    console.log('Unsubscribing from project:', projectId)
+  }, [])
+
+  const triggerSync = useCallback(async (projectId: string): Promise<void> => {
+    console.log('Triggering sync for project:', projectId)
+  }, [])
+
+  const getSyncStatus = useCallback((projectId: string) => {
+    console.log('Getting sync status for project:', projectId)
+  }, [])
+
+  const on = useCallback((event: string, callback: (data: any) => void) => {
+    subscribe(event, callback)
+  }, [subscribe])
+
+  const off = useCallback((event: string, callback: (data: any) => void) => {
+    unsubscribe(event, callback)
+  }, [unsubscribe])
+
   useEffect(() => {
     connect()
     
@@ -101,9 +139,17 @@ export function useWebSocket(): UseWebSocketReturn {
   }, [connect])
 
   return {
+    socket: ws.current,
+    state: { connected: isConnected },
+    subscribeToProject,
+    unsubscribeFromProject,
+    triggerSync,
+    getSyncStatus,
+    on,
+    off,
     subscribe,
     unsubscribe,
-    isConnected: isConnected.current,
+    isConnected,
     send,
   }
 }

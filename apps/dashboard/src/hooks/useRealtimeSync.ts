@@ -56,9 +56,9 @@ export function useRealtimeSync(): UseRealtimeSyncReturn {
   useEffect(() => {
     setState(prev => ({ 
       ...prev, 
-      isConnected: wsState.connected 
+      isConnected: wsState?.connected || false
     }));
-  }, [wsState.connected]);
+  }, [wsState?.connected]);
 
   // Subscribe to project with local tracking
   const subscribeToProject = useCallback(async (projectId: string): Promise<void> => {
@@ -291,13 +291,13 @@ export function useRealtimeSync(): UseRealtimeSyncReturn {
 
   // Auto-unsubscribe from all projects on disconnect
   useEffect(() => {
-    if (!wsState.connected && state.subscribedProjects.size > 0) {
+    if (!wsState?.connected && state.subscribedProjects.size > 0) {
       setState(prev => ({
         ...prev,
         subscribedProjects: new Set(),
       }));
     }
-  }, [wsState.connected, state.subscribedProjects.size]);
+  }, [wsState?.connected, state.subscribedProjects.size]);
 
   return {
     state,
