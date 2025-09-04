@@ -13,7 +13,7 @@ export interface SocketData {
 }
 
 export interface SyncEvent {
-  type: 'sync-started' | 'sync-completed' | 'sync-failed' | 'task-updated' | 'project-updated';
+  type: 'sync-started' | 'sync-completed' | 'sync-failed' | 'task-updated' | 'project-updated' | 'notification';
   projectId: string;
   data: any;
   timestamp: string;
@@ -33,6 +33,15 @@ export interface ProjectUpdateEvent {
   oldValue: any;
   newValue: any;
   updatedBy: string;
+  timestamp: string;
+}
+
+export interface NotificationEvent {
+  notificationId: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
   timestamp: string;
 }
 
@@ -277,6 +286,14 @@ export class SocketManager {
     this.io.to(`project:${projectId}`).emit(event, data);
   }
 
+  // Broadcast notification to specific user
+  broadcastNotification(event: NotificationEvent): void {
+    if (!this.io) return;
+
+    this.sendToUser(event.userId, 'notification', event);
+    console.log(`📡 Broadcast notification: ${event.type} to user ${event.userId}`);
+  }
+
   // Get connection statistics
   getConnectionStats(): {
     totalConnections: number;
@@ -386,4 +403,8 @@ export function broadcastProjectUpdate(event: ProjectUpdateEvent): void {
 
 export function sendToUser(userId: string, event: string, data: any): void {
   socketManager.sendToUser(userId, event, data);
+}
+
+export function broadcastNotification(event: NotificationEvent): void {
+  socketManager.broadcastNotification(event);
 }

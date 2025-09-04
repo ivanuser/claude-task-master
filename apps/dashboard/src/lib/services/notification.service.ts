@@ -47,6 +47,8 @@ export class NotificationService {
     // Store notification
     this.notifications.push(notification);
 
+    // WebSocket broadcasting will be handled by API route
+
     // Check user preferences before sending
     const userPreferences = await this.getUserPreferences(data.userId);
     
