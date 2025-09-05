@@ -1,121 +1,118 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Task } from '@/types'
-
-// Mock data - in a real app this would come from a database
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Implement user authentication',
-    description: 'Set up JWT-based authentication system with refresh tokens',
-    status: 'in-progress',
-    priority: 'high',
-    dependencies: [],
-    projectId: '1',
-    projectName: 'Task Master Dashboard',
-    assignedTo: '1',
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    tags: ['backend', 'security'],
-    complexity: 8,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '2',
-    title: 'Design database schema',
-    description: 'Create PostgreSQL schema with Prisma ORM',
-    status: 'done',
-    priority: 'critical',
-    dependencies: [],
-    projectId: '1',
-    projectName: 'Task Master Dashboard',
-    assignedTo: '1',
-    tags: ['database', 'backend'],
-    complexity: 6,
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '3',
-    title: 'Create REST API endpoints',
-    description: 'Build RESTful API with Next.js API routes',
-    status: 'pending',
-    priority: 'high',
-    dependencies: ['1', '2'],
-    projectId: '1',
-    projectName: 'Task Master Dashboard',
-    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-    tags: ['api', 'backend'],
-    complexity: 7,
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '4',
-    title: 'Implement real-time notifications',
-    description: 'Add WebSocket support for live updates',
-    status: 'blocked',
-    priority: 'medium',
-    dependencies: ['3'],
-    projectId: '2',
-    projectName: 'Mobile App',
-    assignedTo: '2',
-    tags: ['websocket', 'realtime'],
-    complexity: 5,
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: '5',
-    title: 'Write unit tests',
-    description: 'Add comprehensive test coverage with Jest',
-    status: 'pending',
-    priority: 'medium',
-    dependencies: ['3'],
-    projectId: '1',
-    projectName: 'Task Master Dashboard',
-    tags: ['testing', 'quality'],
-    complexity: 4,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '6',
-    title: 'Optimize performance',
-    description: 'Improve page load times and reduce bundle size',
-    status: 'deferred',
-    priority: 'low',
-    dependencies: [],
-    projectId: '1',
-    projectName: 'Task Master Dashboard',
-    tags: ['performance', 'optimization'],
-    complexity: 6,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-]
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/database'
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
     const { searchParams } = new URL(request.url)
+    
+    // Get filter parameters
     const status = searchParams.get('status')
     const priority = searchParams.get('priority')
     const projectId = searchParams.get('projectId')
-    
-    let filteredTasks = [...mockTasks]
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const skip = (page - 1) * limit
+
+    // Build where clause
+    const where: any = {}
     
     if (status) {
-      filteredTasks = filteredTasks.filter(task => task.status === status)
+      where.status = status.toUpperCase()
     }
     
     if (priority) {
-      filteredTasks = filteredTasks.filter(task => task.priority === priority)
+      where.priority = priority.toUpperCase()
     }
     
     if (projectId) {
-      filteredTasks = filteredTasks.filter(task => task.projectId === projectId)
+      where.projectId = projectId
     }
-    
-    return NextResponse.json({ tasks: filteredTasks })
+
+    // If user is authenticated, only show tasks from their projects
+    if (session?.user) {
+      where.project = {
+        members: {
+          some: {
+            userId: (session.user as any).id
+          }
+        }
+      }
+    }
+
+    // Get tasks with related data
+    const [tasks, total] = await Promise.all([
+      prisma.task.findMany({
+        where,
+        include: {
+          project: {
+            select: {
+              id: true,
+              name: true,
+              tag: true
+            }
+          },
+          dependencies: {
+            include: {
+              id: true,
+              title: true,
+              status: true
+            }
+          },
+          dependentTasks: {
+            include: {
+              id: true,
+              title: true,
+              status: true
+            }
+          }
+        },
+        orderBy: {
+          updatedAt: 'desc'
+        },
+        skip,
+        take: limit
+      }),
+      prisma.task.count({ where })
+    ])
+
+    // Transform the data to match frontend expectations
+    const transformedTasks = tasks.map(task => ({
+      id: task.id,
+      taskId: task.taskId,
+      title: task.title,
+      description: task.description,
+      status: task.status.toLowerCase(),
+      priority: task.priority.toLowerCase(),
+      complexity: task.complexity,
+      details: task.details,
+      testStrategy: task.testStrategy,
+      projectId: task.projectId,
+      projectName: task.project.name,
+      projectTag: task.project.tag,
+      dependencies: task.dependencies.map(d => d.taskId),
+      dependentTasks: task.dependentTasks.map(d => d.taskId),
+      data: task.data,
+      createdAt: task.createdAt.toISOString(),
+      updatedAt: task.updatedAt.toISOString(),
+      // Extracting additional fields from the data JSON if needed
+      tags: (task.data as any)?.tags || [],
+      assignedTo: (task.data as any)?.assignedTo || null,
+      dueDate: (task.data as any)?.dueDate || null,
+    }))
+
+    return NextResponse.json({ 
+      tasks: transformedTasks,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    })
+
   } catch (error) {
     console.error('Error fetching tasks:', error)
     return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 })
@@ -124,31 +121,119 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Authentication required' }, 
+        { status: 401 }
+      )
+    }
+
     const taskData = await request.json()
     
-    const newTask: Task = {
-      id: Math.random().toString(36).substr(2, 9),
-      title: taskData.title,
-      description: taskData.description || '',
-      status: taskData.status || 'pending',
-      priority: taskData.priority || 'medium',
-      dependencies: taskData.dependencies || [],
-      projectId: taskData.projectId,
-      projectName: taskData.projectName,
-      assignedTo: taskData.assignedTo,
-      dueDate: taskData.dueDate,
-      tags: taskData.tags || [],
-      complexity: taskData.complexity,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    // Get the project to ensure user has access
+    const project = await prisma.project.findFirst({
+      where: {
+        id: taskData.projectId,
+        members: {
+          some: {
+            userId: (session.user as any).id
+          }
+        }
+      }
+    })
+
+    if (!project) {
+      return NextResponse.json(
+        { error: 'Project not found or access denied' }, 
+        { status: 404 }
+      )
     }
-    
-    // In a real app, save to database
-    mockTasks.push(newTask)
-    
-    return NextResponse.json({ task: newTask }, { status: 201 })
+
+    // Generate next task ID for this project
+    const lastTask = await prisma.task.findFirst({
+      where: { projectId: taskData.projectId },
+      orderBy: { taskId: 'desc' }
+    })
+
+    const nextTaskNumber = lastTask ? parseInt(lastTask.taskId.split('.')[0]) + 1 : 1
+    const newTaskId = nextTaskNumber.toString()
+
+    // Create the task
+    const newTask = await prisma.task.create({
+      data: {
+        taskId: newTaskId,
+        title: taskData.title,
+        description: taskData.description || '',
+        status: taskData.status?.toUpperCase() || 'PENDING',
+        priority: taskData.priority?.toUpperCase() || 'MEDIUM',
+        complexity: taskData.complexity || null,
+        details: taskData.details || null,
+        testStrategy: taskData.testStrategy || null,
+        projectId: taskData.projectId,
+        data: {
+          tags: taskData.tags || [],
+          assignedTo: taskData.assignedTo || null,
+          dueDate: taskData.dueDate || null,
+          ...taskData.additionalData
+        }
+      },
+      include: {
+        project: {
+          select: {
+            name: true,
+            tag: true
+          }
+        }
+      }
+    })
+
+    // Handle dependencies if provided
+    if (taskData.dependencies && taskData.dependencies.length > 0) {
+      // Connect dependencies
+      for (const depTaskId of taskData.dependencies) {
+        const dependencyTask = await prisma.task.findFirst({
+          where: { 
+            taskId: depTaskId,
+            projectId: taskData.projectId 
+          }
+        })
+
+        if (dependencyTask) {
+          await prisma.task.update({
+            where: { id: newTask.id },
+            data: {
+              dependencies: {
+                connect: { id: dependencyTask.id }
+              }
+            }
+          })
+        }
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true,
+      task: {
+        id: newTask.id,
+        taskId: newTask.taskId,
+        title: newTask.title,
+        description: newTask.description,
+        status: newTask.status.toLowerCase(),
+        priority: newTask.priority.toLowerCase(),
+        projectId: newTask.projectId,
+        projectName: newTask.project.name,
+        createdAt: newTask.createdAt.toISOString(),
+        updatedAt: newTask.updatedAt.toISOString()
+      }
+    }, { status: 201 })
+
   } catch (error) {
     console.error('Error creating task:', error)
-    return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to create task' }, 
+      { status: 500 }
+    )
   }
 }

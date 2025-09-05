@@ -16,7 +16,41 @@ const nextConfig = {
 	},
 	
 	// Transpile packages from the monorepo
-	transpilePackages: ['task-master-ai']
+	transpilePackages: ['task-master-ai'],
+
+	// Add headers to prevent caching of dynamic content
+	async headers() {
+		return [
+			{
+				// Apply cache control to API routes
+				source: '/api/:path*',
+				headers: [
+					{
+						key: 'Cache-Control',
+						value: 'no-store, no-cache, must-revalidate, proxy-revalidate'
+					},
+					{
+						key: 'Pragma',
+						value: 'no-cache'
+					},
+					{
+						key: 'Expires',
+						value: '0'
+					}
+				],
+			},
+			{
+				// Apply cache control to dashboard routes
+				source: '/dashboard/:path*',
+				headers: [
+					{
+						key: 'Cache-Control',
+						value: 'no-store, no-cache, must-revalidate, proxy-revalidate'
+					}
+				],
+			}
+		]
+	}
 };
 
 module.exports = nextConfig;
