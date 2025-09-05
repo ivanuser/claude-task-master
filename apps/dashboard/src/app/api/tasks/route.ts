@@ -54,22 +54,8 @@ export async function GET(request: NextRequest) {
               tag: true
             }
           },
-          dependencies: {
-            select: {
-              id: true,
-              taskId: true,
-              title: true,
-              status: true
-            }
-          },
-          dependentTasks: {
-            select: {
-              id: true,
-              taskId: true,
-              title: true,
-              status: true
-            }
-          }
+          dependencies: true,
+          dependentTasks: true
         },
         orderBy: {
           updatedAt: 'desc'

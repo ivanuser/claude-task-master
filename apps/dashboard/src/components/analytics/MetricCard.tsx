@@ -64,7 +64,7 @@ export function MetricCard({
         {icon && (
           <div className={`p-3 rounded-lg ${colorClasses[color]} bg-opacity-10`}>
             <div className={`w-8 h-8 ${colorClasses[color].replace('bg-', 'text-')}`}>
-              {icon}
+              {typeof icon === 'object' && icon !== null && React.isValidElement(icon) ? icon : null}
             </div>
           </div>
         )}
