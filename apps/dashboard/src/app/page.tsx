@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { 
   ChartBarIcon,
   SparklesIcon,
@@ -19,15 +20,18 @@ import {
 
 export default function HomePage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { data: session, status } = useSession();
   const [showDemo, setShowDemo] = useState(false);
 
-  const handleLogin = () => {
-    setIsLoading(true);
-    // Simulate login process
-    setTimeout(() => {
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (status === 'authenticated') {
       router.push('/dashboard');
-    }, 1500);
+    }
+  }, [status, router]);
+
+  const handleLogin = () => {
+    router.push('/auth/signin');
   };
 
   const handleViewDemo = () => {
@@ -113,20 +117,10 @@ export default function HomePage() {
               </button>
               <button
                 onClick={handleLogin}
-                disabled={isLoading}
-                className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700"
               >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                    Signing In...
-                  </>
-                ) : (
-                  <>
-                    Sign In
-                    <ArrowRightIcon className="w-4 h-4 ml-2" />
-                  </>
-                )}
+                Sign In
+                <ArrowRightIcon className="w-4 h-4 ml-2" />
               </button>
             </div>
           </div>
@@ -157,20 +151,10 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
               <button
                 onClick={handleLogin}
-                disabled={isLoading}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl disabled:opacity-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
-                    Signing In...
-                  </>
-                ) : (
-                  <>
-                    Get Started Free
-                    <ArrowRightIcon className="w-5 h-5 ml-3" />
-                  </>
-                )}
+                Get Started Free
+                <ArrowRightIcon className="w-5 h-5 ml-3" />
               </button>
               
               <button
@@ -261,20 +245,10 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleLogin}
-              disabled={isLoading}
-              className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-600 bg-white hover:bg-gray-50 rounded-xl disabled:opacity-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-600 bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent mr-3"></div>
-                  Signing In...
-                </>
-              ) : (
-                <>
-                  Start Free Trial
-                  <CheckCircleIcon className="w-5 h-5 ml-3" />
-                </>
-              )}
+              Start Free Trial
+              <CheckCircleIcon className="w-5 h-5 ml-3" />
             </button>
             
             <button

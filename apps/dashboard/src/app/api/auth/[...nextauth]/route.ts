@@ -1,14 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import NextAuth from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-// Mock authentication endpoint
-export async function GET(request: NextRequest) {
-  return NextResponse.json({ 
-    message: 'Authentication endpoint (demo mode)' 
-  });
-}
+const handler = NextAuth(authOptions);
 
-export async function POST(request: NextRequest) {
-  return NextResponse.json({ 
-    message: 'Authentication endpoint (demo mode)' 
-  });
-}
+export { handler as GET, handler as POST };

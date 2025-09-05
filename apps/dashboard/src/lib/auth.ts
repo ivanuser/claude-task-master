@@ -2,11 +2,65 @@ import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import GithubProvider from "next-auth/providers/github";
 import GitlabProvider from "next-auth/providers/gitlab";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./database";
+import { UserRole } from "../../generated/prisma";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
+    // Demo Credentials Provider
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "demo@taskmaster.ai" },
+        password: { label: "Password", type: "password", placeholder: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        // For demo purposes, accept specific test credentials
+        if (credentials.email === "demo@taskmaster.ai" && credentials.password === "password") {
+          try {
+            // Check if demo user exists, create if not
+            let user = await prisma.user.findUnique({
+              where: { email: credentials.email },
+            });
+
+            if (!user) {
+              user = await prisma.user.create({
+                data: {
+                  email: credentials.email,
+                  name: "Demo User",
+                  role: UserRole.ADMIN,
+                  isActive: true,
+                  settings: {
+                    theme: "light",
+                    notifications: true,
+                    timezone: "UTC",
+                  },
+                },
+              });
+            }
+
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              image: user.image,
+              role: user.role,
+            };
+          } catch (error) {
+            console.error("Database error during auth:", error);
+            return null;
+          }
+        }
+
+        return null;
+      },
+    }),
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
