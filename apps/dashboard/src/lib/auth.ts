@@ -92,9 +92,10 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, account, trigger }) {
-      // Clear token on signout
-      if (trigger === "signout") {
-        return {};
+      // Force clear token on signout
+      if (trigger === "signOut") {
+        console.log("JWT: Signing out, clearing token");
+        return null;
       }
       
       // Store user info in the token on sign in
@@ -116,8 +117,14 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
+      // If no token or empty token, return null session
+      if (!token || Object.keys(token).length === 0) {
+        console.log("Session: No valid token, returning null");
+        return null;
+      }
+      
       // Send properties to the client from JWT token
-      if (token && session.user) {
+      if (token && session.user && token.id) {
         session.user.id = token.id as string || token.sub || '';
         session.user.email = token.email as string || '';
         session.user.name = token.name as string || '';
@@ -134,6 +141,10 @@ export const authOptions: NextAuthOptions = {
         if (token.providerAccountId) {
           session.providerAccountId = token.providerAccountId as string;
         }
+      } else {
+        // If token exists but no user ID, invalidate session
+        console.log("Session: Token without user ID, returning null");
+        return null;
       }
       return session;
     },
@@ -160,8 +171,8 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
-    maxAge: 2 * 60 * 60, // 2 hours (shorter for testing)
-    updateAge: 30 * 60, // 30 minutes
+    maxAge: 5 * 60, // 5 minutes (very short for testing)
+    updateAge: 1 * 60, // 1 minute
   },
   cookies: {
     sessionToken: {
@@ -171,7 +182,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 2 * 60 * 60 // 2 hours
+        maxAge: 5 * 60 // 5 minutes (very short for testing)
       }
     }
   },
