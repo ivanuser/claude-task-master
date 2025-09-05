@@ -23,15 +23,14 @@ export default function HomePage() {
   const { data: session, status } = useSession();
   const [showDemo, setShowDemo] = useState(false);
 
-  // Redirect to dashboard if already authenticated
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/dashboard');
-    }
-  }, [status, router]);
+  // Don't auto-redirect, let user choose to go to dashboard
 
   const handleLogin = () => {
-    router.push('/auth/signin');
+    if (status === 'authenticated') {
+      router.push('/dashboard');
+    } else {
+      router.push('/auth/signin');
+    }
   };
 
   const handleViewDemo = () => {
@@ -119,7 +118,7 @@ export default function HomePage() {
                 onClick={handleLogin}
                 className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700"
               >
-                Sign In
+                {status === 'authenticated' ? 'Dashboard' : 'Sign In'}
                 <ArrowRightIcon className="w-4 h-4 ml-2" />
               </button>
             </div>
@@ -153,7 +152,7 @@ export default function HomePage() {
                 onClick={handleLogin}
                 className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                Get Started Free
+                {status === 'authenticated' ? 'Go to Dashboard' : 'Get Started Free'}
                 <ArrowRightIcon className="w-5 h-5 ml-3" />
               </button>
               
