@@ -87,6 +87,43 @@ model VerificationToken {
   @@map("verificationtokens")
 }
 
+// Server model for tracking remote Task Master instances
+model Server {
+  id          String   @id @default(cuid())
+  name        String   // Human-readable name (e.g., "Production Server", "Development VM")
+  description String?
+  
+  // Connection details
+  host        String   // IP address or hostname
+  port        Int      @default(22) // SSH port
+  username    String   // SSH username
+  privateKey  String?  // SSH private key (encrypted)
+  
+  // Task Master path on remote server
+  projectPath String   // Path to the project root with .taskmaster folder
+  
+  // Server status and metadata
+  status      ServerStatus @default(ACTIVE)
+  lastPingAt  DateTime?
+  isReachable Boolean  @default(true)
+  
+  // Connection settings
+  settings    Json     @default("{}")
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  projects    Project[]
+  syncHistory SyncHistory[]
+  
+  // Indexes
+  @@index([host])
+  @@index([status])
+  @@map("servers")
+}
+
 // Project model representing individual Task Master projects
 model Project {
   id          String   @id @default(cuid())
@@ -99,7 +136,11 @@ model Project {
   gitProvider String?  // 'github', 'gitlab', etc.
   
   // Task Master tag
-  tag         String   @unique
+  tag         String   // No longer unique globally - unique per server
+  
+  // Server relation
+  serverId    String?  // Optional for local projects
+  server      Server?  @relation(fields: [serverId], references: [id], onDelete: SetNull)
   
   // Project status and metadata
   status      ProjectStatus @default(ACTIVE)
@@ -116,10 +157,12 @@ model Project {
   members     ProjectMember[]
   syncHistory SyncHistory[]
   
-  // Indexes
+  // Unique constraint for tag per server (allows same tag on different servers)
+  @@unique([serverId, tag])
   @@index([tag])
   @@index([status])
   @@index([createdAt])
+  @@index([serverId])
   @@map("projects")
 }
 
@@ -186,13 +229,16 @@ model ProjectMember {
   @@map("project_members")
 }
 
-// Sync history for tracking git synchronization
+// Sync history for tracking synchronization from servers
 model SyncHistory {
   id        String   @id @default(cuid())
   
   // Relations
-  projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  serverId  String?
+  server    Server?  @relation(fields: [serverId], references: [id], onDelete: Cascade)
   
   userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -216,6 +262,7 @@ model SyncHistory {
   completedAt   DateTime?
   
   @@index([projectId])
+  @@index([serverId])
   @@index([status])
   @@index([startedAt])
   @@map("sync_history")
@@ -279,4 +326,12 @@ enum SyncStatus {
   COMPLETED
   FAILED
   CANCELLED
+}
+
+enum ServerStatus {
+  ACTIVE
+  INACTIVE
+  UNREACHABLE
+  ERROR
+  MAINTENANCE
 }

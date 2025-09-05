@@ -12,6 +12,7 @@ import {
   Cog6ToothIcon,
   BellIcon,
   UserGroupIcon,
+  ServerIcon,
 } from '@heroicons/react/24/outline'
 import { cn } from '@/lib/utils'
 
@@ -22,6 +23,7 @@ const navigation: Array<{
 }> = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon as any },
   { name: 'Projects', href: '/projects', icon: FolderIcon as any },
+  { name: 'Servers', href: '/servers', icon: ServerIcon as any },
   { name: 'Tasks', href: '/tasks', icon: ClipboardDocumentListIcon as any },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon as any },
   { name: 'Team', href: '/team', icon: UserGroupIcon as any },

@@ -19,10 +19,8 @@ interface Project {
   gitUrl?: string;
   gitBranch?: string;
   updatedAt: string;
-  _count: {
-    tasks: number;
-    members: number;
-  };
+  totalTasks: number;
+  memberCount: number;
   members: Array<{
     user: {
       id: string;
@@ -329,13 +327,13 @@ export default function ProjectsPage() {
                 </div>
                 <div className="flex items-center">
                   <UserGroupIcon className="h-4 w-4 mr-1" />
-                  {project._count.members}
+                  {project.memberCount}
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="text-sm">
-                  <span className="font-medium text-gray-900">{project._count.tasks}</span>
+                  <span className="font-medium text-gray-900">{project.totalTasks}</span>
                   <span className="text-gray-500"> tasks</span>
                 </div>
                 <div className="flex items-center text-sm text-taskmaster-600 hover:text-taskmaster-700">
