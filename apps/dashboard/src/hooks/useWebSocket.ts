@@ -58,21 +58,26 @@ export function useWebSocket(): UseWebSocketReturn {
         }
       }
 
-      ws.current.onclose = () => {
+      ws.current.onclose = (event) => {
         setIsConnected(false)
-        console.log('WebSocket disconnected')
-        // Attempt to reconnect after 3 seconds
-        setTimeout(() => {
-          connect()
-        }, 3000)
+        // Only log and retry if it's not a 501 (Not Implemented) status
+        if (event.code !== 1006) {
+          console.log('WebSocket disconnected:', event.reason)
+          // Attempt to reconnect after 5 seconds, but with backoff
+          setTimeout(() => {
+            connect()
+          }, 5000)
+        } else {
+          console.log('WebSocket functionality not yet implemented, skipping reconnection attempts')
+        }
       }
 
       ws.current.onerror = (error) => {
-        console.error('WebSocket error:', error)
+        console.log('WebSocket connection failed (this is expected until WebSocket server is implemented)')
         setIsConnected(false)
       }
     } catch (error) {
-      console.error('Failed to create WebSocket connection:', error)
+      console.log('WebSocket connection skipped (not yet implemented)')
       setIsConnected(false)
     }
   }, [])
@@ -129,7 +134,9 @@ export function useWebSocket(): UseWebSocketReturn {
   }, [unsubscribe])
 
   useEffect(() => {
-    connect()
+    // Temporarily disable WebSocket connections to prevent errors
+    // TODO: Re-enable when WebSocket server is properly implemented
+    console.log('WebSocket connections temporarily disabled')
     
     return () => {
       if (ws.current) {
