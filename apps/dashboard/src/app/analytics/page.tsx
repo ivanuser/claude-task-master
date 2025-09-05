@@ -12,6 +12,7 @@ import {
 import { MetricCard } from '@/components/analytics/MetricCard';
 import { ChartWidget } from '@/components/analytics/ChartWidget';
 import { AnalyticsService } from '@/lib/services/analytics.service';
+import BackButton from '@/components/ui/BackButton';
 import { 
   AnalyticsSummary,
   ProjectMetrics,
@@ -152,6 +153,9 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6 p-6">
+      {/* Back Button */}
+      <BackButton href="/dashboard" label="Back to Dashboard" />
+      
       {/* Page Header */}
       <div className="flex justify-between items-center">
         <div>

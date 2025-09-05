@@ -22,6 +22,7 @@ import { APIKeySection } from '@/components/settings/APIKeySection'
 import { IntegrationsSection } from '@/components/settings/IntegrationsSection'
 import { SecuritySection } from '@/components/settings/SecuritySection'
 import { DataSection } from '@/components/settings/DataSection'
+import BackButton from '@/components/ui/BackButton'
 
 type SettingsSection = 
   | 'profile'
@@ -124,6 +125,7 @@ export default function SettingsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
+              <BackButton href="/dashboard" label="Back to Dashboard" className="mr-4" />
               <SettingsIcon className="w-8 h-8 text-gray-900 mr-3" />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Settings</h1>

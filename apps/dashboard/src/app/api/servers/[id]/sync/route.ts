@@ -42,6 +42,32 @@ async function mapTaskPriority(priority: string): Promise<string> {
   }
 }
 
+async function mapComplexity(complexity: string | number | null): Promise<number | null> {
+  if (!complexity) return null;
+  
+  if (typeof complexity === 'number') return complexity;
+  
+  if (typeof complexity === 'string') {
+    switch (complexity.toLowerCase()) {
+      case 'low':
+      case 'simple':
+        return 1;
+      case 'medium':
+      case 'moderate':
+        return 5;
+      case 'high':
+      case 'complex':
+        return 8;
+      default:
+        // Try to parse as number
+        const parsed = parseInt(complexity);
+        return isNaN(parsed) ? null : parsed;
+    }
+  }
+  
+  return null;
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: RouteParams }
@@ -93,6 +119,7 @@ export async function POST(
 
       // Check if .taskmaster directory exists
       const tasksFilePath = `${server.projectPath}/.taskmaster/tasks/tasks.json`;
+      console.log('Looking for tasks file at:', tasksFilePath);
       const { stdout: fileExists } = await ssh.execCommand(`test -f ${tasksFilePath} && echo "exists" || echo "missing"`);
 
       if (fileExists.trim() !== 'exists') {
@@ -107,6 +134,8 @@ export async function POST(
       }
 
       const tasksJson = JSON.parse(tasksData);
+      console.log('Raw tasks JSON structure:', Object.keys(tasksJson));
+      console.log('Full JSON preview:', JSON.stringify(tasksJson, null, 2).substring(0, 1000));
 
       // Get available tags
       const availableTags = Object.keys(tasksJson).filter(key => 
@@ -114,6 +143,7 @@ export async function POST(
         tasksJson[key].tasks && 
         Array.isArray(tasksJson[key].tasks)
       );
+      console.log('Available tags found:', availableTags);
 
       let totalTasksImported = 0;
       let totalProjectsCreated = 0;
@@ -122,8 +152,12 @@ export async function POST(
       // Import projects from each tag
       for (const tagName of availableTags) {
         const tasks = tasksJson[tagName]?.tasks || [];
+        console.log(`Processing tag "${tagName}" with ${tasks.length} tasks`);
         
-        if (tasks.length === 0) continue;
+        if (tasks.length === 0) {
+          console.log(`Skipping tag "${tagName}" - no tasks found`);
+          continue;
+        }
 
         // Create or update project for this tag
         const project = await prisma.project.upsert({
@@ -180,6 +214,7 @@ export async function POST(
           try {
             const status = await mapTaskStatus(task.status);
             const priority = await mapTaskPriority(task.priority);
+            const complexity = await mapComplexity(task.complexity);
 
             await prisma.task.create({
               data: {
@@ -189,7 +224,7 @@ export async function POST(
                 description: task.description || '',
                 status: status as any,
                 priority: priority as any,
-                complexity: task.complexity || null,
+                complexity: complexity,
                 details: task.details || null,
                 testStrategy: task.testStrategy || null,
                 data: task

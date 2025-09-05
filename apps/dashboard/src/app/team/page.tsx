@@ -11,6 +11,7 @@ import { TeamActivity } from '@/components/team/TeamActivity'
 import { RoleManagement } from '@/components/team/RoleManagement'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { ErrorState } from '@/components/ui/ErrorState'
+import BackButton from '@/components/ui/BackButton'
 
 type TabType = 'overview' | 'members' | 'invitations' | 'roles' | 'activity' | 'settings'
 
@@ -76,6 +77,9 @@ export default function TeamPage() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <BackButton href="/dashboard" label="Back to Dashboard" />
+      
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">

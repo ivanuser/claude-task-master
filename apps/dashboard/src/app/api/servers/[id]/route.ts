@@ -120,22 +120,40 @@ export async function PUT(
       host,
       port,
       username,
+      authMethod,
       privateKey,
+      password,
       projectPath,
       status,
       settings
     } = body;
 
+    // Validate required fields
+    if (!name || !host || !username || !projectPath) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (host !== undefined) updateData.host = host;
-    if (port !== undefined) updateData.port = port;
+    if (port !== undefined) updateData.port = parseInt(port) || 22;
     if (username !== undefined) updateData.username = username;
-    if (privateKey !== undefined) updateData.privateKey = privateKey;
     if (projectPath !== undefined) updateData.projectPath = projectPath;
     if (status !== undefined) updateData.status = status.toUpperCase();
     if (settings !== undefined) updateData.settings = settings;
+
+    // Handle authentication method updates
+    if (privateKey) {
+      updateData.privateKey = privateKey;
+      updateData.password = null; // Clear password if using key
+    } else if (password) {
+      updateData.password = password;
+      updateData.privateKey = null; // Clear key if using password
+    }
 
     const server = await prisma.server.update({
       where: { id: params.id },

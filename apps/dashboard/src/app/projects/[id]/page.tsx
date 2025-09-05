@@ -5,11 +5,11 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { 
   ChevronRightIcon, 
-  ArrowLeftIcon,
   CheckCircleIcon,
   ClockIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import BackButton from '@/components/ui/BackButton';
 
 interface Task {
   id: string;
@@ -152,13 +152,7 @@ export default function ProjectDetailPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-6">
-        <button
-          onClick={() => router.push('/projects')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
-        >
-          <ArrowLeftIcon className="h-4 w-4 mr-2" />
-          Back to Projects
-        </button>
+        <BackButton href="/projects" label="Back to Projects" className="mb-4" />
         
         <div className="bg-white rounded-lg shadow px-6 py-4">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{project.name}</h1>

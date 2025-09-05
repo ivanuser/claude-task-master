@@ -14,6 +14,7 @@ import { ViewToggle } from '@/components/ui/ViewToggle'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
+import BackButton from '@/components/ui/BackButton'
 import { useWebSocket } from '@/hooks/useWebSocket'
 import { useTasks } from '@/hooks/useTasks'
 import { useProjects } from '@/hooks/useProjects'
@@ -270,6 +271,9 @@ export default function TasksPage() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <BackButton href="/dashboard" label="Back to Dashboard" />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

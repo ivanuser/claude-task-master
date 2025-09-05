@@ -10,6 +10,7 @@ import {
   CalendarIcon,
   UserGroupIcon
 } from '@heroicons/react/24/outline';
+import BackButton from '@/components/ui/BackButton';
 
 interface Project {
   id: string;
@@ -259,6 +260,9 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <BackButton href="/dashboard" label="Back to Dashboard" />
+      
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

@@ -10,8 +10,10 @@ import {
   FolderIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  XCircleIcon
+  XCircleIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
+import BackButton from '@/components/ui/BackButton';
 
 interface Server {
   id: string;
@@ -70,6 +72,7 @@ export default function ServersPage() {
   const [syncingProjects, setSyncingProjects] = useState<string | null>(null);
   const [connectionResults, setConnectionResults] = useState<{[key: string]: any}>({});
   const [syncResults, setSyncResults] = useState<{[key: string]: any}>({});
+  const [editingServer, setEditingServer] = useState<Server | null>(null);
 
   useEffect(() => {
     loadServers();
@@ -186,6 +189,62 @@ export default function ServersPage() {
     }
   };
 
+  const handleEditServer = (server: Server) => {
+    setEditingServer(server);
+    setFormData({
+      name: server.name,
+      description: server.description || '',
+      host: server.host,
+      port: server.port,
+      username: server.username,
+      authMethod: 'key', // We'll assume key auth for editing - user can change if needed
+      privateKey: '', // Don't populate for security
+      password: '', // Don't populate for security
+      projectPath: server.projectPath
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleSubmitEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingServer) return;
+    
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/servers/${editingServer.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        await loadServers();
+        setIsAddModalOpen(false);
+        setEditingServer(null);
+        setFormData({
+          name: '',
+          description: '',
+          host: '',
+          port: 22,
+          username: '',
+          authMethod: 'key',
+          privateKey: '',
+          password: '',
+          projectPath: ''
+        });
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to update server');
+      }
+    } catch (error) {
+      setError('Failed to update server');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const getStatusIcon = (server: Server) => {
     if (server.status === 'active' && server.isReachable) {
       return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
@@ -220,6 +279,9 @@ export default function ServersPage() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <BackButton href="/dashboard" label="Back to Dashboard" />
+      
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -275,6 +337,13 @@ export default function ServersPage() {
                     <span className="ml-1">{getStatusText(server)}</span>
                   </div>
                 </div>
+                <button
+                  onClick={() => handleEditServer(server)}
+                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Edit server"
+                >
+                  <PencilIcon className="h-4 w-4" />
+                </button>
               </div>
 
               <div className="space-y-3">
@@ -384,7 +453,9 @@ export default function ServersPage() {
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4">Add Task Master Server</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {editingServer ? 'Edit Task Master Server' : 'Add Task Master Server'}
+            </h3>
             
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">
@@ -392,7 +463,7 @@ export default function ServersPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={editingServer ? handleSubmitEdit : handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Server Name *
@@ -552,14 +623,18 @@ export default function ServersPage() {
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Path to the project directory containing .taskmaster/ folder
+                  Path to the <strong>project root directory</strong> that contains the .taskmaster/ folder<br/>
+                  Example: /home/user/my-project (NOT /home/user/my-project/.taskmaster)
                 </p>
               </div>
 
               <div className="flex justify-end gap-2 mt-6">
                 <button
                   type="button"
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setEditingServer(null);
+                  }}
                   disabled={isSubmitting}
                   className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
                 >
@@ -570,7 +645,7 @@ export default function ServersPage() {
                   disabled={isSubmitting}
                   className="px-4 py-2 bg-taskmaster-600 text-white rounded hover:bg-taskmaster-700 disabled:opacity-50 text-sm"
                 >
-                  {isSubmitting ? 'Adding...' : 'Add Server'}
+                  {isSubmitting ? (editingServer ? 'Updating...' : 'Adding...') : (editingServer ? 'Update Server' : 'Add Server')}
                 </button>
               </div>
             </form>

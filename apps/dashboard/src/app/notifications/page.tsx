@@ -7,6 +7,7 @@ import { NotificationStats } from '@/components/notifications/NotificationStats'
 import { NotificationPreferencesModal } from '@/components/notifications/NotificationPreferencesModal'
 import { useNotifications } from '@/hooks/useNotifications'
 import { NotificationType } from '@/types/team'
+import BackButton from '@/components/ui/BackButton'
 import { 
   Bell, 
   Settings, 
@@ -148,6 +149,7 @@ export default function NotificationsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
+              <BackButton href="/dashboard" label="Back to Dashboard" className="mr-4" />
               <Bell className="w-8 h-8 text-blue-600 mr-3" />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
