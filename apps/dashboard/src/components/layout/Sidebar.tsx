@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import {
   HomeIcon,
   FolderIcon,
@@ -30,6 +31,7 @@ const navigation: Array<{
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   return (
     <aside className='w-64 bg-white shadow-sm border-r border-gray-200 h-screen sticky top-0'>
@@ -66,10 +68,20 @@ export function Sidebar() {
         </nav>
         <div className='p-4 border-t border-gray-200'>
           <div className='flex items-center'>
-            <div className='h-8 w-8 rounded-full bg-gray-300'></div>
+            <div className='h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center'>
+              {session?.user?.name ? (
+                <span className='text-sm font-medium text-gray-600'>
+                  {session.user.name.charAt(0).toUpperCase()}
+                </span>
+              ) : null}
+            </div>
             <div className='ml-3'>
-              <p className='text-sm font-medium text-gray-700'>User Name</p>
-              <p className='text-xs text-gray-500'>user@example.com</p>
+              <p className='text-sm font-medium text-gray-700'>
+                {session?.user?.name || 'Loading...'}
+              </p>
+              <p className='text-xs text-gray-500'>
+                {session?.user?.email || 'Loading...'}
+              </p>
             </div>
           </div>
         </div>

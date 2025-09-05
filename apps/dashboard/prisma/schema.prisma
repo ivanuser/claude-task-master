@@ -19,6 +19,7 @@ model User {
   name          String?
   email         String    @unique
   emailVerified DateTime? @map("email_verified")
+  password      String?   // Password for credentials-based auth
   image         String?
   
   // User role and permissions

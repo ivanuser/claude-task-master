@@ -15,8 +15,13 @@ export async function GET(request: NextRequest) {
     
     // Get filter parameters
     const search = searchParams.get('search') || '';
-    const sortBy = searchParams.get('sortBy') || 'updatedAt';
+    let sortBy = searchParams.get('sortBy') || 'updatedAt';
     const sortOrder = searchParams.get('sortOrder') || 'desc';
+    
+    // Map frontend sortBy values to actual database fields
+    if (sortBy === 'lastActivity') {
+      sortBy = 'updatedAt';
+    }
     const ownership = searchParams.get('ownership') || 'all';
 
     // Build where clause

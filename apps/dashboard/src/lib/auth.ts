@@ -5,6 +5,7 @@ import GitlabProvider from "next-auth/providers/gitlab";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./database";
 import { UserRole } from "../../generated/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   // adapter: PrismaAdapter(prisma), // Not needed for JWT sessions
@@ -40,8 +41,8 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid email or password");
           }
 
-          // Temporary: use plaintext comparison (not secure, for testing only)
-          const isPasswordValid = credentials.password === user.password;
+          // Verify password using bcryptjs
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
           if (!isPasswordValid) {
             throw new Error("Invalid email or password");
