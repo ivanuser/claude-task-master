@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { 
   ChartBarIcon,
   SparklesIcon,
@@ -115,7 +115,7 @@ export default function HomePage() {
                     Dashboard
                   </button>
                   <button
-                    onClick={() => router.push('/api/auth/signout')}
+                    onClick={() => signOut({ callbackUrl: '/' })}
                     className="inline-flex items-center px-6 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
                   >
                     Sign Out

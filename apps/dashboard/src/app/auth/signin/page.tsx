@@ -49,10 +49,6 @@ export default function SignInPage() {
     signIn('github', { callbackUrl: '/dashboard' });
   };
 
-  const handleDemoLogin = () => {
-    setEmail('demo@taskmaster.ai');
-    setPassword('password');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -69,21 +65,6 @@ export default function SignInPage() {
           <p className="text-gray-600">
             Access your enhanced analytics dashboard
           </p>
-        </div>
-
-        {/* Demo Credentials */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Demo Credentials</h3>
-          <div className="text-sm text-blue-700">
-            <div>Email: <code className="bg-blue-100 px-1 rounded">demo@taskmaster.ai</code></div>
-            <div>Password: <code className="bg-blue-100 px-1 rounded">password</code></div>
-          </div>
-          <button
-            onClick={handleDemoLogin}
-            className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
-          >
-            Click to fill demo credentials
-          </button>
         </div>
 
         {/* Sign In Form */}
@@ -184,8 +165,17 @@ export default function SignInPage() {
           </button>
         </div>
 
-        {/* Back to home */}
-        <div className="text-center">
+        {/* Sign up link */}
+        <div className="text-center space-y-2">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <button
+              onClick={() => router.push('/auth/signup')}
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Sign up for free
+            </button>
+          </p>
           <button
             onClick={() => router.push('/')}
             className="text-sm text-gray-500 hover:text-gray-700"
