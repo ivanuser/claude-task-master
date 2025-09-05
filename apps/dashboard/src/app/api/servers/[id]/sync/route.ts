@@ -83,6 +83,10 @@ export async function POST(
 
       if (server.privateKey) {
         connectionOptions.privateKey = server.privateKey;
+      } else if (server.password) {
+        connectionOptions.password = server.password;
+      } else {
+        throw new Error('No authentication method configured (missing both private key and password)');
       }
 
       await ssh.connect(connectionOptions);

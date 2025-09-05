@@ -98,6 +98,7 @@ model Server {
   port        Int      @default(22) // SSH port
   username    String   // SSH username
   privateKey  String?  // SSH private key (encrypted)
+  password    String?  // SSH password (encrypted) - alternative to private key
   
   // Task Master path on remote server
   projectPath String   // Path to the project root with .taskmaster folder

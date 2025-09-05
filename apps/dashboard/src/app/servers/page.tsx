@@ -42,7 +42,9 @@ interface ServerFormData {
   host: string;
   port: number;
   username: string;
+  authMethod: 'key' | 'password';
   privateKey: string;
+  password: string;
   projectPath: string;
 }
 
@@ -57,7 +59,9 @@ export default function ServersPage() {
     host: '',
     port: 22,
     username: '',
+    authMethod: 'key',
     privateKey: '',
+    password: '',
     projectPath: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,7 +106,9 @@ export default function ServersPage() {
           host: '',
           port: 22,
           username: '',
+          authMethod: 'key',
           privateKey: '',
+          password: '',
           projectPath: ''
         });
       } else {
@@ -351,19 +357,78 @@ export default function ServersPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  SSH Private Key
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Authentication Method *
                 </label>
-                <textarea
-                  value={formData.privateKey}
-                  onChange={(e) => setFormData(prev => ({ ...prev, privateKey: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                  rows={4}
-                  placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Leave empty to use SSH agent or password authentication
-                </p>
+                <div className="flex space-x-4 mb-3">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="key"
+                      checked={formData.authMethod === 'key'}
+                      onChange={(e) => setFormData(prev => ({ ...prev, authMethod: e.target.value as 'key' | 'password' }))}
+                      className="mr-2"
+                    />
+                    <span className="text-sm">SSH Key</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="password"
+                      checked={formData.authMethod === 'password'}
+                      onChange={(e) => setFormData(prev => ({ ...prev, authMethod: e.target.value as 'key' | 'password' }))}
+                      className="mr-2"
+                    />
+                    <span className="text-sm">Password</span>
+                  </label>
+                </div>
+
+                {formData.authMethod === 'key' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      SSH Private Key *
+                    </label>
+                    <textarea
+                      value={formData.privateKey}
+                      onChange={(e) => setFormData(prev => ({ ...prev, privateKey: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                      rows={6}
+                      placeholder="-----BEGIN OPENSSH PRIVATE KEY-----&#10;b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQ...&#10;-----END OPENSSH PRIVATE KEY-----"
+                      required={formData.authMethod === 'key'}
+                    />
+                    <div className="text-xs text-gray-600 mt-2 p-2 bg-blue-50 rounded">
+                      <p className="font-medium mb-1">SSH Key Requirements:</p>
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Use <code className="bg-gray-100 px-1 rounded">ssh-keygen -t rsa -b 4096</code> or <code className="bg-gray-100 px-1 rounded">ssh-keygen -t ed25519</code></li>
+                        <li>Copy the entire private key including BEGIN/END lines</li>
+                        <li>Add the public key to <code className="bg-gray-100 px-1 rounded">~/.ssh/authorized_keys</code> on the target server</li>
+                        <li>Ensure key has proper permissions (600) on both machines</li>
+                      </ul>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      SSH Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                      placeholder="Enter SSH password"
+                      required={formData.authMethod === 'password'}
+                    />
+                    <div className="text-xs text-gray-600 mt-2 p-2 bg-yellow-50 rounded">
+                      <p className="font-medium mb-1">Password Authentication:</p>
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Less secure than SSH keys - consider using keys for production</li>
+                        <li>Ensure SSH password authentication is enabled on the server</li>
+                        <li>Password will be encrypted in the database</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

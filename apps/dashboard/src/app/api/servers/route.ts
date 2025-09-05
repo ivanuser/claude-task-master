@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
       port = 22,
       username,
       privateKey,
+      password,
       projectPath,
       settings = {}
     } = body;
@@ -110,6 +111,14 @@ export async function POST(request: NextRequest) {
     if (!name || !host || !username || !projectPath) {
       return NextResponse.json(
         { error: 'Missing required fields: name, host, username, projectPath' },
+        { status: 400 }
+      );
+    }
+
+    // Validate authentication method
+    if (!privateKey && !password) {
+      return NextResponse.json(
+        { error: 'Either SSH private key or password is required for authentication' },
         { status: 400 }
       );
     }
@@ -123,6 +132,7 @@ export async function POST(request: NextRequest) {
         port,
         username,
         privateKey, // Note: In production, encrypt this!
+        password, // Note: In production, encrypt this!
         projectPath,
         status: 'ACTIVE',
         settings
