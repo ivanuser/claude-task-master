@@ -66,6 +66,10 @@ export default function ServersPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [testingConnection, setTestingConnection] = useState<string | null>(null);
+  const [syncingProjects, setSyncingProjects] = useState<string | null>(null);
+  const [connectionResults, setConnectionResults] = useState<{[key: string]: any}>({});
+  const [syncResults, setSyncResults] = useState<{[key: string]: any}>({});
 
   useEffect(() => {
     loadServers();
@@ -119,6 +123,66 @@ export default function ServersPage() {
       setError('Failed to add server');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleTestConnection = async (serverId: string) => {
+    setTestingConnection(serverId);
+    setConnectionResults(prev => ({ ...prev, [serverId]: null }));
+    
+    try {
+      const response = await fetch(`/api/servers/${serverId}/test`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const result = await response.json();
+      setConnectionResults(prev => ({ ...prev, [serverId]: result }));
+      
+      if (result.success) {
+        // Reload servers to update status
+        await loadServers();
+      }
+    } catch (error) {
+      setConnectionResults(prev => ({ 
+        ...prev, 
+        [serverId]: { 
+          success: false, 
+          error: 'Failed to test connection' 
+        } 
+      }));
+    } finally {
+      setTestingConnection(null);
+    }
+  };
+
+  const handleSyncProjects = async (serverId: string) => {
+    setSyncingProjects(serverId);
+    setSyncResults(prev => ({ ...prev, [serverId]: null }));
+    
+    try {
+      const response = await fetch(`/api/servers/${serverId}/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const result = await response.json();
+      setSyncResults(prev => ({ ...prev, [serverId]: result }));
+      
+      if (result.success) {
+        // Reload servers to update project counts
+        await loadServers();
+      }
+    } catch (error) {
+      setSyncResults(prev => ({ 
+        ...prev, 
+        [serverId]: { 
+          success: false, 
+          error: 'Failed to sync projects' 
+        } 
+      }));
+    } finally {
+      setSyncingProjects(null);
     }
   };
 
@@ -259,13 +323,57 @@ export default function ServersPage() {
                 </div>
               )}
 
-              <div className="mt-4 flex justify-end space-x-2">
-                <button className="text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium">
-                  Test Connection
-                </button>
-                <button className="text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium">
-                  Sync Projects
-                </button>
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-end space-x-2">
+                  <button 
+                    onClick={() => handleTestConnection(server.id)}
+                    className="text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium disabled:opacity-50"
+                    disabled={testingConnection === server.id || syncingProjects === server.id}
+                  >
+                    {testingConnection === server.id ? 'Testing...' : 'Test Connection'}
+                  </button>
+                  <button 
+                    onClick={() => handleSyncProjects(server.id)}
+                    className="text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium disabled:opacity-50"
+                    disabled={testingConnection === server.id || syncingProjects === server.id}
+                  >
+                    {syncingProjects === server.id ? 'Syncing...' : 'Sync Projects'}
+                  </button>
+                </div>
+                
+                {/* Connection test results */}
+                {connectionResults[server.id] && (
+                  <div className={`text-xs p-2 rounded ${
+                    connectionResults[server.id].success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                  }`}>
+                    {connectionResults[server.id].success ? (
+                      <div>
+                        <div className="font-medium">✓ Connection successful</div>
+                        <div>Host: {connectionResults[server.id].connection?.hostname}</div>
+                        <div>Task Master: {connectionResults[server.id].connection?.taskMasterFound ? 'Found' : 'Not found'}</div>
+                      </div>
+                    ) : (
+                      <div className="font-medium">✗ {connectionResults[server.id].error}</div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Sync results */}
+                {syncResults[server.id] && (
+                  <div className={`text-xs p-2 rounded ${
+                    syncResults[server.id].success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                  }`}>
+                    {syncResults[server.id].success ? (
+                      <div>
+                        <div className="font-medium">✓ Sync completed</div>
+                        <div>Projects: {syncResults[server.id].result?.projectsCreated || 0} created, {syncResults[server.id].result?.projectsUpdated || 0} updated</div>
+                        <div>Tasks: {syncResults[server.id].result?.tasksImported || 0} imported</div>
+                      </div>
+                    ) : (
+                      <div className="font-medium">✗ {syncResults[server.id].error}</div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
