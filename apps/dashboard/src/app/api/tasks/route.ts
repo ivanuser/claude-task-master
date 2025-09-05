@@ -55,15 +55,17 @@ export async function GET(request: NextRequest) {
             }
           },
           dependencies: {
-            include: {
+            select: {
               id: true,
+              taskId: true,
               title: true,
               status: true
             }
           },
           dependentTasks: {
-            include: {
+            select: {
               id: true,
+              taskId: true,
               title: true,
               status: true
             }
