@@ -26,11 +26,11 @@ export default function HomePage() {
   // Don't auto-redirect, let user choose to go to dashboard
 
   const handleLogin = () => {
-    if (status === 'authenticated') {
-      router.push('/dashboard');
-    } else {
-      router.push('/auth/signin');
-    }
+    router.push('/auth/signin');
+  };
+  
+  const handleDashboard = () => {
+    router.push('/dashboard');
   };
 
   const handleViewDemo = () => {
@@ -106,21 +106,38 @@ export default function HomePage() {
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={handleViewDemo}
-                disabled={showDemo}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 disabled:opacity-50"
-              >
-                <EyeIcon className="w-4 h-4 mr-2" />
-                {showDemo ? 'Loading Demo...' : 'View Demo'}
-              </button>
-              <button
-                onClick={handleLogin}
-                className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700"
-              >
-                {status === 'authenticated' ? 'Dashboard' : 'Sign In'}
-                <ArrowRightIcon className="w-4 h-4 ml-2" />
-              </button>
+              {status === 'authenticated' ? (
+                <>
+                  <button
+                    onClick={handleDashboard}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={() => router.push('/api/auth/signout')}
+                    className="inline-flex items-center px-6 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleLogin}
+                    className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Sign In
+                    <ArrowRightIcon className="w-4 h-4 ml-2" />
+                  </button>
+                  <button
+                    onClick={() => router.push('/auth/signup')}
+                    className="inline-flex items-center px-6 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Create Account
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -148,31 +165,33 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <button
-                onClick={handleLogin}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                {status === 'authenticated' ? 'Go to Dashboard' : 'Get Started Free'}
-                <ArrowRightIcon className="w-5 h-5 ml-3" />
-              </button>
-              
-              <button
-                onClick={handleViewDemo}
-                disabled={showDemo}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-700 bg-white hover:bg-gray-50 rounded-xl disabled:opacity-50 transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-200"
-              >
-                {showDemo ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-400 border-t-transparent mr-3"></div>
-                    Loading Demo...
-                  </>
-                ) : (
-                  <>
+              {status === 'authenticated' ? (
+                <button
+                  onClick={handleDashboard}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Go to Dashboard
+                  <ArrowRightIcon className="w-5 h-5 ml-3" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => router.push('/auth/signup')}
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    Get Started Free
+                    <ArrowRightIcon className="w-5 h-5 ml-3" />
+                  </button>
+                  
+                  <button
+                    onClick={handleLogin}
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-700 bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-200"
+                  >
                     <PlayIcon className="w-5 h-5 mr-3" />
-                    View Live Demo
-                  </>
-                )}
-              </button>
+                    Sign In
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Stats */}

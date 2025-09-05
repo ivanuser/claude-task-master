@@ -5,60 +5,65 @@ import GitlabProvider from "next-auth/providers/gitlab";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./database";
 import { UserRole } from "../../generated/prisma";
+import bcrypt from 'bcrypt';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    // Demo Credentials Provider
+    // Credentials Provider for email/password authentication
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "demo@taskmaster.ai" },
-        password: { label: "Password", type: "password", placeholder: "password" },
+        email: { label: "Email", type: "email", placeholder: "your@email.com" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error("Please enter your email and password");
         }
 
-        // For demo purposes, accept specific test credentials
-        if (credentials.email === "demo@taskmaster.ai" && credentials.password === "password") {
-          try {
-            // Check if demo user exists, create if not
-            let user = await prisma.user.findUnique({
-              where: { email: credentials.email },
-            });
+        try {
+          // Find user by email
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              password: true,
+              image: true,
+              role: true,
+              isActive: true,
+            },
+          });
 
-            if (!user) {
-              user = await prisma.user.create({
-                data: {
-                  email: credentials.email,
-                  name: "Demo User",
-                  role: UserRole.ADMIN,
-                  isActive: true,
-                  settings: {
-                    theme: "light",
-                    notifications: true,
-                    timezone: "UTC",
-                  },
-                },
-              });
-            }
-
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              image: user.image,
-              role: user.role,
-            };
-          } catch (error) {
-            console.error("Database error during auth:", error);
-            return null;
+          if (!user || !user.password) {
+            throw new Error("Invalid email or password");
           }
-        }
 
-        return null;
+          // Use bcrypt to compare passwords securely
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+
+          if (!isPasswordValid) {
+            throw new Error("Invalid email or password");
+          }
+
+          if (!user.isActive) {
+            throw new Error("Account is not active. Please contact support.");
+          }
+
+          // Return user object (password excluded)
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
+          throw error;
+        }
       },
     }),
     GithubProvider({
