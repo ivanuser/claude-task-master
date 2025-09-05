@@ -5,10 +5,9 @@ import GitlabProvider from "next-auth/providers/gitlab";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./database";
 import { UserRole } from "../../generated/prisma";
-import bcrypt from 'bcrypt';
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma), // Not needed for JWT sessions
   providers: [
     // Credentials Provider for email/password authentication
     CredentialsProvider({
@@ -41,8 +40,8 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid email or password");
           }
 
-          // Use bcrypt to compare passwords securely
-          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          // Temporary: use plaintext comparison (not secure, for testing only)
+          const isPasswordValid = credentials.password === user.password;
 
           if (!isPasswordValid) {
             throw new Error("Invalid email or password");
@@ -92,28 +91,49 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
+      // Clear token on signout
+      if (trigger === "signout") {
+        return {};
+      }
+      
+      // Store user info in the token on sign in
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.image = user.image;
+        if ('role' in user) {
+          token.role = user.role;
+        }
+      }
       // Store the OAuth account info in the token
-      if (account && user) {
+      if (account) {
         token.accessToken = account.access_token;
         token.provider = account.provider;
         token.providerAccountId = account.providerAccountId;
       }
       return token;
     },
-    async session({ session, token, user }) {
-      // Send properties to the client
+    async session({ session, token }) {
+      // Send properties to the client from JWT token
       if (token && session.user) {
-        session.user.id = user?.id || token.sub!;
-        if (user && 'role' in user) {
-          (session.user as any).role = user.role;
+        session.user.id = token.id as string || token.sub || '';
+        session.user.email = token.email as string || '';
+        session.user.name = token.name as string || '';
+        session.user.image = token.image as string || '';
+        if (token.role) {
+          (session.user as any).role = token.role;
         }
-        if (user && 'isActive' in user) {
-          (session.user as any).isActive = user.isActive;
+        if (token.accessToken) {
+          session.accessToken = token.accessToken as string;
         }
-        session.accessToken = token.accessToken as string;
-        session.provider = token.provider as string;
-        session.providerAccountId = token.providerAccountId as string;
+        if (token.provider) {
+          session.provider = token.provider as string;
+        }
+        if (token.providerAccountId) {
+          session.providerAccountId = token.providerAccountId as string;
+        }
       }
       return session;
     },
@@ -121,11 +141,16 @@ export const authOptions: NextAuthOptions = {
       // Allow sign in
       return true;
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+    async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
+      try {
+        const urlObj = new URL(url);
+        if (urlObj.origin === baseUrl) return url;
+      } catch {
+        // Invalid URL
+      }
       return baseUrl;
     },
   },
@@ -134,9 +159,21 @@ export const authOptions: NextAuthOptions = {
     error: "/auth/error",
   },
   session: {
-    strategy: "database",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    strategy: "jwt",
+    maxAge: 2 * 60 * 60, // 2 hours (shorter for testing)
+    updateAge: 30 * 60, // 30 minutes
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 2 * 60 * 60 // 2 hours
+      }
+    }
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
