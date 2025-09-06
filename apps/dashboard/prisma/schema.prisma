@@ -52,6 +52,9 @@ model User {
   emailLogs     EmailLog[]
   apiKeys       ApiKey[]
   integrations  Integration[]
+  twoFactorAuth TwoFactorAuth?
+  backupCodes   BackupCode[]
+  twoFactorRecovery TwoFactorRecovery[]
   
   @@map("users")
 }
@@ -744,4 +747,91 @@ enum SyncDirection {
   INCOMING
   OUTGOING
   BIDIRECTIONAL
+}
+
+// Two-Factor Authentication settings for users
+model TwoFactorAuth {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // TOTP (Time-based One-Time Password) settings
+  secret          String   // Encrypted TOTP secret
+  enabled         Boolean  @default(false)
+  verifiedAt      DateTime? // When 2FA was first verified
+  
+  // SMS fallback (optional)
+  phoneNumber     String?  // Encrypted phone number
+  smsEnabled      Boolean  @default(false)
+  smsVerifiedAt   DateTime?
+  
+  // Authentication methods preferences
+  preferredMethod TwoFactorMethod @default(TOTP)
+  
+  // Recovery settings
+  recoveryEmail   String?  // Backup email for recovery
+  
+  // Security settings
+  trustedDevices  Json     @default("[]") // Array of trusted device identifiers
+  lastUsedAt      DateTime?
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@map("two_factor_auth")
+}
+
+// Backup codes for 2FA recovery
+model BackupCode {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  code      String   // Hashed backup code
+  usedAt    DateTime? // When the code was used
+  
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([code])
+  @@map("backup_codes")
+}
+
+// Two-factor authentication recovery attempts
+model TwoFactorRecovery {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token           String   @unique // Recovery token
+  method          RecoveryMethod // EMAIL or SMS
+  destination     String   // Email or phone number (encrypted)
+  
+  attempts        Int      @default(0)
+  maxAttempts     Int      @default(3)
+  
+  verifiedAt      DateTime?
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+  
+  @@index([userId])
+  @@index([token])
+  @@map("two_factor_recovery")
+}
+
+// Enum for two-factor authentication methods
+enum TwoFactorMethod {
+  TOTP      // Time-based One-Time Password (Google Authenticator, Authy, etc.)
+  SMS       // SMS text message
+  EMAIL     // Email OTP
+  BACKUP    // Backup code
+}
+
+// Enum for recovery methods
+enum RecoveryMethod {
+  EMAIL
+  SMS
+  SUPPORT   // Manual recovery through support
 }
