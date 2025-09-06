@@ -51,6 +51,7 @@ model User {
   emailPreferences EmailPreferences?
   emailLogs     EmailLog[]
   apiKeys       ApiKey[]
+  integrations  Integration[]
   
   @@map("users")
 }
@@ -469,6 +470,150 @@ model ApiKeyUsage {
   @@map("api_key_usage")
 }
 
+// Third-party integrations
+model Integration {
+  id        String   @id @default(cuid())
+  
+  // User relation
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Integration details
+  type      IntegrationType // GitHub, Slack, Google, Jira, etc.
+  name      String   // User-friendly name
+  enabled   Boolean  @default(true)
+  
+  // OAuth tokens and credentials
+  accessToken   String? @db.Text // Encrypted
+  refreshToken  String? @db.Text // Encrypted
+  tokenExpiresAt DateTime?
+  
+  // Integration-specific configuration
+  config    Json     @default("{}") // Service-specific settings
+  metadata  Json?    // Additional metadata
+  
+  // Connection details
+  externalId    String? // ID in the external system
+  externalUrl   String? // URL to the external resource
+  
+  // Status tracking
+  status    IntegrationStatus @default(PENDING)
+  lastSyncAt DateTime?
+  lastError String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  webhooks  Webhook[]
+  syncLogs  IntegrationSyncLog[]
+  
+  @@unique([userId, type, externalId])
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@map("integrations")
+}
+
+// Webhook endpoints for integrations
+model Webhook {
+  id        String   @id @default(cuid())
+  
+  // Integration relation (optional - can be standalone)
+  integrationId String?
+  integration   Integration? @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  
+  // Webhook details
+  url       String   // Webhook endpoint URL
+  secret    String?  // Webhook secret for signature validation
+  events    Json     @default("[]") // Array of event types to listen for
+  
+  // Configuration
+  active    Boolean  @default(true)
+  headers   Json?    // Custom headers to send
+  retryConfig Json   @default("{\"maxRetries\": 3, \"retryDelay\": 5000}")
+  
+  // Status tracking
+  lastTriggeredAt DateTime?
+  failureCount    Int @default(0)
+  successCount    Int @default(0)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  deliveries WebhookDelivery[]
+  
+  @@index([integrationId])
+  @@index([active])
+  @@map("webhooks")
+}
+
+// Webhook delivery logs
+model WebhookDelivery {
+  id        String   @id @default(cuid())
+  
+  // Webhook relation
+  webhookId String
+  webhook   Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  
+  // Delivery details
+  event     String   // Event type that triggered the webhook
+  payload   Json     // Payload sent
+  headers   Json?    // Headers sent
+  
+  // Response details
+  statusCode Int?    // HTTP status code received
+  response   String? @db.Text // Response body
+  error      String? // Error message if failed
+  
+  // Delivery attempts
+  attempts  Int      @default(1)
+  delivered Boolean  @default(false)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  deliveredAt DateTime?
+  
+  @@index([webhookId])
+  @@index([delivered])
+  @@index([createdAt])
+  @@map("webhook_deliveries")
+}
+
+// Integration sync logs
+model IntegrationSyncLog {
+  id        String   @id @default(cuid())
+  
+  // Integration relation
+  integrationId String
+  integration   Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  
+  // Sync details
+  syncType  String   // Type of sync (tasks, issues, events, etc.)
+  direction SyncDirection // INCOMING, OUTGOING, BIDIRECTIONAL
+  
+  // Results
+  itemsSynced   Int @default(0)
+  itemsFailed   Int @default(0)
+  errors        Json? // Array of error messages
+  
+  // Status
+  status    SyncStatus @default(PENDING)
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+  
+  // Metadata
+  metadata  Json? // Additional sync metadata
+  
+  @@index([integrationId])
+  @@index([status])
+  @@index([startedAt])
+  @@map("integration_sync_logs")
+}
+
 // Enums
 enum UserRole {
   SUPER_ADMIN
@@ -572,4 +717,31 @@ enum ApiKeyType {
   PERSONAL
   APPLICATION
   SERVICE
+}
+
+enum IntegrationType {
+  GITHUB
+  GITLAB
+  SLACK
+  GOOGLE_CALENDAR
+  JIRA
+  WEBHOOK
+  DISCORD
+  MICROSOFT_TEAMS
+  NOTION
+  LINEAR
+}
+
+enum IntegrationStatus {
+  PENDING
+  CONNECTED
+  ERROR
+  DISCONNECTED
+  EXPIRED
+}
+
+enum SyncDirection {
+  INCOMING
+  OUTGOING
+  BIDIRECTIONAL
 }
