@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { User, Camera, Save, Upload, X } from 'lucide-react'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 
 interface UserProfile {
   id: string
@@ -16,16 +17,31 @@ interface UserProfile {
 }
 
 export function UserProfileSection() {
+  const { data: session, update } = useSession()
+  
   const [profile, setProfile] = useState<UserProfile>({
-    id: '1',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    username: 'johndoe',
-    bio: 'Software engineer passionate about building great products.',
-    location: 'San Francisco, CA',
+    id: session?.user?.id || '1',
+    name: session?.user?.name || '',
+    email: session?.user?.email || '',
+    username: '',
+    bio: '',
+    location: '',
     timezone: 'America/Los_Angeles',
-    avatar: undefined,
+    avatar: session?.user?.image || undefined,
   })
+  
+  // Update profile when session changes
+  useEffect(() => {
+    if (session?.user) {
+      setProfile(prev => ({
+        ...prev,
+        id: session.user.id || prev.id,
+        name: session.user.name || prev.name,
+        email: session.user.email || prev.email,
+        avatar: session.user.image || prev.avatar,
+      }))
+    }
+  }, [session])
   
   const [loading, setLoading] = useState(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
@@ -60,19 +76,57 @@ export function UserProfileSection() {
   const handleSave = async () => {
     setLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // If there's a new avatar, upload it
+      // Prepare form data for avatar upload if needed
+      const formData = new FormData()
       if (avatarFile) {
-        // Simulate avatar upload
-        console.log('Uploading avatar:', avatarFile.name)
-        setProfile(prev => ({ ...prev, avatar: avatarPreview || undefined }))
+        formData.append('avatar', avatarFile)
+      }
+      
+      // Update profile via API
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: profile.name,
+          username: profile.username,
+          bio: profile.bio,
+          location: profile.location,
+          timezone: profile.timezone,
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to update profile')
+      }
+      
+      const updatedProfile = await response.json()
+      
+      // If there's a new avatar, upload it separately
+      if (avatarFile) {
+        const avatarResponse = await fetch('/api/user/avatar', {
+          method: 'POST',
+          body: formData,
+        })
+        
+        if (avatarResponse.ok) {
+          const { avatarUrl } = await avatarResponse.json()
+          setProfile(prev => ({ ...prev, avatar: avatarUrl }))
+          // Update session with new avatar
+          await update({ image: avatarUrl })
+        }
+        
         setAvatarFile(null)
         setAvatarPreview(null)
       }
       
-      console.log('Profile updated:', profile)
+      // Update session with new name if changed
+      if (profile.name !== session?.user?.name) {
+        await update({ name: profile.name })
+      }
+      
+      console.log('Profile updated successfully')
     } catch (error) {
       console.error('Failed to update profile:', error)
     } finally {

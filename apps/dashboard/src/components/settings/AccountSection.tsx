@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Lock, Mail, Trash2, AlertTriangle, Save, Eye, EyeOff } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 interface PasswordChangeForm {
   currentPassword: string
@@ -10,6 +11,7 @@ interface PasswordChangeForm {
 }
 
 export function AccountSection() {
+  const { data: session } = useSession()
   const [passwordForm, setPasswordForm] = useState<PasswordChangeForm>({
     currentPassword: '',
     newPassword: '',
@@ -21,9 +23,31 @@ export function AccountSection() {
     confirm: false
   })
   const [loading, setLoading] = useState(false)
-  const [emailVerified, setEmailVerified] = useState(true)
+  const [emailVerified, setEmailVerified] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [userEmail, setUserEmail] = useState('')
+
+  // Fetch user's email verification status
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (session?.user?.email) {
+        setUserEmail(session.user.email)
+        
+        try {
+          const response = await fetch('/api/user/profile')
+          if (response.ok) {
+            const userData = await response.json()
+            setEmailVerified(!!userData.emailVerified)
+          }
+        } catch (error) {
+          console.error('Failed to fetch user data:', error)
+        }
+      }
+    }
+    
+    fetchUserData()
+  }, [session])
 
   const handlePasswordChange = (field: keyof PasswordChangeForm, value: string) => {
     setPasswordForm(prev => ({ ...prev, [field]: value }))
@@ -46,14 +70,26 @@ export function AccountSection() {
 
     setLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Password changed successfully')
+      const response = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to change password')
+      }
+
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
       alert('Password changed successfully')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to change password:', error)
-      alert('Failed to change password')
+      alert(error.message || 'Failed to change password')
     } finally {
       setLoading(false)
     }
@@ -62,9 +98,15 @@ export function AccountSection() {
   const handleSendVerificationEmail = async () => {
     setLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Verification email sent')
+      const response = await fetch('/api/user/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send verification email')
+      }
+
       alert('Verification email sent! Please check your inbox.')
     } catch (error) {
       console.error('Failed to send verification email:', error)
@@ -82,12 +124,22 @@ export function AccountSection() {
 
     setLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Account deletion requested')
+      const response = await fetch('/api/user/delete-account', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete account')
+      }
+
       alert('Account deletion request submitted. You will receive an email with further instructions.')
       setShowDeleteConfirm(false)
       setDeleteConfirmText('')
+      
+      // Sign out user after deletion request
+      const { signOut } = await import('next-auth/react')
+      await signOut({ callbackUrl: '/' })
     } catch (error) {
       console.error('Failed to delete account:', error)
       alert('Failed to process account deletion')
@@ -242,6 +294,10 @@ export function AccountSection() {
               {emailVerified ? 'Verified' : 'Unverified'}
             </div>
           </div>
+          
+          <p className="text-sm text-gray-600 mb-2">
+            Email: <strong>{userEmail || session?.user?.email || 'Loading...'}</strong>
+          </p>
           
           {emailVerified ? (
             <p className="text-sm text-gray-600">

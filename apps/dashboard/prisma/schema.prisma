@@ -22,6 +22,12 @@ model User {
   password      String?   // Password for credentials-based auth
   image         String?
   
+  // Profile fields
+  username      String?   @unique
+  bio           String?
+  location      String?
+  timezone      String?   @default("America/Los_Angeles")
+  
   // User role and permissions
   role          UserRole  @default(USER)
   isActive      Boolean   @default(true)
