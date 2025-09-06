@@ -1,9 +1,13 @@
 import { PrismaClient } from '../generated/prisma';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
 	console.log('🌱 Seeding database...');
+
+	// Hash the default password
+	const hashedPassword = await bcrypt.hash('admin123', 10);
 
 	// Create a test user
 	const user = await prisma.user.upsert({
@@ -12,6 +16,8 @@ async function main() {
 		create: {
 			email: 'admin@taskmaster.dev',
 			name: 'Task Master Admin',
+			password: hashedPassword,
+			emailVerified: new Date(),
 			role: 'ADMIN',
 			isActive: true,
 			settings: {
@@ -26,7 +32,12 @@ async function main() {
 
 	// Create the web-dashboard project
 	const webDashboardProject = await prisma.project.upsert({
-		where: { tag: 'web-dashboard' },
+		where: { 
+			serverId_tag: {
+				serverId: null,
+				tag: 'web-dashboard'
+			}
+		},
 		update: {},
 		create: {
 			name: 'Web Dashboard',
@@ -168,7 +179,12 @@ async function main() {
 
 	// Create a default project for users without specific tags
 	const defaultProject = await prisma.project.upsert({
-		where: { tag: 'default' },
+		where: { 
+			serverId_tag: {
+				serverId: null,
+				tag: 'default'
+			}
+		},
 		update: {},
 		create: {
 			name: 'Default Project',
