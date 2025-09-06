@@ -48,6 +48,8 @@ model User {
   projects      ProjectMember[]
   syncHistory   SyncHistory[]
   pushSubscriptions PushSubscription[]
+  emailPreferences EmailPreferences?
+  emailLogs     EmailLog[]
   
   @@map("users")
 }
@@ -308,6 +310,89 @@ model PushSubscription {
   @@map("push_subscriptions")
 }
 
+// Email preferences for users
+model EmailPreferences {
+  id        String   @id @default(cuid())
+  
+  // User relation
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Email notification types
+  taskAssigned    Boolean @default(true)
+  taskUpdated     Boolean @default(true)
+  taskComment     Boolean @default(true)
+  taskDue         Boolean @default(true)
+  teamUpdates     Boolean @default(true)
+  weeklyReport    Boolean @default(true)
+  monthlyDigest   Boolean @default(false)
+  
+  // Email frequency
+  emailDigest     EmailFrequency @default(DAILY)
+  
+  // Quiet hours
+  quietHoursEnabled Boolean @default(false)
+  quietHoursStart   String? // Time in HH:MM format
+  quietHoursEnd     String? // Time in HH:MM format
+  timezone          String @default("America/Los_Angeles")
+  
+  // Unsubscribe token
+  unsubscribeToken String @unique @default(cuid())
+  unsubscribedAt   DateTime?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([unsubscribeToken])
+  @@map("email_preferences")
+}
+
+// Email delivery logs
+model EmailLog {
+  id        String   @id @default(cuid())
+  
+  // User relation
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Email details
+  to        String
+  from      String
+  subject   String
+  template  String // Template name used
+  type      EmailType // Type of email notification
+  
+  // Delivery status
+  status    EmailStatus @default(PENDING)
+  provider  String? // Email provider used (e.g., "smtp", "sendgrid")
+  messageId String? // Provider's message ID
+  
+  // Error tracking
+  errorMessage String?
+  attempts    Int @default(0)
+  lastAttemptAt DateTime?
+  
+  // Email content
+  htmlContent String? @db.Text
+  textContent String? @db.Text
+  metadata    Json? // Additional email metadata
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  sentAt      DateTime?
+  openedAt    DateTime?
+  clickedAt   DateTime?
+  bouncedAt   DateTime?
+  
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+  @@map("email_logs")
+}
+
 // Enums
 enum UserRole {
   SUPER_ADMIN
@@ -374,4 +459,35 @@ enum ServerStatus {
   UNREACHABLE
   ERROR
   MAINTENANCE
+}
+
+enum EmailFrequency {
+  INSTANT
+  DAILY
+  WEEKLY
+  NEVER
+}
+
+enum EmailType {
+  TASK_ASSIGNED
+  TASK_UPDATED
+  TASK_COMMENT
+  TASK_DUE
+  TEAM_UPDATE
+  WEEKLY_REPORT
+  MONTHLY_DIGEST
+  SYSTEM
+  VERIFICATION
+  PASSWORD_RESET
+}
+
+enum EmailStatus {
+  PENDING
+  QUEUED
+  SENDING
+  SENT
+  FAILED
+  BOUNCED
+  OPENED
+  CLICKED
 }

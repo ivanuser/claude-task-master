@@ -7867,7 +7867,16 @@
         ],
         "priority": "medium",
         "subtasks": []
-      },
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-03T15:12:16.372Z",
+      "updated": "2025-09-06T04:21:35.470Z",
+      "description": "Tasks for web-dashboard context"
+    }
+  },
+  "settings": {
+    "tasks": [
       {
         "id": 28,
         "title": "Implement Web Push Notifications System",
@@ -7876,8 +7885,18 @@
         "testStrategy": "Test notification permission request flow, verify subscriptions are stored correctly, test sending notifications from server, validate notification types can be toggled, ensure notifications work across different browsers and devices",
         "priority": "high",
         "dependencies": [],
-        "status": "in-progress",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.081Z"
+            }
+          ]
+        }
       },
       {
         "id": 29,
@@ -7886,11 +7905,19 @@
         "details": "Create email notification system with:\n- Email service using Nodemailer or similar for SMTP delivery\n- HTML email templates for different notification types (daily digest, instant alerts, task updates)\n- Email template engine (Handlebars or React Email) for dynamic content\n- User email preference management (frequency, types, unsubscribe)\n- Queue system using Bull/BullMQ for reliable email delivery\n- Unsubscribe link generation and handling in all emails\n- Email bounce and delivery tracking\n- Database schema updates for email preferences and delivery logs\n- Integration with existing user settings API endpoints\n- GDPR compliant email handling with opt-in/opt-out mechanisms",
         "testStrategy": "Test email delivery across different providers, verify template rendering, test unsubscribe functionality, validate email preferences persist correctly, ensure queue processes emails reliably under load",
         "priority": "high",
-        "dependencies": [
-          28
-        ],
-        "status": "pending",
-        "subtasks": []
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.081Z"
+            }
+          ]
+        }
       },
       {
         "id": 30,
@@ -7899,11 +7926,19 @@
         "details": "Build real-time task notification system:\n- Extend existing Socket.IO implementation for real-time notifications\n- Create notification events for task assignments, status changes, comments, mentions\n- Implement deadline and overdue task notifications with scheduling\n- Add notification history and read/unread status tracking\n- Create notification dropdown/panel component for in-app notifications\n- Integrate with push notification system for background notifications\n- Add notification sound settings and visual indicators\n- Implement notification batching to prevent spam\n- Add mention detection (@username) in task comments\n- Create notification preferences for each event type\n- Database schema for notification history and user preferences",
         "testStrategy": "Test real-time delivery across multiple browser tabs, verify notification history persistence, test mention detection accuracy, validate deadline notifications trigger correctly, ensure notification preferences are respected",
         "priority": "medium",
-        "dependencies": [
-          28
-        ],
+        "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.081Z"
+            }
+          ]
+        }
       },
       {
         "id": 31,
@@ -7912,11 +7947,19 @@
         "details": "Implement collaborative notification features:\n- Team member addition/removal notifications\n- Project milestone completion alerts\n- Team announcement system with broadcast capabilities\n- Project status update notifications (active, completed, archived)\n- Role change notifications (admin, member, viewer)\n- Team invitation notifications with email integration\n- Project activity feed with real-time updates\n- Notification aggregation for team activities\n- Team-wide quiet hours and notification policies\n- Integration with existing team management components\n- Bulk notification management for team leads",
         "testStrategy": "Test team notifications reach all relevant members, verify role-based notification filtering, test announcement broadcasting, validate project milestone notifications, ensure team activity feed updates in real-time",
         "priority": "medium",
-        "dependencies": [
-          30
-        ],
+        "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.081Z"
+            }
+          ]
+        }
       },
       {
         "id": 32,
@@ -7925,12 +7968,19 @@
         "details": "Build sophisticated quiet hours system:\n- Timezone-aware quiet hours scheduling using date-fns or moment-timezone\n- Daily quiet hours configuration (e.g., 10 PM - 8 AM)\n- Weekend notification preferences with custom schedules\n- Holiday calendar integration for extended quiet periods\n- Emergency notification override system for critical alerts\n- Team-wide quiet hours policies with individual overrides\n- Notification queuing during quiet hours with batch delivery\n- Smart quiet hours suggestions based on user activity patterns\n- Integration with user settings API for persistence\n- Visual indicators for quiet hours status in UI\n- Automatic quiet hours activation based on calendar events",
         "testStrategy": "Test timezone calculations accuracy, verify quiet hours prevent notifications correctly, test emergency override functionality, validate weekend preferences work independently, ensure notification queuing and batch delivery works properly",
         "priority": "medium",
-        "dependencies": [
-          29,
-          30
-        ],
+        "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.081Z"
+            }
+          ]
+        }
       },
       {
         "id": 33,
@@ -7941,7 +7991,17 @@
         "priority": "medium",
         "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.081Z"
+            }
+          ]
+        }
       },
       {
         "id": 34,
@@ -7952,7 +8012,17 @@
         "priority": "high",
         "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.081Z"
+            }
+          ]
+        }
       },
       {
         "id": 35,
@@ -7961,11 +8031,19 @@
         "details": "Implement integration system with:\n- OAuth2 flow implementation for GitHub, Google, Slack integrations\n- GitHub integration for issue syncing and commit linking\n- Slack integration for notifications and task updates\n- Google Calendar sync for deadline and milestone management\n- Jira integration for ticket synchronization\n- Custom webhook system for third-party services\n- Integration status monitoring and error handling\n- Connection testing and validation\n- Data mapping configuration for different services\n- Webhook signature verification for security\n- Rate limiting for external API calls\n- Integration activity logs and debugging\n- Bulk data import/export capabilities\n- Integration marketplace for community connectors",
         "testStrategy": "Test OAuth flows for each service, verify data synchronization accuracy, test webhook delivery and signature validation, validate rate limiting prevents API abuse, ensure error handling provides clear user feedback",
         "priority": "high",
-        "dependencies": [
-          34
-        ],
+        "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.082Z"
+            }
+          ]
+        }
       },
       {
         "id": 36,
@@ -7976,7 +8054,17 @@
         "priority": "high",
         "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.082Z"
+            }
+          ]
+        }
       },
       {
         "id": 37,
@@ -7985,24 +8073,24 @@
         "details": "Build data management system with:\n- Complete user data export in JSON and CSV formats\n- Incremental and full backup systems\n- Data import functionality with validation and conflict resolution\n- Automated data retention policies with configurable periods\n- GDPR compliance features (data portability, right to be forgotten)\n- Bulk task deletion with confirmation and undo functionality\n- Data anonymization for deleted accounts\n- Export scheduling and delivery via email\n- Data integrity validation and corruption detection\n- Storage optimization and archival systems\n- Integration with cloud storage providers (S3, Google Drive)\n- Data migration tools for account transfers\n- Audit trail for all data operations\n- Privacy controls for data sharing and processing",
         "testStrategy": "Test export completeness and format validity, verify import handles edge cases and conflicts, validate retention policies delete data correctly, ensure GDPR compliance features work end-to-end, test data integrity after operations",
         "priority": "medium",
-        "dependencies": [
-          34
-        ],
+        "dependencies": [],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [],
+        "tag": "settings",
+        "metadata": {
+          "moveHistory": [
+            {
+              "fromTag": "web-dashboard",
+              "toTag": "settings",
+              "timestamp": "2025-09-06T11:39:16.082Z"
+            }
+          ]
+        }
       }
     ],
     "metadata": {
-      "created": "2025-09-03T15:12:16.372Z",
-      "updated": "2025-09-06T04:21:35.470Z",
-      "description": "Tasks for web-dashboard context"
-    }
-  },
-  "settings": {
-    "tasks": [],
-    "metadata": {
       "created": "2025-09-06T04:14:05.634Z",
-      "updated": "2025-09-06T04:14:05.634Z",
+      "updated": "2025-09-06T11:52:46.586Z",
       "description": "Tag created on 9/6/2025"
     }
   }
