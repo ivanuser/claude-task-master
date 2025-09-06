@@ -12,4 +12,4 @@ export {
   TwoFactorMethod,
   RecoveryMethod,
   UserRole
-} from '@prisma/client';
+} from '../../generated/prisma';

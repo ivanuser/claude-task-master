@@ -98,10 +98,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const preferences = await response.json();
         setTheme(preferences);
+      } else {
+        // Use defaults when not authenticated or API returns error
+        console.log('Theme API returned', response.status, '- using default theme');
+        setTheme({
+          mode: 'system',
+          colorScheme: 'default',
+          density: 'comfortable',
+          fontSize: 'medium',
+          fontFamily: 'system',
+          highContrast: false,
+          reducedMotion: false,
+          colorBlindMode: null,
+          animations: true,
+        });
       }
     } catch (error) {
       console.error('Failed to load theme preferences:', error);
-      // Use defaults
+      // Use defaults on network error
       setTheme({
         mode: 'system',
         colorScheme: 'default',

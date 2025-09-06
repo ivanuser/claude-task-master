@@ -232,6 +232,32 @@ export class ThemeService {
   // Save or update user's theme preferences
   async saveUserTheme(userId: string, preferences: Partial<ThemePreferences>): Promise<ThemePreferences | null> {
     try {
+      // Convert string enums to uppercase for Prisma
+      const normalizedPreferences: any = { ...preferences };
+      
+      if (normalizedPreferences.mode) {
+        normalizedPreferences.mode = normalizedPreferences.mode.toUpperCase();
+      }
+      
+      if (normalizedPreferences.colorScheme) {
+        normalizedPreferences.colorScheme = normalizedPreferences.colorScheme.toUpperCase();
+      }
+      
+      if (normalizedPreferences.density) {
+        normalizedPreferences.density = normalizedPreferences.density.toUpperCase();
+      }
+      
+      if (normalizedPreferences.fontSize) {
+        // Handle fontSize enum conversion (e.g., 'medium' -> 'MEDIUM', 'extraLarge' -> 'EXTRA_LARGE')
+        normalizedPreferences.fontSize = normalizedPreferences.fontSize
+          .replace(/([a-z])([A-Z])/g, '$1_$2')
+          .toUpperCase();
+      }
+      
+      if (normalizedPreferences.colorBlindMode) {
+        normalizedPreferences.colorBlindMode = normalizedPreferences.colorBlindMode.toUpperCase();
+      }
+
       const existingPreferences = await prisma.themePreferences.findUnique({
         where: { userId },
       });
@@ -241,14 +267,14 @@ export class ThemeService {
         // Update existing preferences
         result = await prisma.themePreferences.update({
           where: { userId },
-          data: preferences,
+          data: normalizedPreferences,
         });
       } else {
         // Create new preferences
         result = await prisma.themePreferences.create({
           data: {
             userId,
-            ...preferences,
+            ...normalizedPreferences,
           } as any,
         });
       }
