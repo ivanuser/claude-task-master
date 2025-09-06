@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Implement task notifications functionality
+# Status: pending
+# Dependencies: 1, 2
+# Priority: high
+# Description: Real-time notifications for task-related events
+# Details:
+Task assigned to user, task status changes, task comments and mentions, approaching deadlines and overdue tasks
+
+# Test Strategy:
+Test all task event triggers and notification delivery

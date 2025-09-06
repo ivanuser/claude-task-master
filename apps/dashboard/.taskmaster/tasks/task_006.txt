@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Fix theme mode switching (light/dark/system)
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Implement working theme mode switching with persistence
+# Details:
+Persist theme preference in database, use CSS variables for theme colors, respect system preferences when set to auto, smooth transitions between themes
+
+# Test Strategy:
+Test theme switching, persistence, and system preference detection

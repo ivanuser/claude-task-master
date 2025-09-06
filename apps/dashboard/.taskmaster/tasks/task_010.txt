@@ -1,0 +1,11 @@
+# Task ID: 10
+# Title: Replace mock API keys with real functionality
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Implement functional API key management system
+# Details:
+Generate unique API keys, set expiration dates, track usage statistics, revoke/regenerate keys, rate limiting per key
+
+# Test Strategy:
+Test key generation, validation, rate limiting, and revocation

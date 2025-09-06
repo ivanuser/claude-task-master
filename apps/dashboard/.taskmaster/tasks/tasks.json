@@ -1,0 +1,171 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Implement push notifications functionality",
+        "description": "Implement browser push notifications using Web Push API for real-time updates",
+        "status": "pending",
+        "priority": "high",
+        "details": "Request notification permissions from user, store push subscription in database, send notifications for task updates, mentions, and deadlines, provide granular control over notification types",
+        "testStrategy": "Test notification permissions, subscription storage, and delivery across different browsers",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement email notifications functionality",
+        "description": "Create email notification system with configurable preferences",
+        "status": "pending",
+        "priority": "high",
+        "details": "Daily/weekly digest emails for task summaries, instant notifications for high-priority items, customizable email templates, unsubscribe links in all emails",
+        "testStrategy": "Test email delivery, template rendering, and unsubscribe functionality",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement task notifications functionality",
+        "description": "Real-time notifications for task-related events",
+        "status": "pending",
+        "priority": "high",
+        "details": "Task assigned to user, task status changes, task comments and mentions, approaching deadlines and overdue tasks",
+        "testStrategy": "Test all task event triggers and notification delivery",
+        "dependencies": [1, 2],
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement team and project notifications",
+        "description": "Notifications for collaborative features",
+        "status": "pending",
+        "priority": "medium",
+        "details": "Team member additions/removals, project milestone completions, team announcements, project status updates",
+        "testStrategy": "Test team event triggers and multi-user notification scenarios",
+        "dependencies": [1, 2],
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement quiet hours functionality",
+        "description": "Implement notification scheduling system with time-based controls",
+        "status": "pending",
+        "priority": "medium",
+        "details": "Set daily quiet hours (e.g., 10 PM - 8 AM), weekend notification preferences, timezone-aware scheduling, override for urgent notifications",
+        "testStrategy": "Test scheduling logic across different timezones and edge cases",
+        "dependencies": [1, 2, 3],
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Fix theme mode switching (light/dark/system)",
+        "description": "Implement working theme mode switching with persistence",
+        "status": "pending",
+        "priority": "high",
+        "details": "Persist theme preference in database, use CSS variables for theme colors, respect system preferences when set to auto, smooth transitions between themes",
+        "testStrategy": "Test theme switching, persistence, and system preference detection",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement color scheme selection",
+        "description": "Provide multiple color scheme options (blue/purple/green/orange/red)",
+        "status": "pending",
+        "priority": "medium",
+        "details": "Update primary colors throughout app, preview color changes before applying, persist selection per user",
+        "testStrategy": "Test color application across all components and persistence",
+        "dependencies": [6],
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement UI density settings",
+        "description": "Implement compact/comfortable/spacious layout options",
+        "status": "pending",
+        "priority": "low",
+        "details": "Adjust padding and spacing dynamically, update font sizes appropriately, provide live preview of changes, remember user preference",
+        "testStrategy": "Test layout changes across different screen sizes and components",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement typography settings and interface preview",
+        "description": "Allow font customization with live preview",
+        "status": "pending",
+        "priority": "low",
+        "details": "Font family selection (system, serif, sans-serif, mono), font size adjustments, line height options, reading mode toggle, live preview component",
+        "testStrategy": "Test font changes and preview functionality",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Replace mock API keys with real functionality",
+        "description": "Implement functional API key management system",
+        "status": "pending",
+        "priority": "high",
+        "details": "Generate unique API keys, set expiration dates, track usage statistics, revoke/regenerate keys, rate limiting per key",
+        "testStrategy": "Test key generation, validation, rate limiting, and revocation",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement real integrations functionality",
+        "description": "Implement third-party service connections",
+        "status": "pending",
+        "priority": "medium",
+        "details": "GitHub integration for issue tracking, Slack notifications, Google Calendar sync, Jira integration, webhook support for custom integrations",
+        "testStrategy": "Test OAuth flows, API connections, and data synchronization",
+        "dependencies": [10],
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement 2FA authentication in Security section",
+        "description": "Implement two-factor authentication for enhanced security",
+        "status": "pending",
+        "priority": "high",
+        "details": "TOTP support, QR code generation for authenticator apps, backup codes generation, SMS fallback option, recovery process",
+        "testStrategy": "Test 2FA setup, authentication flow, and recovery scenarios",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement data management functionality",
+        "description": "Provide data export and management options",
+        "status": "pending",
+        "priority": "medium",
+        "details": "Export all user data as JSON/CSV, bulk delete old tasks, data retention policies, automatic backups, account data download for GDPR compliance",
+        "testStrategy": "Test data export formats, deletion operations, and backup functionality",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Fix Profile section to use actual signed-in user data",
+        "description": "Update the UserProfileSection component to use real user data",
+        "status": "done",
+        "priority": "high",
+        "details": "Completed - Now uses useSession hook to get current user data, fetches additional profile fields from database via API, updates profile fields in real-time, implements avatar upload functionality",
+        "testStrategy": "Test profile data fetching, updates, and avatar uploads",
+        "dependencies": [],
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement email verification status in Account section",
+        "description": "Show real email verification status and allow verification",
+        "status": "done",
+        "priority": "high",
+        "details": "Completed - Displays actual email verification status from database, sends verification emails with tokens, verifies emails via token links, implements password change and account deletion",
+        "testStrategy": "Test email verification flow and account management operations",
+        "dependencies": [],
+        "subtasks": []
+      }
+    ]
+  }
+}
