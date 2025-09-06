@@ -1,75 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { NotificationPreferences } from '@/types/team'
-
-// Mock notification preferences data - in a real app, this would come from database
-const mockPreferences: Record<string, NotificationPreferences> = {
-  '1': {
-    taskAssigned: true,
-    taskUpdated: true,
-    taskComment: true,
-    taskDue: true,
-    teamUpdates: true,
-    weeklyReport: true,
-    emailDigest: 'daily',
-    pushEnabled: true,
-    quietHours: {
-      enabled: false,
-      start: '22:00',
-      end: '08:00',
-      timezone: 'UTC',
-    },
-  },
-}
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { notificationService } from '@/lib/notifications/notification-service';
 
 // GET /api/notifications/preferences - Get user notification preferences
 export async function GET(request: NextRequest) {
   try {
-    // In a real app, get userId from auth
-    const userId = '1' // Mock user ID
-
-    const preferences = mockPreferences[userId] || {
-      taskAssigned: true,
-      taskUpdated: true,
-      taskComment: true,
-      taskDue: true,
-      teamUpdates: true,
-      weeklyReport: true,
-      emailDigest: 'daily' as const,
-      pushEnabled: true,
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    return NextResponse.json({ preferences })
-  } catch (error) {
+    const preferences = await notificationService.getUserPreferences(session.user.id);
+
+    return NextResponse.json({ 
+      preferences: preferences || {
+        enabled: true,
+        inApp: true,
+        email: false,
+        push: false,
+        sms: false,
+        slack: false,
+        discord: false,
+        mobileApp: false,
+        quietHoursEnabled: false,
+        notificationTypes: {},
+        soundEnabled: true,
+        vibrationEnabled: true,
+      }
+    });
+  } catch (error: any) {
     console.error('Error fetching notification preferences:', error)
-    return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 })
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch preferences' }, 
+      { status: 500 }
+    );
   }
 }
 
 // PUT /api/notifications/preferences - Update user notification preferences
 export async function PUT(request: NextRequest) {
   try {
-    // In a real app, get userId from auth
-    const userId = '1' // Mock user ID
-    const preferences: NotificationPreferences = await request.json()
-
-    // Validate preferences
-    const validDigestOptions = ['instant', 'daily', 'weekly', 'never']
-    if (!validDigestOptions.includes(preferences.emailDigest)) {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Invalid emailDigest value' },
-        { status: 400 }
-      )
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    // Save preferences (in a real app, save to database)
-    mockPreferences[userId] = preferences
+    const preferences = await request.json()
+
+    const updatedPreferences = await notificationService.updatePreferences(
+      session.user.id,
+      preferences
+    );
 
     return NextResponse.json({ 
-      preferences,
+      success: true,
+      preferences: updatedPreferences,
       message: 'Preferences updated successfully'
-    })
-  } catch (error) {
+    });
+  } catch (error: any) {
     console.error('Error updating notification preferences:', error)
-    return NextResponse.json({ error: 'Failed to update preferences' }, { status: 500 })
+    return NextResponse.json(
+      { error: error.message || 'Failed to update preferences' }, 
+      { status: 500 }
+    );
   }
 }

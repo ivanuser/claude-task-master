@@ -1,11 +1,13 @@
 import { prisma } from '@/lib/prisma';
-import { 
+import type { 
   Notification, 
   NotificationPreference,
-  NotificationQueue,
+  NotificationQueue
+} from '@prisma/client';
+import { 
   NotificationType,
   NotificationPriority 
-} from '@prisma/client';
+} from '@/types/prisma-enums';
 
 export class NotificationService {
   // Create a new notification

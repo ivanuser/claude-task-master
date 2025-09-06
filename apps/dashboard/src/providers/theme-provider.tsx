@@ -2,7 +2,30 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ReactNode } from 'react';
-import type { ThemePreferences } from '@/types/theme';
+// Define types inline to avoid import issues
+type ThemeMode = 'light' | 'dark' | 'system' | 'auto';
+type ColorScheme = 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'teal' | 'pink' | 'gray' | 'custom';
+type UIDensity = 'comfortable' | 'compact' | 'spacious';
+type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
+type ColorBlindMode = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'achromatopsia';
+
+interface ThemePreferences {
+  mode: ThemeMode;
+  colorScheme: ColorScheme;
+  density: UIDensity;
+  fontSize: FontSize;
+  fontFamily?: string | null;
+  highContrast: boolean;
+  reducedMotion: boolean;
+  colorBlindMode?: ColorBlindMode | null;
+  customPrimary?: string | null;
+  customSecondary?: string | null;
+  customAccent?: string | null;
+  customBackground?: string | null;
+  customText?: string | null;
+  borderRadius?: number | null;
+  shadowIntensity?: number | null;
+}
 
 interface ThemeContextType {
   theme: ThemePreferences | null;

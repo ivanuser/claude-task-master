@@ -8,7 +8,12 @@ import {
 } from 'lucide-react'
 import { useTheme } from '@/providers/theme-provider'
 import { toast } from 'sonner'
-import type { ThemeMode, ColorScheme, UIDensity, FontSize, ColorBlindMode } from '@/types/theme'
+// Define types inline to avoid import issues
+type ThemeMode = 'light' | 'dark' | 'system' | 'auto';
+type ColorScheme = 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'teal' | 'pink' | 'gray' | 'custom';
+type UIDensity = 'comfortable' | 'compact' | 'spacious';  
+type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
+type ColorBlindMode = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'achromatopsia';
 
 const colorSchemes = [
   { id: 'blue' as ColorScheme, name: 'Blue', color: '#3B82F6' },

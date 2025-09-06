@@ -4,7 +4,7 @@ import GithubProvider from "next-auth/providers/github";
 import GitlabProvider from "next-auth/providers/gitlab";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./database";
-import { UserRole } from "../../generated/prisma";
+import { UserRole } from "@/types/prisma-enums";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {

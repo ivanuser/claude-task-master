@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/database';
-import { ThemeMode, ColorScheme, UIDensity, FontSize, ColorBlindMode } from '@prisma/client';
+import { ThemeMode, ColorScheme, UIDensity, FontSize, ColorBlindMode } from '@/types/prisma-enums';
 
 // Theme color definitions
 export const COLOR_SCHEMES = {
@@ -202,10 +202,10 @@ export class ThemeService {
       if (!preferences) {
         // Return default preferences if none exist
         return {
-          mode: ThemeMode.SYSTEM,
-          colorScheme: ColorScheme.BLUE,
-          density: UIDensity.COMFORTABLE,
-          fontSize: FontSize.MEDIUM,
+          mode: 'SYSTEM' as ThemeMode,
+          colorScheme: 'BLUE' as ColorScheme,
+          density: 'COMFORTABLE' as UIDensity,
+          fontSize: 'MEDIUM' as FontSize,
           fontFamily: 'system',
           highContrast: false,
           reducedMotion: false,
@@ -262,7 +262,7 @@ export class ThemeService {
 
   // Generate CSS variables based on preferences
   generateCSSVariables(preferences: ThemePreferences, isDark: boolean): Record<string, string> {
-    const colorScheme = preferences.colorScheme === ColorScheme.CUSTOM && preferences.customPrimary
+    const colorScheme = preferences.colorScheme === 'CUSTOM' && preferences.customPrimary
       ? {
           primary: preferences.customPrimary,
           secondary: preferences.customSecondary || preferences.customPrimary,
@@ -276,7 +276,7 @@ export class ThemeService {
             dark: preferences.customText || '#F3F4F6',
           },
         }
-      : COLOR_SCHEMES[preferences.colorScheme];
+      : COLOR_SCHEMES[preferences.colorScheme as keyof typeof COLOR_SCHEMES];
 
     const density = DENSITY_SETTINGS[preferences.density];
     const fontSize = FONT_SIZES[preferences.fontSize];
@@ -326,13 +326,13 @@ export class ThemeService {
   // Check if dark mode should be active
   shouldUseDarkMode(mode: ThemeMode, systemPrefersDark: boolean, currentHour?: number): boolean {
     switch (mode) {
-      case ThemeMode.DARK:
+      case 'DARK':
         return true;
-      case ThemeMode.LIGHT:
+      case 'LIGHT':
         return false;
-      case ThemeMode.SYSTEM:
+      case 'SYSTEM':
         return systemPrefersDark;
-      case ThemeMode.AUTO:
+      case 'AUTO':
         // Auto mode: dark between 6 PM and 6 AM
         const hour = currentHour ?? new Date().getHours();
         return hour >= 18 || hour < 6;
