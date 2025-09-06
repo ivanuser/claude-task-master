@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ReactNode } from 'react';
-import { ThemeMode, ColorScheme, UIDensity, FontSize, ColorBlindMode } from '@prisma/client';
+import type { ThemePreferences } from '@/types/theme';
 
 interface ThemeContextType {
   theme: ThemePreferences | null;
@@ -15,25 +15,6 @@ interface ThemeContextType {
   deletePreset: (name: string) => Promise<void>;
 }
 
-interface ThemePreferences {
-  mode: ThemeMode;
-  colorScheme: ColorScheme;
-  density: UIDensity;
-  fontSize: FontSize;
-  fontFamily?: string | null;
-  highContrast: boolean;
-  reducedMotion: boolean;
-  colorBlindMode?: ColorBlindMode | null;
-  customPrimary?: string | null;
-  customSecondary?: string | null;
-  customAccent?: string | null;
-  customBackground?: string | null;
-  customText?: string | null;
-  borderRadius?: string | null;
-  shadowIntensity?: string | null;
-  animations: boolean;
-  savedThemes?: any;
-}
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -99,10 +80,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       console.error('Failed to load theme preferences:', error);
       // Use defaults
       setTheme({
-        mode: ThemeMode.SYSTEM,
-        colorScheme: ColorScheme.BLUE,
-        density: UIDensity.COMFORTABLE,
-        fontSize: FontSize.MEDIUM,
+        mode: 'system',
+        colorScheme: 'default',
+        density: 'comfortable',
+        fontSize: 'medium',
         fontFamily: 'system',
         highContrast: false,
         reducedMotion: false,
@@ -114,13 +95,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const calculateDarkMode = (mode: ThemeMode, systemDark: boolean): boolean => {
     switch (mode) {
-      case ThemeMode.DARK:
+      case 'dark':
         return true;
-      case ThemeMode.LIGHT:
+      case 'light':
         return false;
-      case ThemeMode.SYSTEM:
+      case 'system':
         return systemDark;
-      case ThemeMode.AUTO:
+      case 'auto':
         const hour = new Date().getHours();
         return hour >= 18 || hour < 6;
       default:
@@ -177,7 +158,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   const getColorScheme = (scheme: ColorScheme, preferences: ThemePreferences) => {
-    if (scheme === ColorScheme.CUSTOM && preferences.customPrimary) {
+    if (scheme === 'custom' && preferences.customPrimary) {
       return {
         primary: preferences.customPrimary,
         secondary: preferences.customSecondary || preferences.customPrimary,

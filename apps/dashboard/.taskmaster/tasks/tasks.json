@@ -27,7 +27,7 @@
         "id": 3,
         "title": "Implement task notifications functionality",
         "description": "Real-time notifications for task-related events",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "high",
         "details": "Task assigned to user, task status changes, task comments and mentions, approaching deadlines and overdue tasks",
         "testStrategy": "Test all task event triggers and notification delivery",
@@ -183,7 +183,7 @@
     ],
     "metadata": {
       "created": "2025-09-06T11:34:35.195Z",
-      "updated": "2025-09-06T12:51:49.716Z",
+      "updated": "2025-09-06T17:49:21.573Z",
       "description": "Tasks for master context"
     }
   }
