@@ -1,6 +1,6 @@
 // Theme types that can be used on both server and client
 export type ThemeMode = 'light' | 'dark' | 'system' | 'auto';
-export type ColorScheme = 'default' | 'monochrome' | 'highContrast' | 'colorful' | 'pastel' | 'custom';
+export type ColorScheme = 'default' | 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'teal' | 'pink' | 'gray' | 'monochrome' | 'highContrast' | 'colorful' | 'pastel' | 'custom';
 export type UIDensity = 'comfortable' | 'compact' | 'spacious';
 export type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
 export type ColorBlindMode = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'achromatopsia';

@@ -8,31 +8,31 @@ import {
 } from 'lucide-react'
 import { useTheme } from '@/providers/theme-provider'
 import { toast } from 'sonner'
-import { ThemeMode, ColorScheme, UIDensity, FontSize, ColorBlindMode } from '@prisma/client'
+import type { ThemeMode, ColorScheme, UIDensity, FontSize, ColorBlindMode } from '@/types/theme'
 
 const colorSchemes = [
-  { id: ColorScheme.BLUE, name: 'Blue', color: '#3B82F6' },
-  { id: ColorScheme.PURPLE, name: 'Purple', color: '#8B5CF6' },
-  { id: ColorScheme.GREEN, name: 'Green', color: '#10B981' },
-  { id: ColorScheme.ORANGE, name: 'Orange', color: '#F97316' },
-  { id: ColorScheme.RED, name: 'Red', color: '#EF4444' },
-  { id: ColorScheme.TEAL, name: 'Teal', color: '#14B8A6' },
-  { id: ColorScheme.PINK, name: 'Pink', color: '#EC4899' },
-  { id: ColorScheme.GRAY, name: 'Gray', color: '#6B7280' },
-  { id: ColorScheme.CUSTOM, name: 'Custom', color: 'linear-gradient(45deg, #3B82F6, #8B5CF6)' },
+  { id: 'blue' as ColorScheme, name: 'Blue', color: '#3B82F6' },
+  { id: 'purple' as ColorScheme, name: 'Purple', color: '#8B5CF6' },
+  { id: 'green' as ColorScheme, name: 'Green', color: '#10B981' },
+  { id: 'orange' as ColorScheme, name: 'Orange', color: '#F97316' },
+  { id: 'red' as ColorScheme, name: 'Red', color: '#EF4444' },
+  { id: 'teal' as ColorScheme, name: 'Teal', color: '#14B8A6' },
+  { id: 'pink' as ColorScheme, name: 'Pink', color: '#EC4899' },
+  { id: 'gray' as ColorScheme, name: 'Gray', color: '#6B7280' },
+  { id: 'custom' as ColorScheme, name: 'Custom', color: 'linear-gradient(45deg, #3B82F6, #8B5CF6)' },
 ]
 
 const densityOptions = [
-  { id: UIDensity.COMPACT, name: 'Compact', description: 'More content, less spacing' },
-  { id: UIDensity.COMFORTABLE, name: 'Comfortable', description: 'Balanced spacing' },
-  { id: UIDensity.SPACIOUS, name: 'Spacious', description: 'More breathing room' },
+  { id: 'compact' as UIDensity, name: 'Compact', description: 'More content, less spacing' },
+  { id: 'comfortable' as UIDensity, name: 'Comfortable', description: 'Balanced spacing' },
+  { id: 'spacious' as UIDensity, name: 'Spacious', description: 'More breathing room' },
 ]
 
 const fontSizes = [
-  { id: FontSize.SMALL, name: 'Small', size: '14px' },
-  { id: FontSize.MEDIUM, name: 'Medium', size: '16px' },
-  { id: FontSize.LARGE, name: 'Large', size: '18px' },
-  { id: FontSize.EXTRA_LARGE, name: 'Extra Large', size: '20px' },
+  { id: 'small' as FontSize, name: 'Small', size: '14px' },
+  { id: 'medium' as FontSize, name: 'Medium', size: '16px' },
+  { id: 'large' as FontSize, name: 'Large', size: '18px' },
+  { id: 'extraLarge' as FontSize, name: 'Extra Large', size: '20px' },
 ]
 
 const borderRadiusOptions = [
@@ -51,10 +51,10 @@ const shadowOptions = [
 
 const colorBlindModes = [
   { id: null, name: 'None', description: 'No color adjustment' },
-  { id: ColorBlindMode.PROTANOPIA, name: 'Protanopia', description: 'Red-blind' },
-  { id: ColorBlindMode.DEUTERANOPIA, name: 'Deuteranopia', description: 'Green-blind' },
-  { id: ColorBlindMode.TRITANOPIA, name: 'Tritanopia', description: 'Blue-blind' },
-  { id: ColorBlindMode.ACHROMATOPSIA, name: 'Achromatopsia', description: 'Total color blindness' },
+  { id: 'protanopia' as ColorBlindMode, name: 'Protanopia', description: 'Red-blind' },
+  { id: 'deuteranopia' as ColorBlindMode, name: 'Deuteranopia', description: 'Green-blind' },
+  { id: 'tritanopia' as ColorBlindMode, name: 'Tritanopia', description: 'Blue-blind' },
+  { id: 'achromatopsia' as ColorBlindMode, name: 'Achromatopsia', description: 'Total color blindness' },
 ]
 
 export function ThemeSectionNew() {
@@ -160,10 +160,10 @@ export function ThemeSectionNew() {
         </div>
         <div className="grid grid-cols-4 gap-3">
           {[
-            { id: ThemeMode.LIGHT, name: 'Light', icon: Sun },
-            { id: ThemeMode.DARK, name: 'Dark', icon: Moon },
-            { id: ThemeMode.SYSTEM, name: 'System', icon: Monitor },
-            { id: ThemeMode.AUTO, name: 'Auto', icon: Sliders },
+            { id: 'light' as ThemeMode, name: 'Light', icon: Sun },
+            { id: 'dark' as ThemeMode, name: 'Dark', icon: Moon },
+            { id: 'system' as ThemeMode, name: 'System', icon: Monitor },
+            { id: 'auto' as ThemeMode, name: 'Auto', icon: Sliders },
           ].map(mode => (
             <button
               key={mode.id}
@@ -176,7 +176,7 @@ export function ThemeSectionNew() {
             >
               <mode.icon className="h-6 w-6 mx-auto mb-2" />
               <div className="text-sm font-medium">{mode.name}</div>
-              {mode.id === ThemeMode.AUTO && (
+              {mode.id === 'auto' && (
                 <div className="text-xs text-gray-500 mt-1">6pm-6am</div>
               )}
             </button>
@@ -196,7 +196,7 @@ export function ThemeSectionNew() {
               key={scheme.id}
               onClick={() => {
                 handleThemeChange('colorScheme', scheme.id)
-                if (scheme.id === ColorScheme.CUSTOM) {
+                if (scheme.id === 'custom') {
                   setShowCustomColors(true)
                 }
               }}
@@ -209,8 +209,8 @@ export function ThemeSectionNew() {
               <div
                 className="h-8 w-full rounded mb-2"
                 style={{
-                  background: scheme.id === ColorScheme.CUSTOM ? scheme.color : scheme.color,
-                  backgroundColor: scheme.id !== ColorScheme.CUSTOM ? scheme.color : undefined,
+                  background: scheme.id === 'custom' ? scheme.color : scheme.color,
+                  backgroundColor: scheme.id !== 'custom' ? scheme.color : undefined,
                 }}
               />
               <div className="text-sm font-medium">{scheme.name}</div>
@@ -219,7 +219,7 @@ export function ThemeSectionNew() {
         </div>
 
         {/* Custom Colors */}
-        {(showCustomColors || theme.colorScheme === ColorScheme.CUSTOM) && (
+        {(showCustomColors || theme.colorScheme === 'custom') && (
           <div className="p-4 bg-gray-50 rounded-lg space-y-3">
             <h4 className="font-medium text-sm">Custom Colors</h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
