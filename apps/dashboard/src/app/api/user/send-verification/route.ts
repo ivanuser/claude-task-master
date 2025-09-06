@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 import crypto from 'crypto';
 
 // In production, you'd use a proper email service like SendGrid, AWS SES, etc.

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database';
 
 export async function GET(request: NextRequest) {
   try {
@@ -46,12 +46,17 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
+    console.log('Session in profile update:', session);
+    
     if (!session?.user?.email) {
+      console.log('No session or email found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
     const { name, username, bio, location, timezone } = body;
+    
+    console.log('Profile update request:', { name, username, bio, location, timezone });
 
     // Validate username if provided
     if (username) {
@@ -73,11 +78,11 @@ export async function PUT(request: NextRequest) {
     const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
       data: {
-        name,
-        username,
-        bio,
-        location,
-        timezone,
+        name: name || null,
+        username: username || null,
+        bio: bio || null,
+        location: location || null,
+        timezone: timezone || null,
         updatedAt: new Date(),
       },
       select: {
@@ -93,10 +98,17 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json(updatedUser);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating user profile:', error);
+    console.error('Error details:', error.message);
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
     return NextResponse.json(
-      { error: 'Failed to update profile' },
+      { error: error.message || 'Failed to update profile' },
       { status: 500 }
     );
   }

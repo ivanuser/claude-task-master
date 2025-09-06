@@ -82,12 +82,21 @@ export function UserProfileSection() {
         formData.append('avatar', avatarFile)
       }
       
+      console.log('Sending profile update:', {
+        name: profile.name,
+        username: profile.username,
+        bio: profile.bio,
+        location: profile.location,
+        timezone: profile.timezone,
+      });
+      
       // Update profile via API
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'same-origin', // Ensure cookies are sent
         body: JSON.stringify({
           name: profile.name,
           username: profile.username,
@@ -98,7 +107,9 @@ export function UserProfileSection() {
       })
       
       if (!response.ok) {
-        throw new Error('Failed to update profile')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Profile update failed:', response.status, errorData);
+        throw new Error(errorData.error || 'Failed to update profile')
       }
       
       const updatedProfile = await response.json()
@@ -127,8 +138,10 @@ export function UserProfileSection() {
       }
       
       console.log('Profile updated successfully')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update profile:', error)
+      console.error('Error message:', error.message)
+      alert(`Failed to update profile: ${error.message}`)
     } finally {
       setLoading(false)
     }
