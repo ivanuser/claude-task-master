@@ -55,6 +55,10 @@ model User {
   twoFactorAuth TwoFactorAuth?
   backupCodes   BackupCode[]
   twoFactorRecovery TwoFactorRecovery[]
+  themePreferences ThemePreferences?
+  webPushSubscriptions WebPushSubscription[]
+  notifications Notification[]
+  notificationPreference NotificationPreference?
   
   @@map("users")
 }
@@ -171,6 +175,7 @@ model Project {
   tasks       Task[]
   members     ProjectMember[]
   syncHistory SyncHistory[]
+  notifications Notification[]
   
   // Unique constraint for tag per server (allows same tag on different servers)
   @@unique([serverId, tag])
@@ -834,4 +839,289 @@ enum RecoveryMethod {
   EMAIL
   SMS
   SUPPORT   // Manual recovery through support
+}
+
+// Theme Preferences model for storing user theme settings
+model ThemePreferences {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Theme settings
+  mode            ThemeMode @default(SYSTEM)
+  colorScheme     ColorScheme @default(BLUE)
+  density         UIDensity @default(COMFORTABLE)
+  fontSize        FontSize @default(MEDIUM)
+  fontFamily      String?  @default("system")
+  
+  // Accessibility
+  highContrast    Boolean  @default(false)
+  reducedMotion   Boolean  @default(false)
+  colorBlindMode  ColorBlindMode? // Optional color blind mode
+  
+  // Custom colors (stored as hex values)
+  customPrimary   String?  // Primary brand color
+  customSecondary String?  // Secondary brand color
+  customAccent    String?  // Accent color
+  customBackground String? // Background color override
+  customText      String?  // Text color override
+  
+  // Advanced settings
+  borderRadius    String?  @default("medium") // small, medium, large, xl
+  shadowIntensity String?  @default("medium") // none, light, medium, heavy
+  animations      Boolean  @default(true)
+  
+  // Theme presets (saved custom themes)
+  savedThemes     Json     @default("[]") // Array of saved theme configurations
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@map("theme_preferences")
+}
+
+// Enum for theme modes
+enum ThemeMode {
+  LIGHT
+  DARK
+  SYSTEM  // Follow system preference
+  AUTO    // Auto-switch based on time of day
+}
+
+// Enum for color schemes
+enum ColorScheme {
+  BLUE
+  PURPLE
+  GREEN
+  ORANGE
+  RED
+  TEAL
+  PINK
+  GRAY
+  CUSTOM  // User-defined colors
+}
+
+// Enum for UI density
+enum UIDensity {
+  COMPACT
+  COMFORTABLE
+  SPACIOUS
+}
+
+// Enum for font sizes
+enum FontSize {
+  SMALL
+  MEDIUM
+  LARGE
+  EXTRA_LARGE
+}
+
+// Enum for color blind modes
+enum ColorBlindMode {
+  PROTANOPIA    // Red-blind
+  DEUTERANOPIA  // Green-blind
+  TRITANOPIA    // Blue-blind
+  ACHROMATOPSIA // Total color blindness
+}
+
+// Web Push Subscription for push notifications
+model WebPushSubscription {
+  id String @id @default(cuid())
+  
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  endpoint String @unique
+  keys Json // { p256dh, auth }
+  expirationTime DateTime?
+  
+  userAgent String?
+  deviceName String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Notification Types
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_STATUS_CHANGED
+  TASK_COMMENTED
+  TASK_MENTIONED
+  TASK_DEADLINE_APPROACHING
+  TASK_OVERDUE
+  PROJECT_INVITED
+  PROJECT_ROLE_CHANGED
+  SYNC_COMPLETED
+  SYNC_FAILED
+  SYSTEM_ANNOUNCEMENT
+  SECURITY_ALERT
+}
+
+// Notification Priority
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Notification Delivery Channel
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+  SMS
+}
+
+// Notification Model
+model Notification {
+  id String @id @default(cuid())
+  
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type NotificationType
+  priority NotificationPriority @default(MEDIUM)
+  
+  title String
+  message String
+  data Json? // Additional context data
+  
+  // Related entities
+  projectId String?
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  taskId String?
+  // task Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  // Tracking
+  isRead Boolean @default(false)
+  readAt DateTime?
+  
+  // Delivery channels used
+  channels NotificationChannel[]
+  
+  // Batching support
+  batchId String?
+  
+  // Action buttons
+  actions Json? // [{ label: string, action: string, url?: string }]
+  
+  // Expiration
+  expiresAt DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@index([projectId])
+  @@index([batchId])
+}
+
+// User Notification Preferences
+model NotificationPreference {
+  id String @id @default(cuid())
+  
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Global settings
+  enabled Boolean @default(true)
+  
+  // Channel preferences
+  emailEnabled Boolean @default(true)
+  pushEnabled Boolean @default(true)
+  inAppEnabled Boolean @default(true)
+  smsEnabled Boolean @default(false)
+  
+  // Type-specific preferences
+  taskAssigned Boolean @default(true)
+  taskStatusChanged Boolean @default(true)
+  taskCommented Boolean @default(true)
+  taskMentioned Boolean @default(true)
+  taskDeadlines Boolean @default(true)
+  projectUpdates Boolean @default(true)
+  syncNotifications Boolean @default(true)
+  systemAnnouncements Boolean @default(true)
+  securityAlerts Boolean @default(true)
+  
+  // Quiet hours
+  quietHoursEnabled Boolean @default(false)
+  quietHoursStart String? // "22:00"
+  quietHoursEnd String? // "08:00"
+  quietHoursTimezone String @default("UTC")
+  quietHoursDays Json @default("[]") // ["monday", "tuesday", ...]
+  
+  // Notification batching
+  batchingEnabled Boolean @default(false)
+  batchingInterval Int @default(300) // seconds (5 minutes)
+  
+  // Sound settings
+  soundEnabled Boolean @default(true)
+  soundVolume Int @default(50) // 0-100
+  customSound String?
+  
+  // Visual settings
+  desktopBadge Boolean @default(true)
+  vibrationEnabled Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Notification Queue for scheduled notifications
+model NotificationQueue {
+  id String @id @default(cuid())
+  
+  userId String
+  scheduledFor DateTime
+  
+  type NotificationType
+  priority NotificationPriority
+  
+  title String
+  message String
+  data Json?
+  
+  projectId String?
+  taskId String?
+  
+  channels NotificationChannel[]
+  
+  processed Boolean @default(false)
+  processedAt DateTime?
+  
+  attempts Int @default(0)
+  lastError String?
+  
+  createdAt DateTime @default(now())
+  
+  @@index([scheduledFor, processed])
+  @@index([userId])
+}
+
+// Notification Templates
+model NotificationTemplate {
+  id String @id @default(cuid())
+  
+  type NotificationType
+  channel NotificationChannel
+  
+  name String
+  subject String? // For email
+  titleTemplate String
+  messageTemplate String
+  
+  variables Json // Expected variables for template
+  
+  isActive Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([type, channel])
 }

@@ -17,7 +17,7 @@ import {
 import { UserProfileSection } from '@/components/settings/UserProfileSection'
 import { AccountSection } from '@/components/settings/AccountSection'
 import { NotificationPreferencesSection } from '@/components/settings/NotificationPreferencesSection'
-import { ThemeSection } from '@/components/settings/ThemeSection'
+import { ThemeSectionNew } from '@/components/settings/theme-section-new'
 import { APIKeySection } from '@/components/settings/APIKeySection'
 import { IntegrationsSection } from '@/components/settings/IntegrationsSection'
 import { SecuritySection } from '@/components/settings/SecuritySection'
@@ -101,7 +101,7 @@ function renderSettingsSection(section: SettingsSection) {
     case 'notifications':
       return <NotificationPreferencesSection />
     case 'theme':
-      return <ThemeSection />
+      return <ThemeSectionNew />
     case 'api-keys':
       return <APIKeySection />
     case 'integrations':

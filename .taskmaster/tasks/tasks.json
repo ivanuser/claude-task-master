@@ -7927,7 +7927,7 @@
         "testStrategy": "Test real-time delivery across multiple browser tabs, verify notification history persistence, test mention detection accuracy, validate deadline notifications trigger correctly, ensure notification preferences are respected",
         "priority": "medium",
         "dependencies": [],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [],
         "tag": "settings",
         "metadata": {
@@ -7990,7 +7990,7 @@
         "testStrategy": "Test theme persistence across sessions, verify smooth transitions between themes, test system preference detection, validate accessibility compliance, ensure custom colors work across all components",
         "priority": "medium",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [],
         "tag": "settings",
         "metadata": {
@@ -8090,7 +8090,7 @@
     ],
     "metadata": {
       "created": "2025-09-06T04:14:05.634Z",
-      "updated": "2025-09-06T12:53:11.116Z",
+      "updated": "2025-09-06T17:05:49.731Z",
       "description": "Tag created on 9/6/2025"
     }
   }

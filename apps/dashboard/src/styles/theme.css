@@ -1,0 +1,185 @@
+/* Theme CSS Variables and Transitions */
+
+:root {
+  /* Default theme variables */
+  --color-primary: #3B82F6;
+  --color-secondary: #1E40AF;
+  --color-accent: #60A5FA;
+  --color-background: #FFFFFF;
+  --color-text: #1F2937;
+  --color-border: #E5E7EB;
+  
+  /* Spacing and sizing */
+  --spacing: 0.5rem;
+  --padding: 0.5rem 1rem;
+  --font-size-base: 1rem;
+  --font-size-heading: 1.875rem;
+  --font-size-small: 0.875rem;
+  --line-height: 1.5rem;
+  --border-radius: 0.375rem;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  
+  /* Typography */
+  --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Animation */
+  --transition-duration: 200ms;
+  --animation-duration: 300ms;
+  
+  /* Contrast and accessibility */
+  --contrast-ratio: 1;
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  --color-background: #0F172A;
+  --color-text: #F3F4F6;
+  --color-border: #374151;
+}
+
+/* High contrast mode */
+[data-high-contrast="true"] {
+  --contrast-ratio: 1.2;
+  --color-border: currentColor;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-duration: 0ms;
+    --animation-duration: 0ms;
+  }
+}
+
+[data-reduced-motion="true"] {
+  --transition-duration: 0ms !important;
+  --animation-duration: 0ms !important;
+}
+
+/* Smooth theme transitions */
+* {
+  transition: 
+    background-color var(--transition-duration) ease,
+    color var(--transition-duration) ease,
+    border-color var(--transition-duration) ease,
+    box-shadow var(--transition-duration) ease;
+}
+
+/* Color blind mode filters */
+[data-color-blind="protanopia"] {
+  filter: url('#protanopia-filter');
+}
+
+[data-color-blind="deuteranopia"] {
+  filter: url('#deuteranopia-filter');
+}
+
+[data-color-blind="tritanopia"] {
+  filter: url('#tritanopia-filter');
+}
+
+[data-color-blind="achromatopsia"] {
+  filter: grayscale(100%);
+}
+
+/* UI Density classes */
+.ui-compact {
+  --spacing: 0.25rem;
+  --padding: 0.25rem 0.5rem;
+  --font-size-base: 0.875rem;
+  --line-height: 1.25rem;
+}
+
+.ui-comfortable {
+  --spacing: 0.5rem;
+  --padding: 0.5rem 1rem;
+  --font-size-base: 1rem;
+  --line-height: 1.5rem;
+}
+
+.ui-spacious {
+  --spacing: 0.75rem;
+  --padding: 0.75rem 1.5rem;
+  --font-size-base: 1.125rem;
+  --line-height: 1.75rem;
+}
+
+/* Font size classes */
+.font-small {
+  --font-size-base: 0.875rem;
+  --font-size-heading: 1.5rem;
+  --font-size-small: 0.75rem;
+}
+
+.font-medium {
+  --font-size-base: 1rem;
+  --font-size-heading: 1.875rem;
+  --font-size-small: 0.875rem;
+}
+
+.font-large {
+  --font-size-base: 1.125rem;
+  --font-size-heading: 2.25rem;
+  --font-size-small: 1rem;
+}
+
+.font-extra-large {
+  --font-size-base: 1.25rem;
+  --font-size-heading: 2.5rem;
+  --font-size-small: 1.125rem;
+}
+
+/* Apply theme variables to body */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-size: var(--font-size-heading);
+  line-height: 1.2;
+}
+
+/* Button styles with theme */
+button, .btn {
+  padding: var(--padding);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-duration) ease;
+}
+
+/* Input styles with theme */
+input, textarea, select {
+  padding: var(--padding);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-duration) ease;
+}
+
+/* Card styles with theme */
+.card {
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+}
+
+/* Color blind filters SVG definitions */
+.sr-only-filters {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
