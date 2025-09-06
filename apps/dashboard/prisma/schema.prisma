@@ -50,6 +50,7 @@ model User {
   pushSubscriptions PushSubscription[]
   emailPreferences EmailPreferences?
   emailLogs     EmailLog[]
+  apiKeys       ApiKey[]
   
   @@map("users")
 }
@@ -393,6 +394,81 @@ model EmailLog {
   @@map("email_logs")
 }
 
+// API Key model for secure API access
+model ApiKey {
+  id        String   @id @default(cuid())
+  
+  // User relation
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Key details
+  name      String   // User-friendly name for the key
+  key       String   @unique // Hashed version of the API key
+  prefix    String   // First few characters for identification (e.g., "tm_live_")
+  type      ApiKeyType @default(PERSONAL) // Personal vs Application key
+  
+  // Permissions and scopes
+  scopes    Json     @default("[]") // Array of allowed scopes/permissions
+  
+  // Expiration and status
+  expiresAt DateTime?
+  revokedAt DateTime?
+  lastUsedAt DateTime?
+  isActive  Boolean  @default(true)
+  
+  // Rate limiting
+  rateLimit Int?     // Requests per hour (null = unlimited)
+  
+  // Metadata
+  description String?
+  metadata  Json?    // Additional key metadata
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  usage     ApiKeyUsage[]
+  
+  @@index([userId])
+  @@index([key])
+  @@index([prefix])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("api_keys")
+}
+
+// API Key usage tracking
+model ApiKeyUsage {
+  id        String   @id @default(cuid())
+  
+  // API Key relation
+  apiKeyId  String
+  apiKey    ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  
+  // Request details
+  endpoint  String   // API endpoint accessed
+  method    String   // HTTP method (GET, POST, etc.)
+  ipAddress String?  // IP address of the request
+  userAgent String?  // User agent string
+  
+  // Response details
+  statusCode Int     // HTTP status code
+  responseTime Int   // Response time in milliseconds
+  
+  // Additional data
+  metadata  Json?    // Additional request metadata
+  
+  // Timestamp
+  timestamp DateTime @default(now())
+  
+  @@index([apiKeyId])
+  @@index([timestamp])
+  @@index([endpoint])
+  @@map("api_key_usage")
+}
+
 // Enums
 enum UserRole {
   SUPER_ADMIN
@@ -490,4 +566,10 @@ enum EmailStatus {
   BOUNCED
   OPENED
   CLICKED
+}
+
+enum ApiKeyType {
+  PERSONAL
+  APPLICATION
+  SERVICE
 }
