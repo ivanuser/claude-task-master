@@ -47,6 +47,7 @@ model User {
   // Relations
   projects      ProjectMember[]
   syncHistory   SyncHistory[]
+  pushSubscriptions PushSubscription[]
   
   @@map("users")
 }
@@ -273,6 +274,38 @@ model SyncHistory {
   @@index([status])
   @@index([startedAt])
   @@map("sync_history")
+}
+
+// Push notification subscriptions
+model PushSubscription {
+  id        String   @id @default(cuid())
+  
+  // User relation
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Push subscription data
+  endpoint  String   @unique
+  p256dh    String   // Public key for encryption
+  auth      String   // Authentication secret
+  
+  // Device/browser information
+  userAgent String?
+  device    String?
+  browser   String?
+  
+  // Subscription preferences
+  enabled   Boolean  @default(true)
+  types     Json     @default("[]") // Array of notification types to receive
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastUsedAt DateTime?
+  
+  @@index([userId])
+  @@index([enabled])
+  @@map("push_subscriptions")
 }
 
 // Enums

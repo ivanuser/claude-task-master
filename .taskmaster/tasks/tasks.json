@@ -7867,12 +7867,143 @@
         ],
         "priority": "medium",
         "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Implement Web Push Notifications System",
+        "description": "Replace mock push notification settings with functional Web Push API implementation including subscription management and granular notification controls",
+        "details": "Implement browser push notifications using the Web Push API:\n- Request notification permissions from users with proper UX\n- Generate and manage push subscriptions using service workers\n- Store push subscriptions in the database (user preferences table)\n- Create notification service worker in public/service-worker.js\n- Implement server-side push notification sending using web-push library\n- Add granular notification type controls (task updates, mentions, deadlines)\n- Integrate with existing notification preferences UI in NotificationPreferencesSection component\n- Handle subscription renewal and error states\n- Add notification click handling to navigate to relevant pages",
+        "testStrategy": "Test notification permission request flow, verify subscriptions are stored correctly, test sending notifications from server, validate notification types can be toggled, ensure notifications work across different browsers and devices",
+        "priority": "high",
+        "dependencies": [],
+        "status": "in-progress",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Build Email Notification System",
+        "description": "Implement comprehensive email notification system with customizable templates and delivery preferences",
+        "details": "Create email notification system with:\n- Email service using Nodemailer or similar for SMTP delivery\n- HTML email templates for different notification types (daily digest, instant alerts, task updates)\n- Email template engine (Handlebars or React Email) for dynamic content\n- User email preference management (frequency, types, unsubscribe)\n- Queue system using Bull/BullMQ for reliable email delivery\n- Unsubscribe link generation and handling in all emails\n- Email bounce and delivery tracking\n- Database schema updates for email preferences and delivery logs\n- Integration with existing user settings API endpoints\n- GDPR compliant email handling with opt-in/opt-out mechanisms",
+        "testStrategy": "Test email delivery across different providers, verify template rendering, test unsubscribe functionality, validate email preferences persist correctly, ensure queue processes emails reliably under load",
+        "priority": "high",
+        "dependencies": [
+          28
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Enhance Real-time Task Notifications",
+        "description": "Implement comprehensive real-time notifications for all task-related events using WebSocket connections",
+        "details": "Build real-time task notification system:\n- Extend existing Socket.IO implementation for real-time notifications\n- Create notification events for task assignments, status changes, comments, mentions\n- Implement deadline and overdue task notifications with scheduling\n- Add notification history and read/unread status tracking\n- Create notification dropdown/panel component for in-app notifications\n- Integrate with push notification system for background notifications\n- Add notification sound settings and visual indicators\n- Implement notification batching to prevent spam\n- Add mention detection (@username) in task comments\n- Create notification preferences for each event type\n- Database schema for notification history and user preferences",
+        "testStrategy": "Test real-time delivery across multiple browser tabs, verify notification history persistence, test mention detection accuracy, validate deadline notifications trigger correctly, ensure notification preferences are respected",
+        "priority": "medium",
+        "dependencies": [
+          28
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Implement Team and Project Collaboration Notifications",
+        "description": "Create notification system for team-based features including member management, project updates, and announcements",
+        "details": "Implement collaborative notification features:\n- Team member addition/removal notifications\n- Project milestone completion alerts\n- Team announcement system with broadcast capabilities\n- Project status update notifications (active, completed, archived)\n- Role change notifications (admin, member, viewer)\n- Team invitation notifications with email integration\n- Project activity feed with real-time updates\n- Notification aggregation for team activities\n- Team-wide quiet hours and notification policies\n- Integration with existing team management components\n- Bulk notification management for team leads",
+        "testStrategy": "Test team notifications reach all relevant members, verify role-based notification filtering, test announcement broadcasting, validate project milestone notifications, ensure team activity feed updates in real-time",
+        "priority": "medium",
+        "dependencies": [
+          30
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 32,
+        "title": "Create Advanced Quiet Hours System",
+        "description": "Implement intelligent notification scheduling with timezone awareness and emergency override capabilities",
+        "details": "Build sophisticated quiet hours system:\n- Timezone-aware quiet hours scheduling using date-fns or moment-timezone\n- Daily quiet hours configuration (e.g., 10 PM - 8 AM)\n- Weekend notification preferences with custom schedules\n- Holiday calendar integration for extended quiet periods\n- Emergency notification override system for critical alerts\n- Team-wide quiet hours policies with individual overrides\n- Notification queuing during quiet hours with batch delivery\n- Smart quiet hours suggestions based on user activity patterns\n- Integration with user settings API for persistence\n- Visual indicators for quiet hours status in UI\n- Automatic quiet hours activation based on calendar events",
+        "testStrategy": "Test timezone calculations accuracy, verify quiet hours prevent notifications correctly, test emergency override functionality, validate weekend preferences work independently, ensure notification queuing and batch delivery works properly",
+        "priority": "medium",
+        "dependencies": [
+          29,
+          30
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 33,
+        "title": "Enhance Theme System with Advanced Customization",
+        "description": "Extend existing theme implementation with database persistence, system theme detection, and smooth transitions",
+        "details": "Improve existing ThemeSection component with:\n- Database persistence for theme preferences (replace localStorage)\n- Server-side theme rendering to prevent flash of unstyled content\n- CSS custom property system for theme variables\n- Smooth theme transitions with CSS animations\n- System theme preference detection and auto-switching\n- High contrast mode support for accessibility\n- Theme preview functionality with live updates\n- Custom color picker for advanced users\n- Theme export/import functionality for sharing\n- Integration with user settings API endpoints\n- Prefers-reduced-motion respect for transitions\n- Dark mode optimized images and icons",
+        "testStrategy": "Test theme persistence across sessions, verify smooth transitions between themes, test system preference detection, validate accessibility compliance, ensure custom colors work across all components",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 34,
+        "title": "Implement Comprehensive API Key Management",
+        "description": "Replace mock API key functionality with secure key generation, usage tracking, and management system",
+        "details": "Build secure API key management system:\n- Cryptographically secure API key generation using crypto.randomBytes\n- API key hashing and storage (never store plain text keys)\n- Key expiration date management with automatic cleanup\n- Usage statistics and rate limiting per key\n- Key revocation and regeneration functionality\n- Scope-based permissions for different API endpoints\n- Key usage analytics dashboard with charts\n- API key testing interface within settings\n- Key rotation notifications and recommendations\n- Integration with rate limiting middleware\n- Audit logging for all key operations\n- Personal access tokens vs. application keys distinction",
+        "testStrategy": "Test key generation uniqueness and security, verify rate limiting works per key, test key revocation immediately blocks access, validate usage statistics accuracy, ensure audit logging captures all operations",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 35,
+        "title": "Build Third-party Integration System",
+        "description": "Create comprehensive integration framework supporting GitHub, Slack, Google Calendar, Jira, and custom webhooks",
+        "details": "Implement integration system with:\n- OAuth2 flow implementation for GitHub, Google, Slack integrations\n- GitHub integration for issue syncing and commit linking\n- Slack integration for notifications and task updates\n- Google Calendar sync for deadline and milestone management\n- Jira integration for ticket synchronization\n- Custom webhook system for third-party services\n- Integration status monitoring and error handling\n- Connection testing and validation\n- Data mapping configuration for different services\n- Webhook signature verification for security\n- Rate limiting for external API calls\n- Integration activity logs and debugging\n- Bulk data import/export capabilities\n- Integration marketplace for community connectors",
+        "testStrategy": "Test OAuth flows for each service, verify data synchronization accuracy, test webhook delivery and signature validation, validate rate limiting prevents API abuse, ensure error handling provides clear user feedback",
+        "priority": "high",
+        "dependencies": [
+          34
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 36,
+        "title": "Implement Two-Factor Authentication System",
+        "description": "Create comprehensive 2FA system with TOTP, backup codes, SMS fallback, and recovery processes",
+        "details": "Build 2FA security system:\n- TOTP implementation using speakeasy library for authenticator app support\n- QR code generation for easy authenticator app setup\n- Backup codes generation and secure storage (hashed)\n- SMS fallback using Twilio or similar service\n- Recovery process for lost devices and backup codes\n- 2FA enforcement policies for organizations\n- Session management with 2FA verification\n- 2FA setup wizard with step-by-step guidance\n- Integration with existing authentication system\n- Audit logging for all 2FA events\n- Rate limiting for 2FA attempts\n- Device trust management (remember device option)\n- Admin override capabilities for account recovery",
+        "testStrategy": "Test TOTP codes work with popular authenticator apps, verify backup codes work only once, test SMS delivery and validation, validate recovery process security, ensure rate limiting prevents brute force attacks",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 37,
+        "title": "Create Advanced Data Management System",
+        "description": "Implement comprehensive data export, import, retention policies, and GDPR compliance features",
+        "details": "Build data management system with:\n- Complete user data export in JSON and CSV formats\n- Incremental and full backup systems\n- Data import functionality with validation and conflict resolution\n- Automated data retention policies with configurable periods\n- GDPR compliance features (data portability, right to be forgotten)\n- Bulk task deletion with confirmation and undo functionality\n- Data anonymization for deleted accounts\n- Export scheduling and delivery via email\n- Data integrity validation and corruption detection\n- Storage optimization and archival systems\n- Integration with cloud storage providers (S3, Google Drive)\n- Data migration tools for account transfers\n- Audit trail for all data operations\n- Privacy controls for data sharing and processing",
+        "testStrategy": "Test export completeness and format validity, verify import handles edge cases and conflicts, validate retention policies delete data correctly, ensure GDPR compliance features work end-to-end, test data integrity after operations",
+        "priority": "medium",
+        "dependencies": [
+          34
+        ],
+        "status": "pending",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-09-03T15:12:16.372Z",
-      "updated": "2025-09-05T03:01:48.997Z",
+      "updated": "2025-09-06T04:21:35.470Z",
       "description": "Tasks for web-dashboard context"
+    }
+  },
+  "settings": {
+    "tasks": [],
+    "metadata": {
+      "created": "2025-09-06T04:14:05.634Z",
+      "updated": "2025-09-06T04:14:05.634Z",
+      "description": "Tag created on 9/6/2025"
     }
   }
 }

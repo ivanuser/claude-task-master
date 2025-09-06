@@ -1,0 +1,22 @@
+# Task ID: 32
+# Title: Create Advanced Quiet Hours System
+# Status: pending
+# Dependencies: 29, 30
+# Priority: medium
+# Description: Implement intelligent notification scheduling with timezone awareness and emergency override capabilities
+# Details:
+Build sophisticated quiet hours system:
+- Timezone-aware quiet hours scheduling using date-fns or moment-timezone
+- Daily quiet hours configuration (e.g., 10 PM - 8 AM)
+- Weekend notification preferences with custom schedules
+- Holiday calendar integration for extended quiet periods
+- Emergency notification override system for critical alerts
+- Team-wide quiet hours policies with individual overrides
+- Notification queuing during quiet hours with batch delivery
+- Smart quiet hours suggestions based on user activity patterns
+- Integration with user settings API for persistence
+- Visual indicators for quiet hours status in UI
+- Automatic quiet hours activation based on calendar events
+
+# Test Strategy:
+Test timezone calculations accuracy, verify quiet hours prevent notifications correctly, test emergency override functionality, validate weekend preferences work independently, ensure notification queuing and batch delivery works properly

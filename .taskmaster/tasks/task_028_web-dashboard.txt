@@ -1,0 +1,20 @@
+# Task ID: 28
+# Title: Implement Web Push Notifications System
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Replace mock push notification settings with functional Web Push API implementation including subscription management and granular notification controls
+# Details:
+Implement browser push notifications using the Web Push API:
+- Request notification permissions from users with proper UX
+- Generate and manage push subscriptions using service workers
+- Store push subscriptions in the database (user preferences table)
+- Create notification service worker in public/service-worker.js
+- Implement server-side push notification sending using web-push library
+- Add granular notification type controls (task updates, mentions, deadlines)
+- Integrate with existing notification preferences UI in NotificationPreferencesSection component
+- Handle subscription renewal and error states
+- Add notification click handling to navigate to relevant pages
+
+# Test Strategy:
+Test notification permission request flow, verify subscriptions are stored correctly, test sending notifications from server, validate notification types can be toggled, ensure notifications work across different browsers and devices

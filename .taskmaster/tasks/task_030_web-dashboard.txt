@@ -1,0 +1,22 @@
+# Task ID: 30
+# Title: Enhance Real-time Task Notifications
+# Status: pending
+# Dependencies: 28
+# Priority: medium
+# Description: Implement comprehensive real-time notifications for all task-related events using WebSocket connections
+# Details:
+Build real-time task notification system:
+- Extend existing Socket.IO implementation for real-time notifications
+- Create notification events for task assignments, status changes, comments, mentions
+- Implement deadline and overdue task notifications with scheduling
+- Add notification history and read/unread status tracking
+- Create notification dropdown/panel component for in-app notifications
+- Integrate with push notification system for background notifications
+- Add notification sound settings and visual indicators
+- Implement notification batching to prevent spam
+- Add mention detection (@username) in task comments
+- Create notification preferences for each event type
+- Database schema for notification history and user preferences
+
+# Test Strategy:
+Test real-time delivery across multiple browser tabs, verify notification history persistence, test mention detection accuracy, validate deadline notifications trigger correctly, ensure notification preferences are respected

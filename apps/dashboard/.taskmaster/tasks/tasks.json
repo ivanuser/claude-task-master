@@ -5,7 +5,7 @@
         "id": 1,
         "title": "Implement push notifications functionality",
         "description": "Implement browser push notifications using Web Push API for real-time updates",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "details": "Request notification permissions from user, store push subscription in database, send notifications for task updates, mentions, and deadlines, provide granular control over notification types",
         "testStrategy": "Test notification permissions, subscription storage, and delivery across different browsers",
@@ -31,7 +31,10 @@
         "priority": "high",
         "details": "Task assigned to user, task status changes, task comments and mentions, approaching deadlines and overdue tasks",
         "testStrategy": "Test all task event triggers and notification delivery",
-        "dependencies": [1, 2],
+        "dependencies": [
+          1,
+          2
+        ],
         "subtasks": []
       },
       {
@@ -42,7 +45,10 @@
         "priority": "medium",
         "details": "Team member additions/removals, project milestone completions, team announcements, project status updates",
         "testStrategy": "Test team event triggers and multi-user notification scenarios",
-        "dependencies": [1, 2],
+        "dependencies": [
+          1,
+          2
+        ],
         "subtasks": []
       },
       {
@@ -53,7 +59,11 @@
         "priority": "medium",
         "details": "Set daily quiet hours (e.g., 10 PM - 8 AM), weekend notification preferences, timezone-aware scheduling, override for urgent notifications",
         "testStrategy": "Test scheduling logic across different timezones and edge cases",
-        "dependencies": [1, 2, 3],
+        "dependencies": [
+          1,
+          2,
+          3
+        ],
         "subtasks": []
       },
       {
@@ -75,7 +85,9 @@
         "priority": "medium",
         "details": "Update primary colors throughout app, preview color changes before applying, persist selection per user",
         "testStrategy": "Test color application across all components and persistence",
-        "dependencies": [6],
+        "dependencies": [
+          6
+        ],
         "subtasks": []
       },
       {
@@ -119,7 +131,9 @@
         "priority": "medium",
         "details": "GitHub integration for issue tracking, Slack notifications, Google Calendar sync, Jira integration, webhook support for custom integrations",
         "testStrategy": "Test OAuth flows, API connections, and data synchronization",
-        "dependencies": [10],
+        "dependencies": [
+          10
+        ],
         "subtasks": []
       },
       {
@@ -166,6 +180,11 @@
         "dependencies": [],
         "subtasks": []
       }
-    ]
+    ],
+    "metadata": {
+      "created": "2025-09-06T11:34:35.195Z",
+      "updated": "2025-09-06T11:34:35.195Z",
+      "description": "Tasks for master context"
+    }
   }
 }

@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Bell, Mail, Smartphone, Clock, Save } from 'lucide-react'
+import { Bell, Mail, Smartphone, Clock, Save, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import { NotificationPreferences } from '@/types/team'
 import { useNotifications } from '@/hooks/useNotifications'
+import { pushNotifications } from '@/lib/push-notifications'
 
 export function NotificationPreferencesSection() {
   const { preferences, updatePreferences } = useNotifications({ initialLoad: false })
@@ -24,12 +25,129 @@ export function NotificationPreferencesSection() {
     }
   })
   const [loading, setLoading] = useState(false)
+  const [pushStatus, setPushStatus] = useState<{
+    supported: boolean;
+    permission: NotificationPermission;
+    subscribed: boolean;
+    checking: boolean;
+  }>({
+    supported: false,
+    permission: 'default',
+    subscribed: false,
+    checking: true
+  })
+  const [pushError, setPushError] = useState<string | null>(null)
 
   useEffect(() => {
     if (preferences) {
       setFormData(preferences)
     }
   }, [preferences])
+
+  // Check push notification status on mount
+  useEffect(() => {
+    checkPushStatus()
+  }, [])
+
+  const checkPushStatus = async () => {
+    setPushStatus(prev => ({ ...prev, checking: true }))
+    setPushError(null)
+
+    try {
+      const supported = pushNotifications.isSupported()
+      const permission = pushNotifications.getPermissionStatus()
+      
+      if (supported) {
+        const { subscribed } = await pushNotifications.checkSubscription()
+        setPushStatus({
+          supported,
+          permission,
+          subscribed,
+          checking: false
+        })
+      } else {
+        setPushStatus({
+          supported: false,
+          permission: 'denied',
+          subscribed: false,
+          checking: false
+        })
+      }
+    } catch (error) {
+      console.error('Error checking push status:', error)
+      setPushStatus(prev => ({ ...prev, checking: false }))
+    }
+  }
+
+  const handlePushToggle = async (enabled: boolean) => {
+    setPushError(null)
+    
+    if (!pushStatus.supported) {
+      setPushError('Push notifications are not supported in your browser')
+      return
+    }
+
+    try {
+      if (enabled) {
+        // Request permission if needed
+        if (pushStatus.permission === 'default') {
+          const permission = await pushNotifications.requestPermission()
+          setPushStatus(prev => ({ ...prev, permission }))
+          
+          if (permission === 'denied') {
+            setPushError('Push notification permission was denied')
+            handleFieldChange('pushEnabled', false)
+            return
+          }
+        } else if (pushStatus.permission === 'denied') {
+          setPushError('Push notifications are blocked. Please enable them in your browser settings.')
+          handleFieldChange('pushEnabled', false)
+          return
+        }
+
+        // Subscribe to push notifications
+        await pushNotifications.initialize()
+        await pushNotifications.subscribe()
+        
+        // Save subscription to server
+        const saved = await pushNotifications.saveSubscription([
+          'tasks',
+          'comments',
+          'updates',
+          'reminders'
+        ])
+        
+        if (saved) {
+          setPushStatus(prev => ({ ...prev, subscribed: true }))
+          handleFieldChange('pushEnabled', true)
+          
+          // Send test notification
+          await pushNotifications.sendTestNotification(
+            'Push Notifications Enabled',
+            'You will now receive Task Master notifications!',
+            {
+              icon: '/icon-192x192.png',
+              badge: '/icon-72x72.png',
+              url: '/settings'
+            }
+          )
+        } else {
+          throw new Error('Failed to save subscription')
+        }
+      } else {
+        // Unsubscribe from push notifications
+        const unsubscribed = await pushNotifications.unsubscribe()
+        if (unsubscribed) {
+          setPushStatus(prev => ({ ...prev, subscribed: false }))
+          handleFieldChange('pushEnabled', false)
+        }
+      }
+    } catch (error: any) {
+      console.error('Error toggling push notifications:', error)
+      setPushError(error.message || 'Failed to update push notification settings')
+      handleFieldChange('pushEnabled', !enabled)
+    }
+  }
 
   const handleFieldChange = (field: keyof NotificationPreferences, value: any) => {
     setFormData(prev => ({
@@ -77,20 +195,93 @@ export function NotificationPreferencesSection() {
             <h3 className="text-lg font-medium text-gray-900">Push Notifications</h3>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Enable Push Notifications</label>
-              <p className="text-sm text-gray-500">Receive real-time notifications in your browser</p>
+          <div className="space-y-4">
+            {/* Status indicator */}
+            {pushStatus.checking ? (
+              <div className="flex items-center text-gray-500">
+                <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                Checking push notification status...
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                {pushStatus.supported ? (
+                  pushStatus.subscribed ? (
+                    <>
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-sm text-green-600">Push notifications are active</span>
+                    </>
+                  ) : pushStatus.permission === 'denied' ? (
+                    <>
+                      <XCircle className="w-5 h-5 text-red-500" />
+                      <span className="text-sm text-red-600">Push notifications are blocked</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-5 h-5 text-yellow-500" />
+                      <span className="text-sm text-yellow-600">Push notifications are available</span>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <XCircle className="w-5 h-5 text-gray-400" />
+                    <span className="text-sm text-gray-500">Push notifications not supported</span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Error message */}
+            {pushError && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                <p className="text-sm text-red-600">{pushError}</p>
+              </div>
+            )}
+
+            {/* Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Enable Push Notifications</label>
+                <p className="text-sm text-gray-500">
+                  {pushStatus.supported 
+                    ? 'Receive real-time notifications in your browser'
+                    : 'Not available in your current browser'}
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={pushStatus.subscribed || formData.pushEnabled}
+                  onChange={(e) => handlePushToggle(e.target.checked)}
+                  disabled={!pushStatus.supported || pushStatus.checking}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.pushEnabled}
-                onChange={(e) => handleFieldChange('pushEnabled', e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
+
+            {/* Test notification button */}
+            {pushStatus.subscribed && (
+              <button
+                onClick={async () => {
+                  try {
+                    await pushNotifications.sendTestNotification(
+                      'Test Notification',
+                      'This is a test notification from Task Master!',
+                      {
+                        icon: '/icon-192x192.png',
+                        badge: '/icon-72x72.png',
+                        url: '/settings'
+                      }
+                    )
+                  } catch (error) {
+                    console.error('Failed to send test notification:', error)
+                  }
+                }}
+                className="text-sm text-blue-600 hover:text-blue-700 underline"
+              >
+                Send test notification
+              </button>
+            )}
           </div>
         </div>
 

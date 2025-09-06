@@ -1,0 +1,11 @@
+# Task ID: 14
+# Title: Create Git Integration and Repository Scanning
+# Status: done
+# Dependencies: 13
+# Priority: high
+# Description: Implement git repository integration for automatic project discovery and task file synchronization
+# Details:
+Build GitHub and GitLab API clients using official SDKs. Implement repository scanning to detect .taskmaster/ directories. Create project auto-discovery algorithm with pagination for large organizations. Setup webhook endpoints for real-time git push notifications. Implement secure webhook validation using GitHub/GitLab signatures. Create background job system using Bull/BullMQ for processing git events. Handle rate limiting and API quotas gracefully.
+
+# Test Strategy:
+Test repository scanning across different organization sizes, webhook payload validation, concurrent git API requests, rate limit handling, and webhook security. Verify auto-discovery finds all Task Master projects correctly.

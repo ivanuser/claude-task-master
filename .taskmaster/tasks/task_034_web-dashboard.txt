@@ -1,0 +1,23 @@
+# Task ID: 34
+# Title: Implement Comprehensive API Key Management
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Replace mock API key functionality with secure key generation, usage tracking, and management system
+# Details:
+Build secure API key management system:
+- Cryptographically secure API key generation using crypto.randomBytes
+- API key hashing and storage (never store plain text keys)
+- Key expiration date management with automatic cleanup
+- Usage statistics and rate limiting per key
+- Key revocation and regeneration functionality
+- Scope-based permissions for different API endpoints
+- Key usage analytics dashboard with charts
+- API key testing interface within settings
+- Key rotation notifications and recommendations
+- Integration with rate limiting middleware
+- Audit logging for all key operations
+- Personal access tokens vs. application keys distinction
+
+# Test Strategy:
+Test key generation uniqueness and security, verify rate limiting works per key, test key revocation immediately blocks access, validate usage statistics accuracy, ensure audit logging captures all operations

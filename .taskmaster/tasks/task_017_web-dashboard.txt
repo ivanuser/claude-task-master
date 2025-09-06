@@ -1,0 +1,11 @@
+# Task ID: 17
+# Title: Implement Project Detail and Task Management Views
+# Status: done
+# Dependencies: 16
+# Priority: medium
+# Description: Create detailed project views with full Task Master functionality integrated into the web interface
+# Details:
+Build project detail pages with complete task breakdown and management capabilities. Implement task status updates, priority changes, and dependency management through web interface. Create task editing modal with rich text support for details and test strategies. Build subtask expansion and collapse functionality. Implement drag-and-drop task reorganization. Add bulk task operations (status changes, priority updates). Create task filtering and sorting within projects. Integrate with existing Task Master CLI command equivalents through API.
+
+# Test Strategy:
+Test all task CRUD operations, drag-and-drop task reordering, bulk operations performance, rich text editing, task filtering accuracy, and integration with backend Task Master logic. Verify feature parity with CLI commands.
