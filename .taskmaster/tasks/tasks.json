@@ -8032,7 +8032,7 @@
         "testStrategy": "Test OAuth flows for each service, verify data synchronization accuracy, test webhook delivery and signature validation, validate rate limiting prevents API abuse, ensure error handling provides clear user feedback",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": [],
         "tag": "settings",
         "metadata": {
@@ -8090,7 +8090,7 @@
     ],
     "metadata": {
       "created": "2025-09-06T04:14:05.634Z",
-      "updated": "2025-09-06T11:58:01.650Z",
+      "updated": "2025-09-06T12:07:01.007Z",
       "description": "Tag created on 9/6/2025"
     }
   }
