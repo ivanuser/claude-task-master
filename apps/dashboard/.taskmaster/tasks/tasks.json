@@ -188,10 +188,22 @@
     }
   },
   "settings": {
-    "tasks": [],
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Implement Team and Project Collaboration Notifications",
+        "description": "Create comprehensive team notification system with activity feeds, announcements, and role-based notifications",
+        "details": "Implemented TeamNotificationService extending base notification service, created API routes for team notifications and policies, built UI components including ProjectActivityFeed, TeamAnnouncementModal, TeamNotificationSettings, TeamInviteModal, and TeamNotificationManager. Integrated all components into a comprehensive team management page at /projects/[id]/team with role-based permissions.",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      }
+    ],
     "metadata": {
       "created": "2025-09-07T03:26:39.465Z",
-      "updated": "2025-09-07T03:26:39.465Z",
+      "updated": "2025-09-07T03:27:06.143Z",
       "description": "Settings and UI customization tasks"
     }
   }

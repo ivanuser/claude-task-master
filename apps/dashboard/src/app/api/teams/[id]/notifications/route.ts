@@ -4,10 +4,10 @@ import { authOptions } from '@/lib/auth';
 import { teamNotificationService } from '@/lib/notifications/team-notification-service';
 import { prisma } from '@/lib/database';
 
-// GET - Get team notification policy
+// GET - Get project activity feed
 export async function GET(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,7 +19,10 @@ export async function GET(
       );
     }
 
-    const { projectId } = params;
+    const { id } = params;
+    const searchParams = request.nextUrl.searchParams;
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
 
     // Check if user is a member of the project
     const user = await prisma.user.findUnique({
@@ -49,23 +52,27 @@ export async function GET(
       );
     }
 
-    // Get notification policy
-    const policy = await teamNotificationService.getTeamNotificationPolicy(projectId);
+    // Get project activity feed
+    const activities = await teamNotificationService.getProjectActivityFeed(
+      projectId,
+      limit,
+      offset
+    );
 
-    return NextResponse.json(policy);
+    return NextResponse.json({ activities });
   } catch (error: any) {
-    console.error('Error fetching notification policy:', error);
+    console.error('Error fetching project activities:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch notification policy' },
+      { error: error.message || 'Failed to fetch project activities' },
       { status: 500 }
     );
   }
 }
 
-// PUT - Update team notification policy
-export async function PUT(
+// POST - Send team announcement
+export async function POST(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -77,8 +84,16 @@ export async function PUT(
       );
     }
 
-    const { projectId } = params;
+    const { id } = params;
     const body = await request.json();
+    const { title, message, priority = 'HIGH' } = body;
+
+    if (!title || !message) {
+      return NextResponse.json(
+        { error: 'Title and message are required' },
+        { status: 400 }
+      );
+    }
 
     // Get user and check permissions
     const user = await prisma.user.findUnique({
@@ -103,73 +118,28 @@ export async function PUT(
 
     if (!member || !['OWNER', 'ADMIN'].includes(member.role)) {
       return NextResponse.json(
-        { error: 'Insufficient permissions to update notification policy' },
+        { error: 'Insufficient permissions to send announcements' },
         { status: 403 }
       );
     }
 
-    // Update policy
-    const updatedPolicy = await teamNotificationService.updateTeamNotificationPolicy(
+    // Send announcement
+    await teamNotificationService.sendTeamAnnouncement(
       projectId,
-      body
-    );
-
-    return NextResponse.json(updatedPolicy);
-  } catch (error: any) {
-    console.error('Error updating notification policy:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to update notification policy' },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE - Clear old notifications (admin only)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { projectId: string } }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { projectId } = params;
-    const searchParams = request.nextUrl.searchParams;
-    const olderThanDays = parseInt(searchParams.get('olderThanDays') || '30');
-
-    // Get user and check permissions
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Delete old notifications
-    await teamNotificationService.deleteTeamNotifications(
-      projectId,
+      title,
+      message,
       user.id,
-      olderThanDays
+      priority
     );
 
     return NextResponse.json({
       success: true,
-      message: `Deleted notifications older than ${olderThanDays} days`,
+      message: 'Announcement sent successfully',
     });
   } catch (error: any) {
-    console.error('Error deleting notifications:', error);
+    console.error('Error sending announcement:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete notifications' },
+      { error: error.message || 'Failed to send announcement' },
       { status: 500 }
     );
   }

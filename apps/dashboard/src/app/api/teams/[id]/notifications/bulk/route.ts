@@ -7,7 +7,7 @@ import { prisma } from '@/lib/database';
 // PATCH - Bulk update notifications (mark as read)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { projectId: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,7 +19,7 @@ export async function PATCH(
       );
     }
 
-    const { projectId } = params;
+    const { id } = params;
     const body = await request.json();
     const { action } = body;
 
