@@ -8,12 +8,34 @@ import {
 } from 'lucide-react'
 import { useTheme } from '@/providers/theme-provider'
 import { toast } from 'sonner'
+import {
+  getButtonClasses,
+  getBadgeClasses,
+  getCardClasses,
+  getInputClasses,
+  getSwitchClasses,
+  getTextClasses
+} from '@/lib/theme-utils'
 // Define types inline to avoid import issues
 type ThemeMode = 'light' | 'dark' | 'system' | 'auto';
 type ColorScheme = 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'teal' | 'pink' | 'gray' | 'custom';
 type UIDensity = 'comfortable' | 'compact' | 'spacious';  
 type FontSize = 'small' | 'medium' | 'large' | 'extraLarge';
 type ColorBlindMode = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'achromatopsia';
+
+// Map for color scheme to Tailwind color names
+const colorSchemeMap: Record<string, string> = {
+  blue: 'blue',
+  purple: 'purple',
+  green: 'green',
+  orange: 'orange',
+  red: 'red',
+  teal: 'teal',
+  pink: 'pink',
+  gray: 'gray',
+  custom: 'primary',
+  default: 'blue'
+};
 
 const colorSchemes = [
   { id: 'blue' as ColorScheme, name: 'Blue', color: '#3B82F6' },
@@ -175,8 +197,10 @@ export function ThemeSectionNew() {
               onClick={() => handleThemeChange('mode', mode.id)}
               className={`p-4 rounded-lg border-2 transition-all ${
                 theme.mode === mode.id
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? theme.colorScheme === 'custom' 
+                    ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/10 dark:bg-[hsl(var(--primary))]/20'
+                    : `border-${colorSchemeMap[theme.colorScheme] || 'blue'}-500 bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-50 dark:bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-900/30`
+                  : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
               }`}
             >
               <mode.icon className="h-6 w-6 mx-auto mb-2" />
@@ -207,8 +231,8 @@ export function ThemeSectionNew() {
               }}
               className={`p-3 rounded-lg border-2 transition-all ${
                 theme.colorScheme === scheme.id
-                  ? 'border-gray-900 shadow-lg'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-gray-900 shadow-lg dark:border-gray-100'
+                  : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
               }`}
             >
               <div
@@ -272,8 +296,10 @@ export function ThemeSectionNew() {
               onClick={() => handleThemeChange('density', option.id)}
               className={`p-4 rounded-lg border-2 transition-all ${
                 theme.density === option.id
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? theme.colorScheme === 'custom'
+                    ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/10 dark:bg-[hsl(var(--primary))]/20'
+                    : `border-${colorSchemeMap[theme.colorScheme] || 'blue'}-500 bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-50 dark:bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-900/30`
+                  : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
               }`}
             >
               <div className="font-medium text-sm">{option.name}</div>
@@ -296,8 +322,10 @@ export function ThemeSectionNew() {
               onClick={() => handleThemeChange('fontSize', size.id)}
               className={`p-3 rounded-lg border-2 transition-all ${
                 theme.fontSize === size.id
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? theme.colorScheme === 'custom'
+                    ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary))]/10 dark:bg-[hsl(var(--primary))]/20'
+                    : `border-${colorSchemeMap[theme.colorScheme] || 'blue'}-500 bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-50 dark:bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-900/30`
+                  : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
               }`}
             >
               <div className="font-medium" style={{ fontSize: size.size }}>Aa</div>
@@ -414,7 +442,9 @@ export function ThemeSectionNew() {
           <h3 className="font-medium">Theme Presets</h3>
           <button
             onClick={() => setShowPresets(!showPresets)}
-            className="text-sm text-blue-600 hover:text-blue-700"
+            className={theme.colorScheme === 'custom' 
+              ? 'text-sm text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))]/80'
+              : `text-sm text-${colorSchemeMap[theme.colorScheme] || 'blue'}-600 hover:text-${colorSchemeMap[theme.colorScheme] || 'blue'}-700 dark:text-${colorSchemeMap[theme.colorScheme] || 'blue'}-400 dark:hover:text-${colorSchemeMap[theme.colorScheme] || 'blue'}-300`}
           >
             {showPresets ? 'Hide' : 'Show'} Presets
           </button>
@@ -433,7 +463,7 @@ export function ThemeSectionNew() {
               <button
                 onClick={handleSavePreset}
                 disabled={!presetName.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className={`${getButtonClasses(theme.colorScheme || 'blue', 'primary', 'md', isDark)} disabled:opacity-50`}
               >
                 <Save className="h-4 w-4" />
               </button>
@@ -452,7 +482,9 @@ export function ThemeSectionNew() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleLoadPreset(preset.name)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                        className={theme.colorScheme === 'custom'
+                          ? 'p-2 text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/10 rounded'
+                          : `p-2 text-${colorSchemeMap[theme.colorScheme] || 'blue'}-600 hover:bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-50 dark:text-${colorSchemeMap[theme.colorScheme] || 'blue'}-400 dark:hover:bg-${colorSchemeMap[theme.colorScheme] || 'blue'}-900 rounded`}
                       >
                         <Eye className="h-4 w-4" />
                       </button>

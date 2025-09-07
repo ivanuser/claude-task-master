@@ -71,7 +71,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const shouldBeDark = calculateDarkMode(theme.mode, systemPrefersDark);
       setIsDark(shouldBeDark);
       
-      // Apply to document
+      // Apply to document - Add or remove the 'dark' class for Tailwind
+      if (shouldBeDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      
       document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
       document.documentElement.setAttribute('data-high-contrast', String(theme.highContrast));
       document.documentElement.setAttribute('data-reduced-motion', String(theme.reducedMotion));
@@ -156,12 +162,47 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // Get color scheme
     const colors = getColorScheme(preferences.colorScheme, preferences);
     
-    // Apply colors
-    root.style.setProperty('--color-primary', colors.primary);
-    root.style.setProperty('--color-secondary', colors.secondary);
-    root.style.setProperty('--color-accent', colors.accent);
-    root.style.setProperty('--color-background', isDarkMode ? colors.background.dark : colors.background.light);
-    root.style.setProperty('--color-text', isDarkMode ? colors.text.dark : colors.text.light);
+    // Apply colors - convert to HSL format for Tailwind
+    const hexToHSL = (hex: string) => {
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
+      
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+      
+      return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+    };
+    
+    // Apply colors using Tailwind's variable names
+    try {
+      root.style.setProperty('--primary', hexToHSL(colors.primary));
+      root.style.setProperty('--secondary', hexToHSL(colors.secondary));
+      root.style.setProperty('--accent', hexToHSL(colors.accent));
+      
+      // Apply background and foreground
+      if (isDarkMode) {
+        root.style.setProperty('--background', hexToHSL(colors.background.dark));
+        root.style.setProperty('--foreground', hexToHSL(colors.text.dark));
+      } else {
+        root.style.setProperty('--background', hexToHSL(colors.background.light));
+        root.style.setProperty('--foreground', hexToHSL(colors.text.light));
+      }
+    } catch (error) {
+      console.error('Error applying theme colors:', error);
+    }
     
     // Apply other settings
     if (preferences.fontFamily && preferences.fontFamily !== 'system') {

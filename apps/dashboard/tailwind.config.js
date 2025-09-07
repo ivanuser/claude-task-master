@@ -7,6 +7,42 @@ module.exports = {
 		'./src/app/**/*.{js,ts,jsx,tsx,mdx}',
 		'./src/lib/**/*.{js,ts,jsx,tsx}'
 	],
+	safelist: [
+		// Color scheme classes for all supported colors
+		{
+			pattern: /^(bg|text|border|ring)-(blue|purple|green|orange|red|teal|pink|gray)-(50|100|200|300|400|500|600|700|800|900)$/,
+			variants: ['hover', 'focus', 'dark', 'dark:hover']
+		},
+		// Opacity modifiers
+		{
+			pattern: /^(bg|border)-(blue|purple|green|orange|red|teal|pink|gray)-(50|100|200|300|400|500|600|700|800|900)\/(10|20|30|40|50|60|70|80|90)$/,
+			variants: ['hover', 'focus', 'dark', 'dark:hover']
+		},
+		// Ring classes
+		{
+			pattern: /^ring-(blue|purple|green|orange|red|teal|pink|gray)-(50|100|200|300|400|500|600|700|800|900)$/,
+			variants: ['focus']
+		},
+		// CSS variable based classes
+		'bg-[hsl(var(--primary))]',
+		'bg-[hsl(var(--primary))]/10',
+		'bg-[hsl(var(--primary))]/20',
+		'bg-[hsl(var(--secondary))]',
+		'bg-[hsl(var(--accent))]',
+		'text-[hsl(var(--primary))]',
+		'text-[hsl(var(--primary))]/80',
+		'text-[hsl(var(--secondary))]',
+		'border-[hsl(var(--primary))]',
+		'border-[hsl(var(--primary))]/20',
+		'ring-[hsl(var(--primary))]',
+		'hover:bg-[hsl(var(--primary))]',
+		'hover:bg-[hsl(var(--primary))]/10',
+		'hover:text-[hsl(var(--primary))]',
+		'hover:text-[hsl(var(--primary))]/80',
+		'focus:border-[hsl(var(--primary))]',
+		'focus:ring-[hsl(var(--primary))]',
+		'dark:bg-[hsl(var(--primary))]/20'
+	],
 	theme: {
 		extend: {
 			colors: {
