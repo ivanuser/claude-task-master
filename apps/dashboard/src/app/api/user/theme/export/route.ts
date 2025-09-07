@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { authOptions } from '@/lib/auth';
 import { themeService } from '@/lib/theme/theme-service';
 
 // GET - Export theme as JSON

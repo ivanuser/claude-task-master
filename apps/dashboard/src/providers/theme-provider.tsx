@@ -94,7 +94,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const loadThemePreferences = async () => {
     try {
-      const response = await fetch('/api/user/theme');
+      const response = await fetch('/api/user/theme', {
+        credentials: 'include',
+      });
       if (response.ok) {
         const preferences = await response.json();
         setTheme(preferences);
@@ -279,6 +281,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const response = await fetch('/api/user/theme', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(preferences),
       });
       

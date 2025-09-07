@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { authOptions } from '@/lib/auth';
 import { twoFactorService } from '@/lib/auth/two-factor-service';
 
 // GET - Get 2FA status for the current user
