@@ -7927,7 +7927,7 @@
         "testStrategy": "Test real-time delivery across multiple browser tabs, verify notification history persistence, test mention detection accuracy, validate deadline notifications trigger correctly, ensure notification preferences are respected",
         "priority": "medium",
         "dependencies": [],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [],
         "tag": "settings",
         "metadata": {
@@ -8090,7 +8090,7 @@
     ],
     "metadata": {
       "created": "2025-09-06T04:14:05.634Z",
-      "updated": "2025-09-06T17:05:49.731Z",
+      "updated": "2025-09-07T03:10:07.396Z",
       "description": "Tag created on 9/6/2025"
     }
   }
