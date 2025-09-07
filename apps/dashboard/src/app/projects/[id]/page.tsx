@@ -7,9 +7,12 @@ import {
   ChevronRightIcon, 
   CheckCircleIcon,
   ClockIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  TagIcon
 } from '@heroicons/react/24/outline';
 import BackButton from '@/components/ui/BackButton';
+import { TaskTagSelector } from '@/components/projects/TaskTagSelector';
+import { TagManagementModal } from '@/components/projects/TagManagementModal';
 
 interface Task {
   id: string;
@@ -45,12 +48,14 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [currentTag, setCurrentTag] = useState<string>('all');
+  const [showTagModal, setShowTagModal] = useState(false);
 
   useEffect(() => {
     if (params.id) {
       fetchProjectAndTasks();
     }
-  }, [params.id]);
+  }, [params.id, currentTag]);
 
   const fetchProjectAndTasks = async () => {
     try {
@@ -61,8 +66,9 @@ export default function ProjectDetailPage() {
         setProject(projectData);
       }
 
-      // Fetch tasks for this project
-      const tasksRes = await fetch(`/api/projects/${params.id}/tasks`);
+      // Fetch tasks for this project with tag filter
+      const tagParam = currentTag !== 'all' ? `?tag=${currentTag}` : '';
+      const tasksRes = await fetch(`/api/projects/${params.id}/tasks${tagParam}`);
       if (tasksRes.ok) {
         const tasksData = await tasksRes.json();
         setTasks(tasksData.tasks || []);
@@ -71,6 +77,18 @@ export default function ProjectDetailPage() {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTagChange = async (tag: string | 'all') => {
+    setCurrentTag(tag);
+    if (tag !== 'all' && tag !== currentTag) {
+      // Switch the active tag in Task Master
+      await fetch(`/api/projects/${params.id}/tags`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tagName: tag })
+      });
     }
   };
 
@@ -155,8 +173,21 @@ export default function ProjectDetailPage() {
         <BackButton href="/projects" label="Back to Projects" className="mb-4" />
         
         <div className="bg-white rounded-lg shadow px-6 py-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{project.name}</h1>
-          <p className="text-gray-600 mb-4">{project.description}</p>
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{project.name}</h1>
+              <p className="text-gray-600">{project.description}</p>
+            </div>
+            
+            {/* Tag Selector */}
+            <TaskTagSelector
+              projectId={params.id as string}
+              currentTag={currentTag}
+              onTagChange={handleTagChange}
+              onCreateTag={() => setShowTagModal(true)}
+              className="ml-4"
+            />
+          </div>
           
           {project.gitUrl && (
             <div className="flex items-center text-sm text-gray-500 mb-4">
@@ -392,6 +423,17 @@ export default function ProjectDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Tag Management Modal */}
+      <TagManagementModal
+        projectId={params.id as string}
+        isOpen={showTagModal}
+        onClose={() => setShowTagModal(false)}
+        onSuccess={() => {
+          setShowTagModal(false);
+          fetchProjectAndTasks();
+        }}
+      />
     </div>
   );
 }

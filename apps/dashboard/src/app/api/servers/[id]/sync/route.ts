@@ -149,7 +149,61 @@ export async function POST(
       let totalProjectsCreated = 0;
       let totalProjectsUpdated = 0;
 
-      // Import projects from each tag
+      // Create a single project for this server if it doesn't exist
+      // Use 'master' as the default tag for the project
+      const defaultTag = availableTags.includes('master') ? 'master' : availableTags[0] || 'master';
+      
+      const project = await prisma.project.upsert({
+        where: {
+          serverId_tag: {
+            serverId: server.id,
+            tag: defaultTag  // Use a consistent tag for the project
+          }
+        },
+        update: {
+          updatedAt: new Date(),
+          lastSyncAt: new Date()
+        },
+        create: {
+          name: `${server.name} Tasks`,
+          description: `Task Master project from ${server.name} - ${availableTags.length} tag(s): ${availableTags.join(', ')}`,
+          tag: defaultTag,  // Store the default tag
+          serverId: server.id,
+          status: 'ACTIVE',
+          visibility: 'PRIVATE',
+          gitUrl: null,
+          gitProvider: null,
+          gitBranch: 'main',
+          settings: {
+            notifications: true,
+            autoSync: true,
+            remoteSync: true,
+            availableTags: availableTags  // Store all available tags in settings
+          },
+          members: {
+            create: {
+              userId: (session.user as any).id,
+              role: 'OWNER',
+              permissions: {}
+            }
+          }
+        }
+      });
+
+      const isNewProject = !project.updatedAt || project.createdAt.getTime() === project.updatedAt.getTime();
+      
+      if (isNewProject) {
+        totalProjectsCreated++;
+      } else {
+        totalProjectsUpdated++;
+      }
+
+      // Clear existing tasks for clean import (all tags)
+      await prisma.task.deleteMany({
+        where: { projectId: project.id }
+      });
+
+      // Process all tasks from all tags and store them with tag information
       for (const tagName of availableTags) {
         const tasks = tasksJson[tagName]?.tasks || [];
         console.log(`Processing tag "${tagName}" with ${tasks.length} tasks`);
@@ -159,56 +213,7 @@ export async function POST(
           continue;
         }
 
-        // Create or update project for this tag
-        const project = await prisma.project.upsert({
-          where: {
-            serverId_tag: {
-              serverId: server.id,
-              tag: tagName
-            }
-          },
-          update: {
-            updatedAt: new Date(),
-            lastSyncAt: new Date()
-          },
-          create: {
-            name: `${tagName.charAt(0).toUpperCase() + tagName.slice(1)} (${server.name})`,
-            description: `Remote Task Master project from ${server.name}`,
-            tag: tagName,
-            serverId: server.id,
-            status: 'ACTIVE',
-            visibility: 'PRIVATE',
-            gitUrl: null,
-            gitProvider: null,
-            gitBranch: 'main',
-            settings: {
-              notifications: true,
-              autoSync: true,
-              remoteSync: true
-            },
-            members: {
-              create: {
-                userId: (session.user as any).id,
-                role: 'OWNER',
-                permissions: {}
-              }
-            }
-          }
-        });
-
-        const isNewProject = !project.updatedAt || project.createdAt.getTime() === project.updatedAt.getTime();
-        if (isNewProject) {
-          totalProjectsCreated++;
-        } else {
-          totalProjectsUpdated++;
-        }
-
-        // Clear existing tasks for clean import
-        await prisma.task.deleteMany({
-          where: { projectId: project.id }
-        });
-
-        // Import tasks
+        // Import tasks with tag information
         let taskCount = 0;
         for (const task of tasks) {
           try {
@@ -216,10 +221,16 @@ export async function POST(
             const priority = await mapTaskPriority(task.priority);
             const complexity = await mapComplexity(task.complexity);
 
+            // Add tag information to the task data
+            const taskData = {
+              ...task,
+              tag: tagName  // Store which tag this task belongs to
+            };
+
             await prisma.task.create({
               data: {
                 projectId: project.id,
-                taskId: String(task.id),
+                taskId: `${tagName}-${task.id}`,  // Unique ID per tag
                 title: task.title || `Task ${task.id}`,
                 description: task.description || '',
                 status: status as any,
@@ -227,13 +238,13 @@ export async function POST(
                 complexity: complexity,
                 details: task.details || null,
                 testStrategy: task.testStrategy || null,
-                data: task
+                data: taskData  // Store task data with tag info
               }
             });
 
             taskCount++;
           } catch (error) {
-            console.error(`Failed to import task ${task.id}:`, error);
+            console.error(`Failed to import task ${task.id} from tag ${tagName}:`, error);
           }
         }
 

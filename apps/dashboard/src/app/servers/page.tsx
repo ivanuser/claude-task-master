@@ -11,7 +11,8 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   XCircleIcon,
-  PencilIcon
+  PencilIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline';
 import BackButton from '@/components/ui/BackButton';
 
@@ -205,6 +206,32 @@ export default function ServersPage() {
     setIsAddModalOpen(true);
   };
 
+  const handleDeleteServer = async (server: Server) => {
+    if (server.projectCount > 0) {
+      alert(`Cannot delete server "${server.name}" because it has ${server.projectCount} associated project${server.projectCount > 1 ? 's' : ''}. Please delete the projects first.`);
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete server "${server.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/servers/${server.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        await loadServers();
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Failed to delete server');
+      }
+    } catch (error) {
+      alert('Failed to delete server');
+    }
+  };
+
   const handleSubmitEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingServer) return;
@@ -337,13 +364,22 @@ export default function ServersPage() {
                     <span className="ml-1">{getStatusText(server)}</span>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleEditServer(server)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                  title="Edit server"
-                >
-                  <PencilIcon className="h-4 w-4" />
-                </button>
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={() => handleEditServer(server)}
+                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    title="Edit server"
+                  >
+                    <PencilIcon className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteServer(server)}
+                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Delete server"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-3">

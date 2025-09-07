@@ -6,9 +6,9 @@ import {
   TagIcon, 
   PlusIcon,
   HashtagIcon,
-  DocumentDuplicateIcon,
-  CodeBranchIcon
+  DocumentDuplicateIcon
 } from '@heroicons/react/24/outline'
+import { CodeBracketIcon } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
@@ -242,7 +242,7 @@ export function TagManagementModal({
                       className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors"
                     >
                       <div className="flex items-center space-x-2">
-                        <CodeBranchIcon className="h-4 w-4 text-gray-500" />
+                        <CodeBracketIcon className="h-4 w-4 text-gray-500" />
                         <span>Use current Git branch name</span>
                       </div>
                     </button>

@@ -8,7 +8,8 @@ import {
   ArrowDownTrayIcon,
   EyeIcon,
   CalendarIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline';
 import BackButton from '@/components/ui/BackButton';
 
@@ -241,6 +242,29 @@ export default function ProjectsPage() {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const handleDeleteProject = async (e: React.MouseEvent, project: Project) => {
+    e.stopPropagation(); // Prevent navigation to project page
+    
+    if (!confirm(`Are you sure you want to delete project "${project.name}"? This will delete all associated tasks and data. This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/projects/${project.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        fetchProjects();
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Failed to delete project');
+      }
+    } catch (error) {
+      alert('Failed to delete project');
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE': return 'bg-green-100 text-green-800';
@@ -319,9 +343,18 @@ export default function ProjectsPage() {
                     {project.description}
                   </p>
                 </div>
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
-                  {project.status}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+                    {project.status}
+                  </span>
+                  <button
+                    onClick={(e) => handleDeleteProject(e, project)}
+                    className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Delete project"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
