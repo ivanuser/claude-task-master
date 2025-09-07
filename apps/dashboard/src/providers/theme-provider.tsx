@@ -194,7 +194,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
     };
     
-    // Apply colors using Tailwind's variable names
+    // Apply colors using CSS variables
     try {
       root.style.setProperty('--primary', hexToHSL(colors.primary));
       root.style.setProperty('--secondary', hexToHSL(colors.secondary));
@@ -208,6 +208,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         root.style.setProperty('--background', hexToHSL(colors.background.light));
         root.style.setProperty('--foreground', hexToHSL(colors.text.light));
       }
+      
+      // Add debug logging to verify colors are being set
+      console.log('🎨 CSS variables set:', {
+        '--primary': hexToHSL(colors.primary),
+        '--secondary': hexToHSL(colors.secondary),
+        '--accent': hexToHSL(colors.accent),
+      });
+      
+      // Force update by adding a temporary class and removing it
+      document.body.classList.add('theme-updating');
+      setTimeout(() => {
+        document.body.classList.remove('theme-updating');
+      }, 10);
+      
     } catch (error) {
       console.error('Error applying theme colors:', error);
     }

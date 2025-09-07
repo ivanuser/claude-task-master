@@ -47,6 +47,33 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 199 89% 48%;
   }
+  
+  /* Apply dynamic theming to common elements */
+  .btn-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .btn-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+  }
+  
+  .text-primary {
+    color: hsl(var(--primary));
+  }
+  
+  .border-primary {
+    border-color: hsl(var(--primary));
+  }
+  
+  .bg-primary {
+    background-color: hsl(var(--primary));
+  }
+  
+  .bg-primary\/10 {
+    background-color: hsl(var(--primary) / 0.1);
+  }
 }
 
 @layer base {
