@@ -10,8 +10,6 @@ const nextConfig = {
 		// Disable type checking during builds (handled separately)
 		ignoreBuildErrors: true,
 	},
-	// Allow cross-origin requests from production domain during development
-	allowedDevOrigins: ['https://taskmanagerai.honercloud.com'],
 	images: {
 		domains: ['github.com', 'gitlab.com', 'localhost'],
 		formats: ['image/avif', 'image/webp']
@@ -38,6 +36,22 @@ const nextConfig = {
 					{
 						key: 'Expires',
 						value: '0'
+					},
+					{
+						key: 'Access-Control-Allow-Origin',
+						value: 'https://taskmanagerai.honercloud.com'
+					},
+					{
+						key: 'Access-Control-Allow-Methods',
+						value: 'GET, POST, PUT, DELETE, OPTIONS'
+					},
+					{
+						key: 'Access-Control-Allow-Headers',
+						value: 'Content-Type, Authorization, Cookie, Set-Cookie'
+					},
+					{
+						key: 'Access-Control-Allow-Credentials',
+						value: 'true'
 					}
 				],
 			},
