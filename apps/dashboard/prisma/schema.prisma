@@ -35,6 +35,13 @@ model User {
   // User preferences
   settings      Json      @default("{}")
   
+  // Data retention and GDPR
+  dataRetentionDays  Int?      @default(90)
+  autoDataCleanup    Boolean   @default(false)
+  lastDataCleanup    DateTime?
+  isAnonymized       Boolean   @default(false)
+  anonymizedAt       DateTime?
+  
   // Timestamps
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
