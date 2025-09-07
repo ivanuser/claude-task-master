@@ -254,67 +254,76 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       };
     }
     
-    // Default color schemes
+    // Default color schemes - use lowercase keys to match database values
     const schemes: Record<string, any> = {
-      BLUE: {
+      blue: {
         primary: '#3B82F6',
         secondary: '#1E40AF',
         accent: '#60A5FA',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
-      PURPLE: {
+      purple: {
         primary: '#8B5CF6',
         secondary: '#6D28D9',
         accent: '#A78BFA',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
-      GREEN: {
+      green: {
         primary: '#10B981',
         secondary: '#059669',
         accent: '#34D399',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
-      ORANGE: {
+      orange: {
         primary: '#F97316',
         secondary: '#EA580C',
         accent: '#FB923C',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
-      RED: {
+      red: {
         primary: '#EF4444',
         secondary: '#DC2626',
         accent: '#F87171',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
-      TEAL: {
+      teal: {
         primary: '#14B8A6',
         secondary: '#0D9488',
         accent: '#2DD4BF',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
-      PINK: {
+      pink: {
         primary: '#EC4899',
         secondary: '#DB2777',
         accent: '#F472B6',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
-      GRAY: {
+      gray: {
         primary: '#6B7280',
         secondary: '#4B5563',
         accent: '#9CA3AF',
         background: { light: '#FFFFFF', dark: '#0F172A' },
         text: { light: '#1F2937', dark: '#F3F4F6' },
       },
+      default: {
+        primary: '#3B82F6',
+        secondary: '#1E40AF',
+        accent: '#60A5FA',
+        background: { light: '#FFFFFF', dark: '#0F172A' },
+        text: { light: '#1F2937', dark: '#F3F4F6' },
+      },
     };
     
-    return schemes[scheme] || schemes.BLUE;
+    // Convert scheme to lowercase to match database values
+    const schemeKey = (scheme || 'blue').toLowerCase();
+    return schemes[schemeKey] || schemes.blue;
   };
 
   const updateTheme = async (preferences: Partial<ThemePreferences>) => {
