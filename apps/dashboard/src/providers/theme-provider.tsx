@@ -111,7 +111,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         console.log('Theme API returned', response.status, '- using default theme');
         setTheme({
           mode: 'system',
-          colorScheme: 'default',
+          colorScheme: 'blue',
           density: 'comfortable',
           fontSize: 'medium',
           fontFamily: 'system',
@@ -126,7 +126,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       // Use defaults on network error
       setTheme({
         mode: 'system',
-        colorScheme: 'default',
+        colorScheme: 'blue',
         density: 'comfortable',
         fontSize: 'medium',
         fontFamily: 'system',
@@ -161,6 +161,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     
     // Get color scheme
     const colors = getColorScheme(preferences.colorScheme, preferences);
+    
+    // Debug logging
+    console.log('🎨 Applying theme:', {
+      colorScheme: preferences.colorScheme,
+      isDarkMode,
+      colors,
+      preferences
+    });
     
     // Apply colors - convert to HSL format for Tailwind
     const hexToHSL = (hex: string) => {
