@@ -27,6 +27,7 @@ export async function GET(
       where: { id: projectId },
       include: {
         server: true,
+        tasks: true,
       },
     });
 
@@ -37,7 +38,38 @@ export async function GET(
       );
     }
 
-    // Check if the tasks.json file exists
+    // Check if this is a synced project with tags stored in settings
+    if (project.settings && (project.settings as any).availableTags) {
+      const availableTags = (project.settings as any).availableTags as string[];
+      const currentTag = project.tag || availableTags[0] || 'master';
+      
+      // Get tasks from database and group by tag
+      const tags = availableTags.map(tagName => {
+        const tagTasks = project.tasks.filter(task => 
+          task.data && (task.data as any).tag === tagName
+        );
+        const completedCount = tagTasks.filter(t => 
+          t.status === 'DONE' || t.status === 'COMPLETED'
+        ).length;
+        
+        return {
+          name: tagName,
+          taskCount: tagTasks.length,
+          completedCount,
+          description: `Tasks for ${tagName} context`,
+          isCurrent: tagName === currentTag,
+          created: project.createdAt.toISOString(),
+        };
+      });
+
+      return NextResponse.json({
+        tags,
+        currentTag,
+        projectPath: project.server?.projectPath || null,
+      });
+    }
+
+    // Otherwise, check if the tasks.json file exists locally
     const serverPath = project.server?.projectPath || '/home/ihoner/Devana';
     const tasksFilePath = join(serverPath, '.taskmaster', 'tasks', 'tasks.json');
     

@@ -85,27 +85,22 @@ export async function DELETE(
     }
 
     // Delete all related data in order
-    // 1. Delete all team notifications
-    await prisma.teamNotification.deleteMany({
-      where: { projectId: params.id },
-    });
-
-    // 2. Delete all tasks
+    // 1. Delete all tasks
     await prisma.task.deleteMany({
       where: { projectId: params.id },
     });
 
-    // 3. Delete all project members
+    // 2. Delete all project members
     await prisma.projectMember.deleteMany({
       where: { projectId: params.id },
     });
 
-    // 4. Delete all sync history
+    // 3. Delete all sync history
     await prisma.syncHistory.deleteMany({
       where: { projectId: params.id },
     });
 
-    // 5. Finally, delete the project
+    // 4. Finally, delete the project
     await prisma.project.delete({
       where: { id: params.id },
     });
