@@ -13,9 +13,9 @@ export async function GET(
     const priority = searchParams.get('priority');
     const tag = searchParams.get('tag');
 
-    // If a tag is specified, fetch tasks from tasks.json for that specific tag
+    // If a tag is specified, fetch tasks for that specific tag
     if (tag && tag !== 'all') {
-      // Get project to find the server path
+      // Get project to check if it's a synced project
       const project = await prisma.project.findUnique({
         where: { id: params.id },
         include: { server: true },
@@ -28,6 +28,68 @@ export async function GET(
         );
       }
 
+      // Check if this is a synced project with tags in settings
+      if (project.settings && (project.settings as any).availableTags) {
+        // For synced projects, get tasks from database filtered by tag
+        const tasks = await prisma.task.findMany({
+          where: { 
+            projectId: params.id,
+          },
+        });
+
+        // Filter tasks by the tag stored in their data field
+        const tagTasks = tasks.filter(task => {
+          const taskData = task.data as any;
+          return taskData && taskData.tag === tag;
+        }).map(task => ({
+          id: task.id,
+          taskId: task.taskId,
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          priority: task.priority,
+          complexity: task.complexity,
+          details: task.details,
+          testStrategy: task.testStrategy,
+          data: task.data,
+          projectId: task.projectId,
+          createdAt: task.createdAt,
+          updatedAt: task.updatedAt,
+        }));
+
+        // Apply status and priority filters if provided
+        let filteredTasks = tagTasks;
+        if (status) {
+          filteredTasks = filteredTasks.filter((t: any) => 
+            t.status === status.toUpperCase()
+          );
+        }
+        if (priority) {
+          filteredTasks = filteredTasks.filter((t: any) => 
+            t.priority === priority.toUpperCase()
+          );
+        }
+
+        // Calculate stats
+        const statusCounts: { [key: string]: number } = {};
+        tagTasks.forEach((task: any) => {
+          const taskStatus = task.status;
+          statusCounts[taskStatus] = (statusCounts[taskStatus] || 0) + 1;
+        });
+
+        const taskStats = Object.entries(statusCounts).map(([status, count]) => ({
+          status,
+          _count: count,
+        }));
+
+        return NextResponse.json({
+          tasks: filteredTasks,
+          stats: taskStats,
+          total: filteredTasks.length,
+        });
+      }
+
+      // For non-synced projects, try to read from local tasks.json file
       const serverPath = project.server?.projectPath || '/home/ihoner/Devana';
       const tasksFilePath = join(serverPath, '.taskmaster', 'tasks', 'tasks.json');
       
