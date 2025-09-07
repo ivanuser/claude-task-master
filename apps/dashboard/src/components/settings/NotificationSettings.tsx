@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Switch } from '@headlessui/react'
 import { BellIcon, DevicePhoneMobileIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
 import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/useToast'
+import { toast } from 'sonner'
 
 interface NotificationPreferences {
   enabled: boolean
@@ -42,7 +42,6 @@ const notificationTypeLabels = {
 }
 
 export function NotificationSettings() {
-  const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [preferences, setPreferences] = useState<NotificationPreferences>({
@@ -81,11 +80,7 @@ export function NotificationSettings() {
       }
     } catch (error) {
       console.error('Failed to fetch notification preferences:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to load notification preferences',
-        variant: 'destructive',
-      })
+      toast.error('Failed to load notification preferences')
     } finally {
       setLoading(false)
     }
@@ -104,20 +99,13 @@ export function NotificationSettings() {
       })
 
       if (response.ok) {
-        toast({
-          title: 'Success',
-          description: 'Notification preferences saved',
-        })
+        toast.success('Notification preferences saved')
       } else {
         throw new Error('Failed to save preferences')
       }
     } catch (error) {
       console.error('Failed to save notification preferences:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to save notification preferences',
-        variant: 'destructive',
-      })
+      toast.error('Failed to save notification preferences')
     } finally {
       setSaving(false)
     }
