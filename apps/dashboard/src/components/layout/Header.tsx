@@ -12,6 +12,7 @@ import {
   DocumentTextIcon,
 } from '@heroicons/react/24/outline'
 import { cn } from '@/lib/utils'
+import { NotificationDropdown } from '@/components/notifications/NotificationDropdown'
 
 const navigation: Array<{
   name: string
@@ -62,7 +63,8 @@ export function Header() {
               })}
             </nav>
           </div>
-          <div className='flex items-center'>
+          <div className='flex items-center space-x-3'>
+            <NotificationDropdown />
             <button className='p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100'>
               <span className='sr-only'>User menu</span>
               <div className='h-8 w-8 rounded-full bg-gray-300'></div>
