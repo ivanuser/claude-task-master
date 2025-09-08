@@ -35,15 +35,10 @@ export function useWebSocket(): UseWebSocketReturn {
       console.log('🔌 Connecting to SSE...')
       eventSource.current = new EventSource('/api/sse')
 
-      eventSource.current.onopen = () => {
-        setIsConnected(true)
-        console.log('✅ SSE connected')
-        
-        // Re-subscribe to projects after reconnection
-        subscribedProjects.current.forEach(projectId => {
-          subscribeToProjectSSE(projectId)
-        })
-      }
+      // EventSource doesn't fire onopen immediately, we need to listen for the first message
+      eventSource.current.addEventListener('open', () => {
+        console.log('✅ SSE connection opened')
+      })
 
       eventSource.current.onmessage = (event) => {
         try {
@@ -53,6 +48,12 @@ export function useWebSocket(): UseWebSocketReturn {
           // Handle different message types
           if (data.type === 'connected') {
             console.log('🎉 SSE connection established')
+            setIsConnected(true)
+            
+            // Re-subscribe to projects after reconnection
+            subscribedProjects.current.forEach(projectId => {
+              subscribeToProjectSSE(projectId)
+            })
             return
           }
           

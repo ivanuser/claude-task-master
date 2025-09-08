@@ -114,37 +114,52 @@ export async function POST(request: NextRequest) {
     const finalProjectName = projectName || `${tagName.charAt(0).toUpperCase() + tagName.slice(1)} Project`;
     const finalProjectDescription = projectDescription || `Imported from Task Master tag: ${tagName}`;
 
-    const project = await prisma.project.upsert({
-      where: { tag: tagName },
-      update: {
-        name: finalProjectName,
-        description: finalProjectDescription,
-        gitUrl,
-        gitBranch,
-        updatedAt: new Date()
-      },
-      create: {
-        name: finalProjectName,
-        description: finalProjectDescription,
+    // For local projects (no serverId), we need to find by tag and null serverId
+    let project = await prisma.project.findFirst({
+      where: {
         tag: tagName,
-        status: 'ACTIVE',
-        visibility: 'PRIVATE',
-        gitUrl,
-        gitProvider: gitUrl.includes('github.com') ? 'GITHUB' : 'OTHER',
-        gitBranch,
-        settings: {
-          notifications: true,
-          autoSync: true
-        },
-        members: {
-          create: {
-            userId: user.id,
-            role: 'OWNER',
-            permissions: {}
-          }
-        }
+        serverId: null
       }
     });
+
+    if (project) {
+      // Update existing project
+      project = await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          name: finalProjectName,
+          description: finalProjectDescription,
+          gitUrl,
+          gitBranch,
+          updatedAt: new Date()
+        }
+      });
+    } else {
+      // Create new project
+      project = await prisma.project.create({
+        data: {
+          name: finalProjectName,
+          description: finalProjectDescription,
+          tag: tagName,
+          status: 'ACTIVE',
+          visibility: 'PRIVATE',
+          gitUrl,
+          gitProvider: gitUrl.includes('github.com') ? 'GITHUB' : 'OTHER',
+          gitBranch,
+          settings: {
+            notifications: true,
+            autoSync: true
+          },
+          members: {
+            create: {
+              userId: user.id,
+              role: 'OWNER',
+              permissions: {}
+            }
+          }
+        }
+      });
+    }
 
     // Clear existing tasks for clean import
     await prisma.task.deleteMany({

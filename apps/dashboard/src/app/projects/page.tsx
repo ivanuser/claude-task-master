@@ -255,7 +255,7 @@ export default function ProjectsPage() {
       });
 
       if (response.ok) {
-        fetchProjects();
+        loadProjects();
       } else {
         const errorData = await response.json();
         alert(errorData.error || 'Failed to delete project');
