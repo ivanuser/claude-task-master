@@ -21,11 +21,11 @@ export function MetricCard({
   color = 'blue',
 }: MetricCardProps) {
   const colorClasses = {
-    blue: 'bg-blue-500',
+    blue: 'bg-primary',
     green: 'bg-green-500',
     red: 'bg-red-500',
     yellow: 'bg-yellow-500',
-    purple: 'bg-purple-500',
+    purple: 'bg-primary',
   };
 
   const trendIcon = trend === 'up' ? (
@@ -33,20 +33,20 @@ export function MetricCard({
   ) : trend === 'down' ? (
     <ArrowDownIcon className="w-4 h-4 text-red-500" />
   ) : (
-    <MinusIcon className="w-4 h-4 text-gray-400" />
+    <MinusIcon className="w-4 h-4 text-muted-foreground" />
   );
 
   const changeColor = 
     change && change > 0 ? 'text-green-600' :
     change && change < 0 ? 'text-red-600' :
-    'text-gray-500';
+    'text-muted-foreground';
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-card rounded-lg shadow-sm p-6">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <p className="mt-2 text-3xl font-bold text-foreground">{value}</p>
           {(change !== undefined || changeLabel) && (
             <div className="mt-2 flex items-center space-x-1">
               {trend && trendIcon}
@@ -56,7 +56,7 @@ export function MetricCard({
                 </span>
               )}
               {changeLabel && (
-                <span className="text-sm text-gray-500">{changeLabel}</span>
+                <span className="text-sm text-muted-foreground">{changeLabel}</span>
               )}
             </div>
           )}

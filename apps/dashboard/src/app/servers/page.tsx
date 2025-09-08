@@ -299,7 +299,7 @@ export default function ServersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-taskmaster-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -319,7 +319,7 @@ export default function ServersPage() {
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center px-4 py-2 bg-taskmaster-600 text-white rounded-md hover:bg-taskmaster-700 text-sm font-medium"
+          className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm font-medium"
         >
           <PlusIcon className="h-4 w-4 mr-2" />
           Add Server
@@ -337,7 +337,7 @@ export default function ServersPage() {
           <div className="mt-6">
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="inline-flex items-center px-4 py-2 bg-taskmaster-600 text-white rounded-md hover:bg-taskmaster-700 text-sm font-medium"
+              className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm font-medium"
             >
               <PlusIcon className="h-4 w-4 mr-2" />
               Add Server
@@ -432,14 +432,14 @@ export default function ServersPage() {
                 <div className="flex justify-end space-x-2">
                   <button 
                     onClick={() => handleTestConnection(server.id)}
-                    className="text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium disabled:opacity-50"
+                    className="text-sm text-primary hover:text-primary/80 font-medium disabled:opacity-50"
                     disabled={testingConnection === server.id || syncingProjects === server.id}
                   >
                     {testingConnection === server.id ? 'Testing...' : 'Test Connection'}
                   </button>
                   <button 
                     onClick={() => handleSyncProjects(server.id)}
-                    className="text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium disabled:opacity-50"
+                    className="text-sm text-primary hover:text-primary/80 font-medium disabled:opacity-50"
                     disabled={testingConnection === server.id || syncingProjects === server.id}
                   >
                     {syncingProjects === server.id ? 'Syncing...' : 'Sync Projects'}
@@ -679,7 +679,7 @@ export default function ServersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 bg-taskmaster-600 text-white rounded hover:bg-taskmaster-700 disabled:opacity-50 text-sm"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 disabled:opacity-50 text-sm"
                 >
                   {isSubmitting ? (editingServer ? 'Updating...' : 'Adding...') : (editingServer ? 'Update Server' : 'Add Server')}
                 </button>
