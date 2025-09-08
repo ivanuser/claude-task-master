@@ -30,31 +30,33 @@ async function main() {
 
 	console.log('✅ Created user:', user.email);
 
-	// Create the web-dashboard project
-	const webDashboardProject = await prisma.project.upsert({
+	// Create the web-dashboard project (use findFirst then create to handle null serverId)
+	let webDashboardProject = await prisma.project.findFirst({
 		where: { 
-			serverId_tag: {
-				serverId: null,
-				tag: 'web-dashboard'
-			}
-		},
-		update: {},
-		create: {
-			name: 'Web Dashboard',
-			description: 'Task Master centralized web dashboard for multi-project management',
-			tag: 'web-dashboard',
-			gitUrl: 'https://github.com/user/claude-task-master',
-			gitBranch: 'main',
-			gitProvider: 'github',
-			status: 'ACTIVE',
-			visibility: 'PRIVATE',
-			settings: {
-				syncEnabled: true,
-				autoSync: false,
-				notifications: true
-			}
+			serverId: null,
+			tag: 'web-dashboard'
 		}
 	});
+	
+	if (!webDashboardProject) {
+		webDashboardProject = await prisma.project.create({
+			data: {
+				name: 'Web Dashboard',
+				description: 'Task Master centralized web dashboard for multi-project management',
+				tag: 'web-dashboard',
+				gitUrl: 'https://github.com/user/claude-task-master',
+				gitBranch: 'main',
+				gitProvider: 'github',
+				status: 'ACTIVE',
+				visibility: 'PRIVATE',
+				settings: {
+					syncEnabled: true,
+					autoSync: false,
+					notifications: true
+				}
+			}
+		});
+	}
 
 	console.log('✅ Created project:', webDashboardProject.name);
 
@@ -178,27 +180,29 @@ async function main() {
 	console.log('✅ Created initial sync history');
 
 	// Create a default project for users without specific tags
-	const defaultProject = await prisma.project.upsert({
+	let defaultProject = await prisma.project.findFirst({
 		where: { 
-			serverId_tag: {
-				serverId: null,
-				tag: 'default'
-			}
-		},
-		update: {},
-		create: {
-			name: 'Default Project',
-			description: 'Default Task Master project for untagged tasks',
-			tag: 'default',
-			status: 'ACTIVE',
-			visibility: 'PRIVATE',
-			settings: {
-				syncEnabled: true,
-				autoSync: false,
-				isDefault: true
-			}
+			serverId: null,
+			tag: 'default'
 		}
 	});
+	
+	if (!defaultProject) {
+		defaultProject = await prisma.project.create({
+			data: {
+				name: 'Default Project',
+				description: 'Default Task Master project for untagged tasks',
+				tag: 'default',
+				status: 'ACTIVE',
+				visibility: 'PRIVATE',
+				settings: {
+					syncEnabled: true,
+					autoSync: false,
+					isDefault: true
+				}
+			}
+		});
+	}
 
 	// Add user to default project as well
 	await prisma.projectMember.upsert({

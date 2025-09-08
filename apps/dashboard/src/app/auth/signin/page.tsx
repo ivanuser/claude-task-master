@@ -70,7 +70,7 @@ export default function SignInPage() {
         {/* Sign In Form */}
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground">
               Email address
             </label>
             <input
@@ -81,13 +81,13 @@ export default function SignInPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+              className="mt-1 appearance-none relative block w-full px-3 py-2 border border-input placeholder-muted-foreground text-foreground bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
               placeholder="Enter your email"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground">
               Password
             </label>
             <div className="mt-1 relative">
@@ -99,7 +99,7 @@ export default function SignInPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-2 pr-10 border border-input placeholder-muted-foreground text-foreground bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Enter your password"
               />
               <button
@@ -108,9 +108,9 @@ export default function SignInPage() {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                  <EyeSlashIcon className="h-5 w-5 text-muted-foreground" />
                 ) : (
-                  <EyeIcon className="h-5 w-5 text-gray-400" />
+                  <EyeIcon className="h-5 w-5 text-muted-foreground" />
                 )}
               </button>
             </div>
