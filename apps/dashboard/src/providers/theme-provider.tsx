@@ -65,10 +65,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Apply theme when preferences change
   useEffect(() => {
     if (theme) {
-      applyTheme(theme);
+      // Normalize theme values to lowercase
+      const normalizedTheme = {
+        ...theme,
+        mode: (theme.mode?.toLowerCase() || 'system') as ThemeMode,
+        colorScheme: (theme.colorScheme?.toLowerCase() || 'blue') as ColorScheme,
+        density: (theme.density?.toLowerCase() || 'comfortable') as UIDensity,
+        fontSize: (theme.fontSize?.toLowerCase() || 'medium') as FontSize,
+        colorBlindMode: theme.colorBlindMode?.toLowerCase() as ColorBlindMode | null,
+      };
+      
+      applyTheme(normalizedTheme);
       
       // Determine if dark mode should be active
-      const shouldBeDark = calculateDarkMode(theme.mode, systemPrefersDark);
+      const shouldBeDark = calculateDarkMode(normalizedTheme.mode, systemPrefersDark);
       setIsDark(shouldBeDark);
       
       // Apply to document - Add or remove the 'dark' class for Tailwind
@@ -79,22 +89,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       }
       
       document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-high-contrast', String(theme.highContrast));
-      document.documentElement.setAttribute('data-reduced-motion', String(theme.reducedMotion));
+      document.documentElement.setAttribute('data-high-contrast', String(normalizedTheme.highContrast));
+      document.documentElement.setAttribute('data-reduced-motion', String(normalizedTheme.reducedMotion));
       
-      if (theme.colorBlindMode) {
-        document.documentElement.setAttribute('data-color-blind', theme.colorBlindMode.toLowerCase());
+      if (normalizedTheme.colorBlindMode) {
+        document.documentElement.setAttribute('data-color-blind', normalizedTheme.colorBlindMode);
       } else {
         document.documentElement.removeAttribute('data-color-blind');
       }
       
       // Apply density class
       document.body.className = document.body.className.replace(/ui-\w+/, '');
-      document.body.classList.add(`ui-${theme.density.toLowerCase()}`);
+      document.body.classList.add(`ui-${normalizedTheme.density}`);
       
       // Apply font size class
       document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-extra-large');
-      document.body.classList.add(`font-${theme.fontSize.toLowerCase().replace('_', '-')}`);
+      document.body.classList.add(`font-${normalizedTheme.fontSize.replace('_', '-')}`);
     }
   }, [theme, systemPrefersDark]);
 
@@ -105,7 +115,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       });
       if (response.ok) {
         const preferences = await response.json();
-        setTheme(preferences);
+        // Convert all enum values to lowercase for consistency
+        const normalizedPreferences = {
+          ...preferences,
+          mode: preferences.mode?.toLowerCase() || 'system',
+          colorScheme: preferences.colorScheme?.toLowerCase() || 'blue',
+          density: preferences.density?.toLowerCase() || 'comfortable',
+          fontSize: preferences.fontSize?.toLowerCase() || 'medium',
+          colorBlindMode: preferences.colorBlindMode?.toLowerCase() || null,
+        };
+        console.log('🔄 Normalized preferences:', normalizedPreferences);
+        setTheme(normalizedPreferences);
       } else {
         // Use defaults when not authenticated or API returns error
         console.log('Theme API returned', response.status, '- using default theme');
@@ -359,7 +379,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       
       if (response.ok) {
         const { preferences: updatedPreferences } = await response.json();
-        setTheme(updatedPreferences);
+        // Convert all enum values to lowercase for consistency
+        const normalizedPreferences = {
+          ...updatedPreferences,
+          mode: updatedPreferences.mode?.toLowerCase() || 'system',
+          colorScheme: updatedPreferences.colorScheme?.toLowerCase() || 'blue',
+          density: updatedPreferences.density?.toLowerCase() || 'comfortable',
+          fontSize: updatedPreferences.fontSize?.toLowerCase() || 'medium',
+          colorBlindMode: updatedPreferences.colorBlindMode?.toLowerCase() || null,
+        };
+        setTheme(normalizedPreferences);
       }
     } catch (error) {
       console.error('Failed to update theme:', error);
