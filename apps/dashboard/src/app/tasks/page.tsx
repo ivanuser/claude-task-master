@@ -277,8 +277,8 @@ export default function TasksPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Tasks</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-foreground">Tasks</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage tasks across all your projects
           </p>
         </div>

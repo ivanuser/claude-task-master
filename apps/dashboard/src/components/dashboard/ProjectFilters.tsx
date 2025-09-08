@@ -86,13 +86,13 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
         {/* Search */}
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
               value={searchValue}
               onChange={handleSearchChange}
               placeholder="Search projects by name or description..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             />
             {searchValue && (
               <button
@@ -100,7 +100,7 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
                   setSearchValue('');
                   onFilterChange({ search: '' });
                 }}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -113,7 +113,7 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
           <select
             value={filters.sortBy}
             onChange={(e) => onFilterChange({ sortBy: e.target.value as FilterOptions['sortBy'] })}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           >
             {sortOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -124,10 +124,10 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
 
           <button
             onClick={() => onFilterChange({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-colors bg-background"
             title={`Sort ${filters.sortOrder === 'asc' ? 'descending' : 'ascending'}`}
           >
-            <span className="text-gray-600">
+            <span className="text-muted-foreground">
               {filters.sortOrder === 'asc' ? '↑' : '↓'}
             </span>
           </button>
@@ -138,14 +138,14 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
           onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
           className={`inline-flex items-center px-4 py-2 border rounded-lg transition-colors ${
             showAdvancedFilters || hasActiveFilters
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 hover:bg-gray-50'
+              ? 'border-primary bg-primary/10 text-primary'
+              : 'border-border hover:bg-accent bg-background'
           }`}
         >
           <Filter className="w-4 h-4 mr-2" />
           Filters
           {hasActiveFilters && (
-            <span className="ml-2 px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+            <span className="ml-2 px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
               {filters.status.length + filters.tags.length + (filters.ownership !== 'all' ? 1 : 0)}
             </span>
           )}
@@ -155,7 +155,7 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear all
           </button>
@@ -164,10 +164,10 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
 
       {/* Advanced Filters Panel */}
       {showAdvancedFilters && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-6">
+        <div className="bg-card border border-border rounded-lg p-6 space-y-6">
           {/* Status Filter */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Project Status</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">Project Status</h3>
             <div className="flex flex-wrap gap-2">
               {statusOptions.map(status => (
                 <button
@@ -176,7 +176,7 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     filters.status.includes(status.value)
                       ? status.color
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-muted text-muted-foreground hover:bg-accent'
                   }`}
                 >
                   {status.label}
@@ -190,7 +190,7 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
 
           {/* Ownership Filter */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Ownership</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">Ownership</h3>
             <div className="flex flex-wrap gap-2">
               {ownershipOptions.map(option => (
                 <button
@@ -198,8 +198,8 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
                   onClick={() => onFilterChange({ ownership: option.value as FilterOptions['ownership'] })}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     filters.ownership === option.value
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground hover:bg-accent'
                   }`}
                 >
                   {option.label}
@@ -210,7 +210,7 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
 
           {/* Tags Filter */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Tags</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">Tags</h3>
             <div className="flex flex-wrap gap-2">
               {availableTags.map(tag => (
                 <button
@@ -218,8 +218,8 @@ export function ProjectFilters({ filters, onFilterChange, className = '' }: Proj
                   onClick={() => handleTagToggle(tag)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     filters.tags.includes(tag)
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground hover:bg-accent'
                   }`}
                 >
                   #{tag}

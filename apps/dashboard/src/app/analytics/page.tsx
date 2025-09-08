@@ -270,7 +270,7 @@ export default function AnalyticsPage() {
       />
 
       {/* Insights Section */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-card rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-semibold mb-4">Key Insights</h2>
         <div className="space-y-4">
           {summary.insights.map(insight => (
@@ -284,15 +284,15 @@ export default function AnalyticsPage() {
                   : 'bg-blue-50 border-blue-500'
               }`}
             >
-              <h3 className="font-medium text-gray-900">{insight.title}</h3>
-              <p className="text-sm text-gray-600 mt-1">{insight.description}</p>
+              <h3 className="font-medium text-foreground">{insight.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1">{insight.description}</p>
               {insight.value && (
                 <div className="mt-2">
-                  <span className="text-2xl font-bold text-gray-900">
+                  <span className="text-2xl font-bold text-foreground">
                     {insight.value}
                   </span>
                   {insight.metric && (
-                    <span className="text-sm text-gray-500 ml-2">{insight.metric}</span>
+                    <span className="text-sm text-muted-foreground ml-2">{insight.metric}</span>
                   )}
                 </div>
               )}
@@ -302,11 +302,11 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Recommendations Section */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-card rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-semibold mb-4">Recommendations</h2>
         <div className="space-y-4">
           {summary.recommendations.map(rec => (
-            <div key={rec.id} className="border-l-4 border-gray-300 pl-4">
+            <div key={rec.id} className="border-l-4 border-border pl-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900">{rec.title}</h3>
@@ -345,7 +345,7 @@ export default function AnalyticsPage() {
 
       {/* Top Performers */}
       {teamMetrics.topPerformers.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-card rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4">Top Performers</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {teamMetrics.topPerformers.slice(0, 3).map(member => (

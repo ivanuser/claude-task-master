@@ -312,8 +312,8 @@ export default function ServersPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Servers</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-foreground">Servers</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage remote Task Master instances across your infrastructure
           </p>
         </div>
@@ -328,10 +328,10 @@ export default function ServersPage() {
 
       {/* Servers Grid */}
       {servers.length === 0 ? (
-        <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-          <ServerIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">No servers</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <div className="bg-card border-2 border-dashed border-border rounded-lg p-12 text-center">
+          <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-2 text-sm font-semibold text-foreground">No servers</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
             Get started by adding your first Task Master server.
           </p>
           <div className="mt-6">
@@ -349,17 +349,17 @@ export default function ServersPage() {
           {servers.map((server) => (
             <div
               key={server.id}
-              className="bg-white rounded-lg shadow border border-gray-200 p-6 hover:shadow-md transition-shadow"
+              className="bg-card rounded-lg shadow border border-border p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
                     {server.name}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-sm text-muted-foreground mb-2">
                     {server.description || `${server.username}@${server.host}:${server.port}`}
                   </p>
-                  <div className="flex items-center text-sm text-gray-500">
+                  <div className="flex items-center text-sm text-muted-foreground">
                     {getStatusIcon(server)}
                     <span className="ml-1">{getStatusText(server)}</span>
                   </div>
@@ -367,14 +367,14 @@ export default function ServersPage() {
                 <div className="flex items-center space-x-1">
                   <button
                     onClick={() => handleEditServer(server)}
-                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                     title="Edit server"
                   >
                     <PencilIcon className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteServer(server)}
-                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    className="p-2 text-muted-foreground hover:text-red-600 transition-colors"
                     title="Delete server"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -383,17 +383,17 @@ export default function ServersPage() {
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center text-sm text-gray-600">
+                <div className="flex items-center text-sm text-muted-foreground">
                   <ServerIcon className="h-4 w-4 mr-2" />
                   <span className="font-mono">{server.host}:{server.port}</span>
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600">
+                <div className="flex items-center text-sm text-muted-foreground">
                   <FolderIcon className="h-4 w-4 mr-2" />
                   <span className="truncate">{server.projectPath}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-600">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <SignalIcon className="h-4 w-4 mr-1" />
                     <span>{server.projectCount} projects</span>
@@ -406,21 +406,21 @@ export default function ServersPage() {
               </div>
 
               {server.projects.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <div className="text-xs text-gray-500 mb-2">Recent Projects</div>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="text-xs text-muted-foreground mb-2">Recent Projects</div>
                   <div className="space-y-1">
                     {server.projects.slice(0, 3).map((project) => (
                       <div key={project.id} className="flex items-center justify-between text-xs">
-                        <span className="text-gray-600 truncate">{project.name}</span>
+                        <span className="text-muted-foreground truncate">{project.name}</span>
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          project.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                          project.status === 'active' ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400' : 'bg-muted text-muted-foreground'
                         }`}>
                           {project.status}
                         </span>
                       </div>
                     ))}
                     {server.projects.length > 3 && (
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-muted-foreground">
                         +{server.projects.length - 3} more
                       </div>
                     )}

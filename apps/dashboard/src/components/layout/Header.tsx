@@ -24,7 +24,7 @@ const navigation: Array<{
   { name: 'Tasks', href: '/tasks', icon: ClipboardDocumentListIcon as any },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon as any },
   { name: 'API Docs', href: '/api-docs', icon: DocumentTextIcon as any },
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon as any },
+  { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon as any },
 ]
 
 export function Header() {

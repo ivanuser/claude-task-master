@@ -119,16 +119,16 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<SettingsSection>('profile')
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <BackButton href="/dashboard" label="Back to Dashboard" className="mr-4" />
-              <SettingsIcon className="w-8 h-8 text-gray-900 mr-3" />
+              <SettingsIcon className="w-8 h-8 text-foreground mr-3" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+                <h1 className="text-2xl font-bold text-foreground">Settings</h1>
               </div>
             </div>
           </div>
@@ -139,22 +139,22 @@ export default function SettingsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
-            <nav className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="p-4 border-b border-gray-200">
-                <h2 className="text-sm font-medium text-gray-900 uppercase tracking-wide">
+            <nav className="bg-card rounded-lg border border-border overflow-hidden">
+              <div className="p-4 border-b border-border">
+                <h2 className="text-sm font-medium text-foreground uppercase tracking-wide">
                   Settings
                 </h2>
               </div>
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {settingsSections.map((section) => {
                   const IconComponent = section.icon
                   return (
                     <button
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className={`w-full p-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between group ${
+                      className={`w-full p-4 text-left hover:bg-accent transition-colors flex items-center justify-between group ${
                         activeSection === section.id
-                          ? 'bg-blue-50 border-r-2 border-r-blue-500'
+                          ? 'bg-primary/10 border-r-2 border-r-primary'
                           : ''
                       }`}
                     >
@@ -162,16 +162,16 @@ export default function SettingsPage() {
                         <IconComponent
                           className={`w-5 h-5 mr-3 flex-shrink-0 ${
                             activeSection === section.id
-                              ? 'text-blue-600'
-                              : 'text-gray-400 group-hover:text-gray-500'
+                              ? 'text-primary'
+                              : 'text-muted-foreground group-hover:text-accent-foreground'
                           }`}
                         />
                         <div className="min-w-0 flex-1">
                           <p
                             className={`text-sm font-medium truncate ${
                               activeSection === section.id
-                                ? 'text-blue-900'
-                                : 'text-gray-900'
+                                ? 'text-primary'
+                                : 'text-foreground'
                             }`}
                           >
                             {section.title}
@@ -179,8 +179,8 @@ export default function SettingsPage() {
                           <p
                             className={`text-xs truncate ${
                               activeSection === section.id
-                                ? 'text-blue-700'
-                                : 'text-gray-500'
+                                ? 'text-primary/80'
+                                : 'text-muted-foreground'
                             }`}
                           >
                             {section.description}
@@ -190,8 +190,8 @@ export default function SettingsPage() {
                       <ChevronRight
                         className={`w-4 h-4 flex-shrink-0 ${
                           activeSection === section.id
-                            ? 'text-blue-500'
-                            : 'text-gray-400 group-hover:text-gray-500'
+                            ? 'text-primary'
+                            : 'text-muted-foreground group-hover:text-accent-foreground'
                         }`}
                       />
                     </button>
@@ -203,7 +203,7 @@ export default function SettingsPage() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg border border-gray-200">
+            <div className="bg-card rounded-lg border border-border">
               {renderSettingsSection(activeSection)}
             </div>
           </div>

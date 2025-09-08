@@ -102,7 +102,7 @@ function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+      <div className="bg-card rounded-lg max-w-md w-full p-6">
         <h3 className="text-lg font-semibold mb-4">Import Task Master Project</h3>
         
         {error && (
@@ -113,7 +113,7 @@ function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Tasks File Path
             </label>
             <input
@@ -121,19 +121,19 @@ function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
               value={tasksFilePath}
               onChange={(e) => setTasksFilePath(e.target.value)}
               onBlur={loadAvailableTags}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              className="w-full px-3 py-2 border border-border rounded text-sm bg-background text-foreground"
               placeholder="/path/to/tasks.json"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Tag to Import *
             </label>
             <select
               value={selectedTag}
               onChange={(e) => setSelectedTag(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              className="w-full px-3 py-2 border border-border rounded text-sm bg-background text-foreground"
               required
             >
               <option value="">Select a tag...</option>
@@ -144,26 +144,26 @@ function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Project Name (optional)
             </label>
             <input
               type="text"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              className="w-full px-3 py-2 border border-border rounded text-sm bg-background text-foreground"
               placeholder="Will use tag name if empty"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Project Description (optional)
             </label>
             <textarea
               value={projectDescription}
               onChange={(e) => setProjectDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+              className="w-full px-3 py-2 border border-border rounded text-sm bg-background text-foreground"
               rows={3}
               placeholder="Brief description of the project"
             />
@@ -174,7 +174,7 @@ function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
           >
             Cancel
           </button>
@@ -267,10 +267,10 @@ export default function ProjectsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800';
-      case 'INACTIVE': return 'bg-gray-100 text-gray-800';
-      case 'ARCHIVED': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'ACTIVE': return 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400';
+      case 'INACTIVE': return 'bg-muted text-muted-foreground';
+      case 'ARCHIVED': return 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -290,15 +290,15 @@ export default function ProjectsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-foreground">Projects</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage and monitor all your Task Master projects
           </p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => setIsImportModalOpen(true)}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className="inline-flex items-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground bg-card hover:bg-accent"
           >
             <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
             Import Project
@@ -312,10 +312,10 @@ export default function ProjectsPage() {
 
       {/* Projects Grid */}
       {projects.length === 0 ? (
-        <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-          <ArrowDownTrayIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">No projects</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by importing a Task Master project.</p>
+        <div className="bg-card border-2 border-dashed border-border rounded-lg p-12 text-center">
+          <ArrowDownTrayIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-2 text-sm font-semibold text-foreground">No projects</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Get started by importing a Task Master project.</p>
           <div className="mt-6">
             <button
               onClick={() => setIsImportModalOpen(true)}
@@ -331,15 +331,15 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="bg-white rounded-lg shadow border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-card rounded-lg shadow border border-border p-6 hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => router.push(`/projects/${project.id}`)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
                     {project.name}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                     {project.description}
                   </p>
                 </div>
@@ -349,7 +349,7 @@ export default function ProjectsPage() {
                   </span>
                   <button
                     onClick={(e) => handleDeleteProject(e, project)}
-                    className="p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                    className="p-1.5 text-muted-foreground hover:text-red-600 transition-colors"
                     title="Delete project"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -357,7 +357,7 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+              <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                 <div className="flex items-center">
                   <CalendarIcon className="h-4 w-4 mr-1" />
                   {formatDate(project.updatedAt)}
@@ -370,8 +370,8 @@ export default function ProjectsPage() {
 
               <div className="flex items-center justify-between">
                 <div className="text-sm">
-                  <span className="font-medium text-gray-900">{project.totalTasks}</span>
-                  <span className="text-gray-500"> tasks</span>
+                  <span className="font-medium text-foreground">{project.totalTasks}</span>
+                  <span className="text-muted-foreground"> tasks</span>
                 </div>
                 <div className="flex items-center text-sm text-taskmaster-600 hover:text-taskmaster-700">
                   <EyeIcon className="h-4 w-4 mr-1" />
@@ -380,11 +380,11 @@ export default function ProjectsPage() {
               </div>
 
               {project.gitUrl && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <div className="flex items-center text-xs text-gray-500">
+                <div className="mt-3 pt-3 border-t border-border">
+                  <div className="flex items-center text-xs text-muted-foreground">
                     <span className="truncate">{project.gitUrl}</span>
                     {project.gitBranch && (
-                      <span className="ml-2 px-2 py-1 bg-gray-100 rounded">
+                      <span className="ml-2 px-2 py-1 bg-muted rounded">
                         {project.gitBranch}
                       </span>
                     )}

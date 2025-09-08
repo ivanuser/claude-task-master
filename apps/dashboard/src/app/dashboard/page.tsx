@@ -55,10 +55,10 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="bg-card rounded-lg shadow-lg p-8 max-w-md">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Dashboard</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-muted-foreground mb-4">{error}</p>
           <button
             onClick={refetch}
             className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
@@ -71,7 +71,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <DashboardHeader 
         viewMode={viewMode}
         onViewModeChange={setViewMode}
@@ -98,7 +98,7 @@ export default function DashboardPage() {
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-gray-600">Loading projects...</span>
+            <span className="ml-3 text-muted-foreground">Loading projects...</span>
           </div>
         ) : projects && projects.length > 0 ? (
           <div className="transition-all duration-300">
@@ -118,9 +118,9 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="bg-white rounded-lg shadow-sm p-8">
+            <div className="bg-card rounded-lg shadow-sm p-8">
               <svg
-                className="mx-auto h-12 w-12 text-gray-400"
+                className="mx-auto h-12 w-12 text-muted-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -132,8 +132,8 @@ export default function DashboardPage() {
                   d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2z"
                 />
               </svg>
-              <h3 className="mt-4 text-lg font-medium text-gray-900">No projects found</h3>
-              <p className="mt-2 text-sm text-gray-500">
+              <h3 className="mt-4 text-lg font-medium text-foreground">No projects found</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
                 {filters.search || filters.status.length > 0 || filters.tags.length > 0
                   ? 'Try adjusting your filters or search query.'
                   : 'Get started by creating your first project.'}

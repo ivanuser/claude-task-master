@@ -124,16 +124,16 @@ export default function NotificationsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md">
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="bg-card rounded-lg shadow-lg p-8 max-w-md">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
+          <h2 className="text-2xl font-bold text-foreground text-center mb-4">
             Error Loading Notifications
           </h2>
-          <p className="text-gray-600 text-center mb-4">{error}</p>
+          <p className="text-muted-foreground text-center mb-4">{error}</p>
           <button
             onClick={() => loadNotifications()}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             Retry
           </button>
@@ -143,18 +143,18 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <BackButton href="/dashboard" label="Back to Dashboard" className="mr-4" />
-              <Bell className="w-8 h-8 text-blue-600 mr-3" />
+              <Bell className="w-8 h-8 text-primary mr-3" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+                <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
                 {unreadCount > 0 && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
                   </p>
                 )}
@@ -166,7 +166,7 @@ export default function NotificationsPage() {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 >
                   <CheckCheck className="w-4 h-4 mr-2" />
                   Mark all read
@@ -176,7 +176,7 @@ export default function NotificationsPage() {
               {/* Filters toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
@@ -185,7 +185,7 @@ export default function NotificationsPage() {
               {/* Preferences */}
               <button
                 onClick={() => setShowPreferencesModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Preferences
@@ -217,13 +217,13 @@ export default function NotificationsPage() {
             {/* Search Bar */}
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search notifications..."
                   value={filters.search}
                   onChange={(e) => handleFilterChange({ search: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 />
               </div>
             </div>

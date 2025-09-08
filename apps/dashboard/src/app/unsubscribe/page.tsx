@@ -122,7 +122,7 @@ export default function UnsubscribePage() {
               )}
               
               <Link
-                href="/settings"
+                href="/dashboard/settings"
                 className="mt-4 inline-flex items-center text-sm text-blue-600 hover:text-blue-500"
               >
                 Manage email preferences →
@@ -145,7 +145,7 @@ export default function UnsubscribePage() {
                 </button>
                 
                 <Link
-                  href="/settings"
+                  href="/dashboard/settings"
                   className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Go to Settings
@@ -161,7 +161,7 @@ export default function UnsubscribePage() {
               <p className="text-gray-600 mb-6">{message}</p>
               
               <Link
-                href="/settings"
+                href="/dashboard/settings"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Manage Preferences in Settings

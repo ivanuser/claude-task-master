@@ -28,7 +28,7 @@ const navigation: Array<{
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon as any },
   { name: 'Team', href: '/team', icon: UserGroupIcon as any },
   { name: 'Notifications', href: '/notifications', icon: BellIcon as any },
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon as any },
+  { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon as any },
 ]
 
 export function Sidebar() {

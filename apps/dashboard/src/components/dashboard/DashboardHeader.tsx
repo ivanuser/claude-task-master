@@ -13,25 +13,25 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ viewMode, onViewModeChange, totalProjects }: DashboardHeaderProps) {
   return (
-    <div className="bg-white border-b border-gray-200">
+    <div className="bg-card border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Portfolio Dashboard</h1>
-            <span className="ml-4 px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+            <h1 className="text-2xl font-bold text-foreground">Portfolio Dashboard</h1>
+            <span className="ml-4 px-3 py-1 bg-muted text-muted-foreground text-sm rounded-full">
               {totalProjects} {totalProjects === 1 ? 'project' : 'projects'}
             </span>
           </div>
 
           <div className="flex items-center space-x-4">
             {/* View Mode Switcher */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center bg-muted rounded-lg p-1">
               <button
                 onClick={() => onViewModeChange('grid')}
                 className={`flex items-center px-3 py-1 rounded-md transition-colors ${
                   viewMode === 'grid'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
                 title="Grid view"
               >
@@ -42,8 +42,8 @@ export function DashboardHeader({ viewMode, onViewModeChange, totalProjects }: D
                 onClick={() => onViewModeChange('list')}
                 className={`flex items-center px-3 py-1 rounded-md transition-colors ${
                   viewMode === 'list'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
                 title="List view"
               >

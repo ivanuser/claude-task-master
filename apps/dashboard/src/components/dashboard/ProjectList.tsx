@@ -44,10 +44,10 @@ export function ProjectList({
   });
 
   const getStatusColor = (status: string) => {
-    if (status === 'active') return 'bg-green-100 text-green-800';
-    if (status === 'paused') return 'bg-yellow-100 text-yellow-800';
-    if (status === 'completed') return 'bg-blue-100 text-blue-800';
-    return 'bg-gray-100 text-gray-800';
+    if (status === 'active') return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+    if (status === 'paused') return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+    if (status === 'completed') return 'bg-primary/10 text-primary';
+    return 'bg-muted text-muted-foreground';
   };
 
   const getHealthIcon = (project: Project) => {
@@ -62,26 +62,26 @@ export function ProjectList({
 
   return (
     <>
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-card shadow-sm rounded-lg overflow-hidden">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted/50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Project
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Progress
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Team
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Last Activity
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Sync Status
               </th>
               <th className="relative px-6 py-3">
@@ -89,7 +89,7 @@ export function ProjectList({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {projects.map((project) => {
               const isSyncing = syncState.syncStatuses.get(project.id)?.isRunning || false;
               const lastSync = syncState.syncStatuses.get(project.id)?.lastSync || null;
@@ -100,7 +100,7 @@ export function ProjectList({
                 : 0;
 
               return (
-                <tr key={project.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={project.id} className="hover:bg-accent transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="mr-3">
@@ -108,11 +108,11 @@ export function ProjectList({
                       </div>
                       <div>
                         <Link href={`/projects/${project.id}`}>
-                          <div className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors">
+                          <div className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                             {project.name}
                           </div>
                         </Link>
-                        <div className="text-sm text-gray-500 max-w-xs truncate">
+                        <div className="text-sm text-muted-foreground max-w-xs truncate">
                           {project.description || 'No description'}
                         </div>
                       </div>
@@ -126,39 +126,39 @@ export function ProjectList({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-1">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-foreground">
                           {project.completedTasks} / {project.totalTasks} tasks
                         </div>
-                        <div className="w-32 bg-gray-200 rounded-full h-1.5 mt-1">
+                        <div className="w-32 bg-muted rounded-full h-1.5 mt-1">
                           <div
                             className={`h-1.5 rounded-full ${
                               completionPercentage >= 75 ? 'bg-green-500' :
-                              completionPercentage >= 50 ? 'bg-blue-500' :
+                              completionPercentage >= 50 ? 'bg-primary' :
                               completionPercentage >= 25 ? 'bg-yellow-500' : 'bg-gray-400'
                             }`}
                             style={{ width: `${completionPercentage}%` }}
                           />
                         </div>
                       </div>
-                      <span className="ml-2 text-xs text-gray-500">
+                      <span className="ml-2 text-xs text-muted-foreground">
                         {completionPercentage}%
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-sm text-gray-500">
+                    <div className="flex items-center text-sm text-muted-foreground">
                       <Users className="w-4 h-4 mr-1" />
                       {project.memberCount || 1}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {project.lastActivity
                       ? formatDistanceToNow(new Date(project.lastActivity), { addSuffix: true })
                       : 'Never'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {isSyncing ? (
-                      <div className="flex items-center text-sm text-blue-600">
+                      <div className="flex items-center text-sm text-primary">
                         <RefreshCw className="w-4 h-4 animate-spin mr-1" />
                         Syncing
                       </div>
@@ -167,21 +167,21 @@ export function ProjectList({
                         Synced {formatDistanceToNow(new Date(lastSync), { addSuffix: true })}
                       </div>
                     ) : (
-                      <div className="text-sm text-gray-400">Never synced</div>
+                      <div className="text-sm text-muted-foreground">Never synced</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
                       <button
                         onClick={() => onProjectUpdate()}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
                         title="Sync project"
                       >
                         <RefreshCw className="w-4 h-4" />
                       </button>
                       <Link
                         href={`/projects/${project.id}`}
-                        className="text-gray-400 hover:text-blue-600 transition-colors"
+                        className="text-muted-foreground hover:text-primary transition-colors"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </Link>

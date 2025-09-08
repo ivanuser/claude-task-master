@@ -81,13 +81,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const shouldBeDark = calculateDarkMode(normalizedTheme.mode, systemPrefersDark);
       setIsDark(shouldBeDark);
       
-      // Apply to document - Add or remove the 'dark' class for Tailwind
-      if (shouldBeDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      
       document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
       document.documentElement.setAttribute('data-high-contrast', String(normalizedTheme.highContrast));
       document.documentElement.setAttribute('data-reduced-motion', String(normalizedTheme.reducedMotion));
@@ -159,7 +152,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   const calculateDarkMode = (mode: ThemeMode, systemDark: boolean): boolean => {
-    switch (mode) {
+    // Normalize mode to lowercase for comparison
+    const normalizedMode = (mode || 'system').toLowerCase();
+    
+    switch (normalizedMode) {
       case 'dark':
         return true;
       case 'light':
@@ -179,11 +175,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     const isDarkMode = calculateDarkMode(preferences.mode, systemPrefersDark);
     
-    // Apply dark mode class
+    // Apply dark mode class - IMPORTANT: Must be on documentElement for Tailwind
+    console.log('🌙 Dark mode:', isDarkMode, 'from mode:', preferences.mode);
     if (isDarkMode) {
       root.classList.add('dark');
+      console.log('✅ Added dark class to HTML element');
     } else {
       root.classList.remove('dark');
+      console.log('❌ Removed dark class from HTML element');
     }
     
     // Get color scheme
@@ -194,7 +193,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       colorScheme: preferences.colorScheme,
       isDarkMode,
       colors,
-      preferences
+      preferences,
+      htmlClasses: root.className
     });
     
     // Apply colors - convert to HSL format for Tailwind
@@ -227,38 +227,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.style.setProperty('--secondary', hexToHSL(colors.secondary));
       root.style.setProperty('--accent', hexToHSL(colors.accent));
       
-      // Apply background and foreground
-      if (isDarkMode) {
-        root.style.setProperty('--background', '222.2 84% 4.9%');
-        root.style.setProperty('--foreground', '210 40% 98%');
-        root.style.setProperty('--card', '222.2 84% 4.9%');
-        root.style.setProperty('--card-foreground', '210 40% 98%');
-        root.style.setProperty('--popover', '222.2 84% 4.9%');
-        root.style.setProperty('--popover-foreground', '210 40% 98%');
-        root.style.setProperty('--primary-foreground', '222.2 47.4% 11.2%');
-        root.style.setProperty('--secondary-foreground', '210 40% 98%');
-        root.style.setProperty('--muted', '217.2 32.6% 17.5%');
-        root.style.setProperty('--muted-foreground', '215 20.2% 65.1%');
-        root.style.setProperty('--accent', '217.2 32.6% 17.5%');
-        root.style.setProperty('--accent-foreground', '210 40% 98%');
-        root.style.setProperty('--border', '217.2 32.6% 17.5%');
-        root.style.setProperty('--input', '217.2 32.6% 17.5%');
-      } else {
-        root.style.setProperty('--background', '0 0% 100%');
-        root.style.setProperty('--foreground', '222.2 84% 4.9%');
-        root.style.setProperty('--card', '0 0% 100%');
-        root.style.setProperty('--card-foreground', '222.2 84% 4.9%');
-        root.style.setProperty('--popover', '0 0% 100%');
-        root.style.setProperty('--popover-foreground', '222.2 84% 4.9%');
-        root.style.setProperty('--primary-foreground', '210 40% 98%');
-        root.style.setProperty('--secondary-foreground', '222.2 47.4% 11.2%');
-        root.style.setProperty('--muted', '210 40% 96.1%');
-        root.style.setProperty('--muted-foreground', '215.4 16.3% 46.9%');
-        root.style.setProperty('--accent', '210 40% 96.1%');
-        root.style.setProperty('--accent-foreground', '222.2 47.4% 11.2%');
-        root.style.setProperty('--border', '214.3 31.8% 91.4%');
-        root.style.setProperty('--input', '214.3 31.8% 91.4%');
-      }
+      // Don't override CSS variables for standard theme colors in dark/light mode
+      // The CSS already handles this with the .dark class
+      // Only set the primary color from the selected color scheme
       
       // Add debug logging to verify colors are being set
       console.log('🎨 CSS variables set:', {
