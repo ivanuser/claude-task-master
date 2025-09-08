@@ -292,7 +292,7 @@ export default function TasksPage() {
       <TaskStats tasks={tasks || []} />
 
       {/* Controls Bar */}
-      <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-4">
+      <div className="bg-card shadow-sm border border-border rounded-lg p-4">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           <div className="flex-1">
             <TaskSearch value={searchQuery} onChange={setSearchQuery} />

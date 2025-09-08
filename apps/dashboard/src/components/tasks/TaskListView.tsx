@@ -25,13 +25,13 @@ export function TaskListView({
 }: TaskListViewProps) {
   const getStatusBadge = (status: Task['status']) => {
     const colors = {
-      'pending': 'bg-gray-100 text-gray-800',
-      'in-progress': 'bg-blue-100 text-blue-800',
-      'review': 'bg-yellow-100 text-yellow-800',
-      'done': 'bg-green-100 text-green-800',
-      'blocked': 'bg-red-100 text-red-800',
-      'cancelled': 'bg-gray-100 text-gray-500',
-      'deferred': 'bg-purple-100 text-purple-800',
+      'pending': 'bg-muted text-muted-foreground',
+      'in-progress': 'bg-primary/10 text-primary',
+      'review': 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400',
+      'done': 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400',
+      'blocked': 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400',
+      'cancelled': 'bg-muted text-muted-foreground',
+      'deferred': 'bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400',
     }
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status]}`}>
@@ -42,10 +42,10 @@ export function TaskListView({
 
   const getPriorityBadge = (priority: Task['priority']) => {
     const colors = {
-      'low': 'bg-gray-100 text-gray-600',
-      'medium': 'bg-blue-100 text-blue-600',
-      'high': 'bg-orange-100 text-orange-600',
-      'critical': 'bg-red-100 text-red-600',
+      'low': 'bg-muted text-muted-foreground',
+      'medium': 'bg-primary/10 text-primary',
+      'high': 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400',
+      'critical': 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400',
     }
     return (
       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${colors[priority]}`}>
@@ -61,11 +61,11 @@ export function TaskListView({
 
   const getSortIcon = (field: keyof Task) => {
     if (sortConfig.field !== field) {
-      return <span className="text-gray-400">↕</span>
+      return <span className="text-muted-foreground">↕</span>
     }
     return sortConfig.direction === 'asc' ? 
-      <span className="text-gray-600">↑</span> : 
-      <span className="text-gray-600">↓</span>
+      <span className="text-foreground">↑</span> : 
+      <span className="text-foreground">↓</span>
   }
 
   const allSelected = tasks.length > 0 && tasks.every(task => selectedTasks.has(task.id))
@@ -73,8 +73,8 @@ export function TaskListView({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+      <table className="min-w-full divide-y divide-border">
+        <thead className="bg-muted/50">
           <tr>
             <th className="px-6 py-3 text-left">
               <input
@@ -84,11 +84,11 @@ export function TaskListView({
                   if (el) el.indeterminate = someSelected && !allSelected
                 }}
                 onChange={(e) => onSelectAll(e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-border text-primary focus:ring-primary"
               />
             </th>
             <th 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/70"
               onClick={() => onSort('title')}
             >
               <div className="flex items-center gap-1">
@@ -97,7 +97,7 @@ export function TaskListView({
               </div>
             </th>
             <th 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/70"
               onClick={() => onSort('status')}
             >
               <div className="flex items-center gap-1">
@@ -106,7 +106,7 @@ export function TaskListView({
               </div>
             </th>
             <th 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/70"
               onClick={() => onSort('priority')}
             >
               <div className="flex items-center gap-1">
@@ -115,7 +115,7 @@ export function TaskListView({
               </div>
             </th>
             <th 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/70"
               onClick={() => onSort('projectName')}
             >
               <div className="flex items-center gap-1">
@@ -124,7 +124,7 @@ export function TaskListView({
               </div>
             </th>
             <th 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/70"
               onClick={() => onSort('dueDate')}
             >
               <div className="flex items-center gap-1">
@@ -133,7 +133,7 @@ export function TaskListView({
               </div>
             </th>
             <th 
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/70"
               onClick={() => onSort('updatedAt')}
             >
               <div className="flex items-center gap-1">
@@ -141,41 +141,41 @@ export function TaskListView({
                 {getSortIcon('updatedAt')}
               </div>
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-card divide-y divide-border">
           {tasks.map((task) => (
-            <tr key={task.id} className="hover:bg-gray-50">
+            <tr key={task.id} className="hover:bg-muted/30">
               <td className="px-6 py-4">
                 <input
                   type="checkbox"
                   checked={selectedTasks.has(task.id)}
                   onChange={(e) => onTaskSelect(task.id, e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-border text-primary focus:ring-primary"
                 />
               </td>
               <td className="px-6 py-4">
                 <div className="flex flex-col">
-                  <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
+                  <div className="text-sm font-medium text-foreground max-w-xs truncate">
                     {task.title}
                   </div>
                   {task.description && (
-                    <div className="text-sm text-gray-500 max-w-xs truncate">
+                    <div className="text-sm text-muted-foreground max-w-xs truncate">
                       {task.description}
                     </div>
                   )}
                   {task.tags && task.tags.length > 0 && (
                     <div className="flex gap-1 mt-1">
                       {task.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600">
+                        <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-muted text-muted-foreground">
                           {tag}
                         </span>
                       ))}
                       {task.tags.length > 3 && (
-                        <span className="text-xs text-gray-400">+{task.tags.length - 3}</span>
+                        <span className="text-xs text-muted-foreground/70">+{task.tags.length - 3}</span>
                       )}
                     </div>
                   )}
@@ -187,13 +187,13 @@ export function TaskListView({
               <td className="px-6 py-4">
                 {getPriorityBadge(task.priority)}
               </td>
-              <td className="px-6 py-4 text-sm text-gray-900">
+              <td className="px-6 py-4 text-sm text-foreground">
                 {task.projectName || 'Unknown Project'}
               </td>
-              <td className="px-6 py-4 text-sm text-gray-900">
+              <td className="px-6 py-4 text-sm text-foreground">
                 {formatDate(task.dueDate)}
               </td>
-              <td className="px-6 py-4 text-sm text-gray-500">
+              <td className="px-6 py-4 text-sm text-muted-foreground">
                 {formatDate(task.updatedAt)}
               </td>
               <td className="px-6 py-4">
@@ -201,7 +201,7 @@ export function TaskListView({
                   <select
                     value={task.status}
                     onChange={(e) => onTaskUpdate(task.id, { status: e.target.value as Task['status'] })}
-                    className="text-xs border-gray-300 rounded focus:border-blue-500 focus:ring-blue-500"
+                    className="text-xs border-border rounded focus:border-primary focus:ring-primary bg-background text-foreground"
                   >
                     <option value="pending">Pending</option>
                     <option value="in-progress">In Progress</option>
@@ -212,7 +212,7 @@ export function TaskListView({
                     <option value="cancelled">Cancelled</option>
                   </select>
                   <button 
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-primary hover:text-primary/80 text-sm"
                     onClick={() => {/* open task details modal */}}
                   >
                     View

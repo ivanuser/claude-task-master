@@ -154,7 +154,7 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
               {/* Project Filter */}
               {projects && projects.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Project</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">Project</label>
                   <div className="space-y-2 max-h-32 overflow-y-auto">
                     {projects.map((project) => (
                       <label key={project.id} className="flex items-center">
@@ -164,7 +164,7 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
                           onChange={(e) => handleMultiSelectChange('projectIds', project.id, e.target.checked)}
                           className="rounded border-border text-primary focus:ring-primary"
                         />
-                        <span className="ml-2 text-sm text-gray-700 truncate">{project.name}</span>
+                        <span className="ml-2 text-sm text-foreground truncate">{project.name}</span>
                       </label>
                     ))}
                   </div>
@@ -173,10 +173,10 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
 
               {/* Date Range Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Due Date Range</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Due Date Range</label>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">From</label>
+                    <label className="block text-xs text-muted-foreground mb-1">From</label>
                     <input
                       type="date"
                       value={filters.dateRange.start ? filters.dateRange.start.toISOString().split('T')[0] : ''}
@@ -187,11 +187,11 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
                           start: e.target.value ? new Date(e.target.value) : null
                         }
                       })}
-                      className="w-full text-sm border-gray-300 rounded focus:border-blue-500 focus:ring-blue-500"
+                      className="w-full text-sm border-border rounded focus:border-primary focus:ring-primary bg-background text-foreground"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">To</label>
+                    <label className="block text-xs text-muted-foreground mb-1">To</label>
                     <input
                       type="date"
                       value={filters.dateRange.end ? filters.dateRange.end.toISOString().split('T')[0] : ''}
@@ -202,7 +202,7 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
                           end: e.target.value ? new Date(e.target.value) : null
                         }
                       })}
-                      className="w-full text-sm border-gray-300 rounded focus:border-blue-500 focus:ring-blue-500"
+                      className="w-full text-sm border-border rounded focus:border-primary focus:ring-primary bg-background text-foreground"
                     />
                   </div>
                 </div>
