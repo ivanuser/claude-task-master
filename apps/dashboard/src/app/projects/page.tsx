@@ -243,24 +243,33 @@ export default function ProjectsPage() {
   };
 
   const handleDeleteProject = async (e: React.MouseEvent, project: Project) => {
+    e.preventDefault(); // Prevent default behavior
     e.stopPropagation(); // Prevent navigation to project page
+    
+    console.log('Delete clicked for project:', project.id, project.name);
     
     if (!confirm(`Are you sure you want to delete project "${project.name}"? This will delete all associated tasks and data. This action cannot be undone.`)) {
       return;
     }
 
     try {
+      console.log('Sending DELETE request for project:', project.id);
       const response = await fetch(`/api/projects/${project.id}`, {
         method: 'DELETE',
       });
 
+      console.log('Delete response status:', response.status);
+      
       if (response.ok) {
-        loadProjects();
+        console.log('Delete successful, reloading projects...');
+        await loadProjects();
       } else {
         const errorData = await response.json();
+        console.error('Delete failed:', errorData);
         alert(errorData.error || 'Failed to delete project');
       }
     } catch (error) {
+      console.error('Delete error:', error);
       alert('Failed to delete project');
     }
   };

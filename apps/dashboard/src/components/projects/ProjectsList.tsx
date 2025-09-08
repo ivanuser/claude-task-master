@@ -89,12 +89,30 @@ export function ProjectsList() {
   }, [user])
 
   const loadProjects = async () => {
-    if (!user) return
-    
     try {
       setLoading(true)
-      const userProjects = await projectService.getUserProjects(user.id)
-      setProjects(userProjects)
+      const response = await fetch('/api/projects')
+      if (response.ok) {
+        const data = await response.json()
+        // Transform the API response to match the expected format
+        const transformedProjects = (data.projects || []).map((project: any) => ({
+          id: project.id,
+          name: project.name,
+          description: project.description,
+          status: project.status?.toLowerCase() || 'active',
+          visibility: project.visibility?.toLowerCase() || 'private',
+          archived: project.status === 'ARCHIVED',
+          tags: project.tag ? [project.tag] : [],
+          updatedAt: new Date(project.updatedAt),
+          createdAt: new Date(project.createdAt),
+          totalTasks: project.totalTasks || 0,
+          completedTasks: project.completedTasks || 0,
+          memberCount: project.memberCount || 0,
+          gitUrl: project.gitUrl,
+          gitBranch: project.gitBranch
+        }))
+        setProjects(transformedProjects)
+      }
     } catch (error) {
       console.error('Error loading projects:', error)
       toast({
@@ -214,16 +232,25 @@ export function ProjectsList() {
     }
 
     try {
-      await projectService.deleteProject(projectId)
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete project')
+      }
+
       toast({
         title: 'Success',
         description: 'Project deleted successfully',
       })
       loadProjects()
     } catch (error) {
+      console.error('Delete error:', error)
       toast({
         title: 'Error',
-        description: 'Failed to delete project',
+        description: error instanceof Error ? error.message : 'Failed to delete project',
         variant: 'destructive',
       })
     }
