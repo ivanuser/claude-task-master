@@ -179,6 +179,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     const isDarkMode = calculateDarkMode(preferences.mode, systemPrefersDark);
     
+    // Apply dark mode class
+    if (isDarkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    
     // Get color scheme
     const colors = getColorScheme(preferences.colorScheme, preferences);
     
@@ -222,11 +229,35 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       
       // Apply background and foreground
       if (isDarkMode) {
-        root.style.setProperty('--background', hexToHSL(colors.background.dark));
-        root.style.setProperty('--foreground', hexToHSL(colors.text.dark));
+        root.style.setProperty('--background', '222.2 84% 4.9%');
+        root.style.setProperty('--foreground', '210 40% 98%');
+        root.style.setProperty('--card', '222.2 84% 4.9%');
+        root.style.setProperty('--card-foreground', '210 40% 98%');
+        root.style.setProperty('--popover', '222.2 84% 4.9%');
+        root.style.setProperty('--popover-foreground', '210 40% 98%');
+        root.style.setProperty('--primary-foreground', '222.2 47.4% 11.2%');
+        root.style.setProperty('--secondary-foreground', '210 40% 98%');
+        root.style.setProperty('--muted', '217.2 32.6% 17.5%');
+        root.style.setProperty('--muted-foreground', '215 20.2% 65.1%');
+        root.style.setProperty('--accent', '217.2 32.6% 17.5%');
+        root.style.setProperty('--accent-foreground', '210 40% 98%');
+        root.style.setProperty('--border', '217.2 32.6% 17.5%');
+        root.style.setProperty('--input', '217.2 32.6% 17.5%');
       } else {
-        root.style.setProperty('--background', hexToHSL(colors.background.light));
-        root.style.setProperty('--foreground', hexToHSL(colors.text.light));
+        root.style.setProperty('--background', '0 0% 100%');
+        root.style.setProperty('--foreground', '222.2 84% 4.9%');
+        root.style.setProperty('--card', '0 0% 100%');
+        root.style.setProperty('--card-foreground', '222.2 84% 4.9%');
+        root.style.setProperty('--popover', '0 0% 100%');
+        root.style.setProperty('--popover-foreground', '222.2 84% 4.9%');
+        root.style.setProperty('--primary-foreground', '210 40% 98%');
+        root.style.setProperty('--secondary-foreground', '222.2 47.4% 11.2%');
+        root.style.setProperty('--muted', '210 40% 96.1%');
+        root.style.setProperty('--muted-foreground', '215.4 16.3% 46.9%');
+        root.style.setProperty('--accent', '210 40% 96.1%');
+        root.style.setProperty('--accent-foreground', '222.2 47.4% 11.2%');
+        root.style.setProperty('--border', '214.3 31.8% 91.4%');
+        root.style.setProperty('--input', '214.3 31.8% 91.4%');
       }
       
       // Add debug logging to verify colors are being set

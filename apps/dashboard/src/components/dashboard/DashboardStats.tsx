@@ -58,7 +58,7 @@ export function DashboardStats({ projects, className = '' }: DashboardStatsProps
       change: `${stats.activeProjects} of ${stats.totalProjects} total`,
       changeType: 'neutral',
       icon: Briefcase,
-      iconColor: 'text-blue-600',
+      iconColor: 'text-primary',
     },
     {
       title: 'Overall Progress',
@@ -92,9 +92,9 @@ export function DashboardStats({ projects, className = '' }: DashboardStatsProps
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div key={index} className="bg-card rounded-lg shadow-sm border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-2 bg-gray-50 rounded-lg ${stat.iconColor}`}>
+                <div className={`p-2 bg-muted rounded-lg ${stat.iconColor}`}>
                   <Icon className="w-5 h-5" />
                 </div>
                 {stat.changeType && (
@@ -109,10 +109,10 @@ export function DashboardStats({ projects, className = '' }: DashboardStatsProps
                 )}
               </div>
               <div>
-                <p className="text-sm text-gray-500 mb-1">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-sm text-muted-foreground mb-1">{stat.title}</p>
+                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
                 {stat.change && (
-                  <p className="text-xs text-gray-500 mt-1">{stat.change}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{stat.change}</p>
                 )}
               </div>
             </div>
@@ -122,24 +122,24 @@ export function DashboardStats({ projects, className = '' }: DashboardStatsProps
 
       {/* Additional Insights */}
       {projects.length > 0 && (
-        <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-4">Quick Insights</h3>
+        <div className="mt-6 bg-card rounded-lg shadow-sm border border-border p-6">
+          <h3 className="text-sm font-medium text-foreground mb-4">Quick Insights</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex items-center">
               <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {projects.filter(p => p.status === 'completed').length} projects completed
               </span>
             </div>
             <div className="flex items-center">
               <Clock className="w-4 h-4 text-yellow-500 mr-2" />
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {projects.filter(p => p.status === 'paused').length} projects paused
               </span>
             </div>
             <div className="flex items-center">
               <AlertCircle className="w-4 h-4 text-red-500 mr-2" />
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {projects.filter(p => {
                   const daysSinceActivity = p.lastActivity
                     ? Math.floor((Date.now() - new Date(p.lastActivity).getTime()) / (1000 * 60 * 60 * 24))
