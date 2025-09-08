@@ -52,8 +52,8 @@ export default function HomePage() {
       icon: ChartBarIcon,
       title: 'Interactive Charts',
       description: 'Real-time dashboards with zoom, pan, fullscreen, and export capabilities',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
     },
     {
       icon: UsersIcon,
@@ -99,7 +99,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <ChartBarIcon className="h-8 w-8 text-blue-600" />
+              <ChartBarIcon className="h-8 w-8 text-primary" />
               <span className="ml-2 text-xl font-bold text-gray-900">Task Master</span>
               <span className="ml-2 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
                 Enhanced Analytics
@@ -125,7 +125,7 @@ export default function HomePage() {
                 <>
                   <button
                     onClick={handleLogin}
-                    className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700"
+                    className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-primary-foreground bg-primary hover:bg-primary/90"
                   >
                     Sign In
                     <ArrowRightIcon className="w-4 h-4 ml-2" />
@@ -154,7 +154,7 @@ export default function HomePage() {
             
             <h1 className="text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6">
               Task Management
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent block">
+              <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent block">
                 Powered by AI
               </span>
             </h1>
@@ -168,7 +168,7 @@ export default function HomePage() {
               {status === 'authenticated' ? (
                 <button
                   onClick={handleDashboard}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-foreground bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   Go to Dashboard
                   <ArrowRightIcon className="w-5 h-5 ml-3" />
@@ -177,7 +177,7 @@ export default function HomePage() {
                 <>
                   <button
                     onClick={() => router.push('/auth/signup')}
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary-foreground bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
                   >
                     Get Started Free
                     <ArrowRightIcon className="w-5 h-5 ml-3" />
@@ -256,14 +256,14 @@ export default function HomePage() {
           <h2 className="text-4xl font-bold text-white mb-6">
             Ready to Transform Your Workflow?
           </h2>
-          <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
             Join thousands of teams already using Task Master to deliver projects faster with AI-powered insights.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleLogin}
-              className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-600 bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-primary bg-white hover:bg-gray-50 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Start Free Trial
               <CheckCircleIcon className="w-5 h-5 ml-3" />
@@ -295,7 +295,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">
-              <ChartBarIcon className="h-6 w-6 text-blue-400" />
+              <ChartBarIcon className="h-6 w-6 text-primary" />
               <span className="ml-2 text-lg font-semibold">Task Master</span>
               <span className="ml-2 text-sm text-gray-400">Enhanced Analytics</span>
             </div>

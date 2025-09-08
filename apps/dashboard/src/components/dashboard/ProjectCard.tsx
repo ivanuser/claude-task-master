@@ -37,13 +37,13 @@ export function ProjectCard({
   const getStatusColor = () => {
     if (project.status === 'active') return 'bg-green-100 text-green-800';
     if (project.status === 'paused') return 'bg-yellow-100 text-yellow-800';
-    if (project.status === 'completed') return 'bg-blue-100 text-blue-800';
+    if (project.status === 'completed') return 'bg-primary/10 text-primary';
     return 'bg-gray-100 text-gray-800';
   };
 
   const getCompletionColor = (percentage: number) => {
     if (percentage >= 75) return 'bg-green-500';
-    if (percentage >= 50) return 'bg-blue-500';
+    if (percentage >= 50) return 'bg-primary';
     if (percentage >= 25) return 'bg-yellow-500';
     return 'bg-gray-400';
   };
@@ -72,7 +72,7 @@ export function ProjectCard({
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <Link href={`/projects/${project.id}`}>
-              <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-1">
+              <h3 className="text-lg font-semibold text-gray-900 hover:text-primary transition-colors line-clamp-1">
                 {project.name}
               </h3>
             </Link>
@@ -143,7 +143,7 @@ export function ProjectCard({
           </div>
           
           {isSyncing && (
-            <div className="flex items-center text-xs text-blue-600">
+            <div className="flex items-center text-xs text-primary">
               <RefreshCw className="w-3 h-3 animate-spin mr-1" />
               Syncing
             </div>

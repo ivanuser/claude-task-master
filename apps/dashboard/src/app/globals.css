@@ -74,6 +74,14 @@
   .bg-primary\/10 {
     background-color: hsl(var(--primary) / 0.1);
   }
+  
+  .bg-primary\/90 {
+    background-color: hsl(var(--primary) / 0.9);
+  }
+  
+  .hover\:bg-primary\/90:hover {
+    background-color: hsl(var(--primary) / 0.9);
+  }
 }
 
 @layer base {
@@ -112,7 +120,7 @@
   }
 
   .status-in-progress {
-    @apply bg-blue-500 animate-pulse;
+    @apply bg-primary animate-pulse;
   }
 
   .status-done {
@@ -125,7 +133,7 @@
 
   /* Gradient text */
   .gradient-text {
-    @apply bg-gradient-to-r from-taskmaster-600 to-blue-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent;
   }
 
   /* Glass morphism effect */

@@ -61,7 +61,7 @@ export default function DashboardPage() {
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={refetch}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             Retry
           </button>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
         {/* Project Content */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
             <span className="ml-3 text-gray-600">Loading projects...</span>
           </div>
         ) : projects && projects.length > 0 ? (
@@ -148,7 +148,7 @@ export default function DashboardPage() {
                     sortBy: 'lastActivity',
                     sortOrder: 'desc',
                   })}
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                 >
                   Clear Filters
                 </button>
