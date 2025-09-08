@@ -39,7 +39,7 @@ export function ViewToggle({ value, onChange, options }: ViewToggleProps) {
   }
 
   return (
-    <div className="inline-flex rounded-lg border border-gray-300 bg-white">
+    <div className="inline-flex rounded-lg border border-border bg-card">
       {options.map((option, index) => (
         <button
           key={option.value}
@@ -49,8 +49,8 @@ export function ViewToggle({ value, onChange, options }: ViewToggleProps) {
             ${index === 0 ? 'rounded-l-lg' : ''}
             ${index === options.length - 1 ? 'rounded-r-lg' : ''}
             ${value === option.value
-              ? 'bg-blue-50 text-blue-700 border-blue-200'
-              : 'text-gray-700 hover:bg-gray-50'
+              ? 'bg-primary/10 text-primary border-primary'
+              : 'text-foreground hover:bg-accent'
             }
           `}
           title={option.label}

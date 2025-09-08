@@ -324,7 +324,7 @@ export default function TasksPage() {
       </div>
 
       {/* Task Views */}
-      <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
+      <div className="bg-card shadow-sm border border-border rounded-lg">
         {filteredTasks.length === 0 ? (
           <EmptyState
             title="No tasks found"

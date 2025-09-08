@@ -20,39 +20,39 @@ export function TaskStats({ tasks }: TaskStatsProps) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-        <div className="text-sm text-gray-500">Total Tasks</div>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <div className="text-2xl font-bold text-foreground">{stats.total}</div>
+        <div className="text-sm text-muted-foreground">Total Tasks</div>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="text-2xl font-bold text-green-600">{stats.done}</div>
-        <div className="text-sm text-gray-500">Completed</div>
+        <div className="text-sm text-muted-foreground">Completed</div>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="text-2xl font-bold text-blue-600">{stats.inProgress}</div>
-        <div className="text-sm text-gray-500">In Progress</div>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <div className="text-2xl font-bold text-primary">{stats.inProgress}</div>
+        <div className="text-sm text-muted-foreground">In Progress</div>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="text-2xl font-bold text-gray-600">{stats.pending}</div>
-        <div className="text-sm text-gray-500">Pending</div>
+      <div className="bg-card rounded-lg border border-border p-4">
+        <div className="text-2xl font-bold text-muted-foreground">{stats.pending}</div>
+        <div className="text-sm text-muted-foreground">Pending</div>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="text-2xl font-bold text-red-600">{stats.blocked}</div>
-        <div className="text-sm text-gray-500">Blocked</div>
+        <div className="text-sm text-muted-foreground">Blocked</div>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="text-2xl font-bold text-red-600">{stats.critical}</div>
-        <div className="text-sm text-gray-500">Critical</div>
+        <div className="text-sm text-muted-foreground">Critical</div>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-card rounded-lg border border-border p-4">
         <div className="text-2xl font-bold text-green-600">{completionRate}%</div>
-        <div className="text-sm text-gray-500">Completion</div>
+        <div className="text-sm text-muted-foreground">Completion</div>
       </div>
     </div>
   )

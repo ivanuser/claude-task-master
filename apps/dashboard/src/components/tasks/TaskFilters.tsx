@@ -74,8 +74,8 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
         onClick={() => setIsOpen(!isOpen)}
         className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${
           activeCount > 0
-            ? 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
-            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+            ? 'bg-primary/10 border-primary text-primary hover:bg-primary/20'
+            : 'bg-card border-border text-foreground hover:bg-accent'
         }`}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,29 +83,29 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
         </svg>
         Filters
         {activeCount > 0 && (
-          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
+          <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
             {activeCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+        <div className="absolute right-0 mt-2 w-80 bg-card rounded-lg shadow-lg border border-border z-50">
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-900">Filter Tasks</h3>
+              <h3 className="text-sm font-semibold text-foreground">Filter Tasks</h3>
               <div className="flex items-center gap-2">
                 {activeCount > 0 && (
                   <button
                     onClick={clearAllFilters}
-                    className="text-xs text-gray-500 hover:text-gray-700"
+                    className="text-xs text-muted-foreground hover:text-foreground"
                   >
                     Clear all
                   </button>
                 )}
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -117,7 +117,7 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
             <div className="space-y-6">
               {/* Status Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Status</label>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
                   {statusOptions.map((option) => (
                     <label key={option.value} className="flex items-center">
@@ -125,9 +125,9 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
                         type="checkbox"
                         checked={filters.status.includes(option.value)}
                         onChange={(e) => handleMultiSelectChange('status', option.value, e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="rounded border-border text-primary focus:ring-primary"
                       />
-                      <span className="ml-2 text-sm text-gray-700">{option.label}</span>
+                      <span className="ml-2 text-sm text-foreground">{option.label}</span>
                     </label>
                   ))}
                 </div>
@@ -135,7 +135,7 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
 
               {/* Priority Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Priority</label>
                 <div className="space-y-2">
                   {priorityOptions.map((option) => (
                     <label key={option.value} className="flex items-center">
@@ -143,9 +143,9 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
                         type="checkbox"
                         checked={filters.priority.includes(option.value)}
                         onChange={(e) => handleMultiSelectChange('priority', option.value, e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="rounded border-border text-primary focus:ring-primary"
                       />
-                      <span className="ml-2 text-sm text-gray-700">{option.label}</span>
+                      <span className="ml-2 text-sm text-foreground">{option.label}</span>
                     </label>
                   ))}
                 </div>
@@ -162,7 +162,7 @@ export function TaskFilters({ filters, onChange, projects }: TaskFiltersProps) {
                           type="checkbox"
                           checked={filters.projectIds.includes(project.id)}
                           onChange={(e) => handleMultiSelectChange('projectIds', project.id, e.target.checked)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="rounded border-border text-primary focus:ring-primary"
                         />
                         <span className="ml-2 text-sm text-gray-700 truncate">{project.name}</span>
                       </label>
