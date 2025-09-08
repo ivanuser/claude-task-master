@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 export type ConnectionStatus = 'online' | 'offline' | 'reconnecting'
 
@@ -39,6 +40,8 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     reconnectAttempts: 0,
     maxReconnectAttempts: MAX_RECONNECT_ATTEMPTS,
   })
+
+  const webSocket = useWebSocket()
 
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>()
   const heartbeatIntervalRef = useRef<NodeJS.Timeout>()
@@ -182,6 +185,28 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     }
   }, [state.status, state.isOnline, checkConnection, handleOffline])
 
+  // Listen to SSE connection status changes
+  useEffect(() => {
+    if (webSocket.isConnected) {
+      console.log('🔌 SSE connected - updating ConnectionContext to online')
+      setState(prev => ({
+        ...prev,
+        status: 'online',
+        isOnline: true,
+        lastOnlineAt: new Date(),
+        reconnectAttempts: 0,
+      }))
+    } else {
+      console.log('🔌 SSE disconnected - updating ConnectionContext to offline')
+      setState(prev => ({
+        ...prev,
+        status: 'offline',
+        isOnline: false,
+        lastOfflineAt: new Date(),
+      }))
+    }
+  }, [webSocket.isConnected])
+
   // Listen to browser online/offline events
   useEffect(() => {
     const handleBrowserOnline = async () => {
@@ -198,12 +223,14 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
     window.addEventListener('online', handleBrowserOnline)
     window.addEventListener('offline', handleBrowserOffline)
 
-    // Check initial connection status
-    checkConnection().then(isOnline => {
-      if (!isOnline) {
-        handleOffline()
-      }
-    })
+    // Check initial connection status (but prioritize SSE connection status)
+    if (!webSocket.isConnected) {
+      checkConnection().then(isOnline => {
+        if (!isOnline) {
+          handleOffline()
+        }
+      })
+    }
 
     return () => {
       window.removeEventListener('online', handleBrowserOnline)
@@ -217,7 +244,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
         clearInterval(heartbeatIntervalRef.current)
       }
     }
-  }, [checkConnection, handleOnline, handleOffline])
+  }, [checkConnection, handleOnline, handleOffline, webSocket.isConnected])
 
   const value: ConnectionContextValue = {
     ...state,
