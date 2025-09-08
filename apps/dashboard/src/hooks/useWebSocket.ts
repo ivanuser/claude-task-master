@@ -1,11 +1,12 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface UseWebSocketState {
   connected: boolean
 }
 
 interface UseWebSocketReturn {
-  socket: WebSocket | null
+  socket: EventSource | null
   state: UseWebSocketState
   subscribeToProject: (projectId: string) => Promise<void>
   unsubscribeFromProject: (projectId: string) => void
@@ -20,67 +21,113 @@ interface UseWebSocketReturn {
 }
 
 export function useWebSocket(): UseWebSocketReturn {
-  const ws = useRef<WebSocket | null>(null)
+  const eventSource = useRef<EventSource | null>(null)
   const callbacks = useRef<Map<string, Set<(data: any) => void>>>(new Map())
   const [isConnected, setIsConnected] = useState<boolean>(false)
+  const { data: session } = useSession()
+  const subscribedProjects = useRef<Set<string>>(new Set())
 
   const connect = useCallback(() => {
-    if (ws.current?.readyState === WebSocket.OPEN) return
+    if (eventSource.current?.readyState === EventSource.OPEN) return
+    if (!session?.user?.id) return
 
     try {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const wsUrl = `${protocol}//${window.location.host}/api/ws`
-      
-      ws.current = new WebSocket(wsUrl)
+      console.log('🔌 Connecting to SSE...')
+      eventSource.current = new EventSource('/api/sse')
 
-      ws.current.onopen = () => {
+      eventSource.current.onopen = () => {
         setIsConnected(true)
-        console.log('WebSocket connected')
+        console.log('✅ SSE connected')
+        
+        // Re-subscribe to projects after reconnection
+        subscribedProjects.current.forEach(projectId => {
+          subscribeToProjectSSE(projectId)
+        })
       }
 
-      ws.current.onmessage = (event) => {
+      eventSource.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
-          const { channel, ...payload } = data
+          console.log('📨 SSE message received:', data)
+          
+          // Handle different message types
+          if (data.type === 'connected') {
+            console.log('🎉 SSE connection established')
+            return
+          }
+          
+          if (data.type === 'ping') {
+            return // Ignore ping messages
+          }
+          
+          // Determine the channel based on message type
+          let channel = data.type
+          if (data.projectId) {
+            channel = `project-${data.projectId}`
+          }
           
           const channelCallbacks = callbacks.current.get(channel)
           if (channelCallbacks) {
             channelCallbacks.forEach(callback => {
               try {
-                callback(payload)
+                callback(data)
               } catch (error) {
-                console.error('WebSocket callback error:', error)
+                console.error('SSE callback error:', error)
+              }
+            })
+          }
+          
+          // Also trigger generic event listeners
+          const genericCallbacks = callbacks.current.get(data.type)
+          if (genericCallbacks) {
+            genericCallbacks.forEach(callback => {
+              try {
+                callback(data)
+              } catch (error) {
+                console.error('SSE generic callback error:', error)
               }
             })
           }
         } catch (error) {
-          console.error('WebSocket message parsing error:', error)
+          console.error('SSE message parsing error:', error)
         }
       }
 
-      ws.current.onclose = (event) => {
+      eventSource.current.onerror = (error) => {
+        console.log('❌ SSE connection error, reconnecting...')
         setIsConnected(false)
-        // Only log and retry if it's not a 501 (Not Implemented) status
-        if (event.code !== 1006) {
-          console.log('WebSocket disconnected:', event.reason)
-          // Attempt to reconnect after 5 seconds, but with backoff
-          setTimeout(() => {
-            connect()
-          }, 5000)
-        } else {
-          console.log('WebSocket functionality not yet implemented, skipping reconnection attempts')
+        
+        // Close current connection
+        if (eventSource.current) {
+          eventSource.current.close()
+          eventSource.current = null
         }
-      }
-
-      ws.current.onerror = (error) => {
-        console.log('WebSocket connection failed (this is expected until WebSocket server is implemented)')
-        setIsConnected(false)
+        
+        // Attempt to reconnect after 5 seconds
+        setTimeout(() => {
+          connect()
+        }, 5000)
       }
     } catch (error) {
-      console.log('WebSocket connection skipped (not yet implemented)')
+      console.error('SSE connection failed:', error)
       setIsConnected(false)
     }
-  }, [])
+  }, [session?.user?.id])
+
+  // Helper function for SSE project subscription (calls backend subscription function)
+  const subscribeToProjectSSE = useCallback(async (projectId: string) => {
+    if (!session?.user?.id) return
+    
+    try {
+      // Call the SSE subscription function from our API
+      const { subscribeToProject } = await import('@/app/api/sse/route')
+      subscribeToProject(session.user.id, projectId)
+      subscribedProjects.current.add(projectId)
+      console.log(`📡 Subscribed to project ${projectId} via SSE`)
+    } catch (error) {
+      console.error('Failed to subscribe to project via SSE:', error)
+    }
+  }, [session?.user?.id])
 
   const subscribe = useCallback((channel: string, callback: (data: any) => void) => {
     if (!callbacks.current.has(channel)) {
@@ -100,30 +147,70 @@ export function useWebSocket(): UseWebSocketReturn {
   }, [])
 
   const send = useCallback((message: any) => {
-    if (ws.current?.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify(message))
-    } else {
-      console.warn('WebSocket not connected, message not sent:', message)
-    }
+    // SSE is one-way, but we could send messages via HTTP POST if needed
+    console.warn('SSE is one-way communication, cannot send message:', message)
   }, [])
 
   // Additional methods expected by useRealtimeSync
   const subscribeToProject = useCallback(async (projectId: string): Promise<void> => {
-    // For now, this is a no-op since we don't have a real WebSocket server
-    console.log('Subscribing to project:', projectId)
-  }, [])
+    await subscribeToProjectSSE(projectId)
+  }, [subscribeToProjectSSE])
 
-  const unsubscribeFromProject = useCallback((projectId: string) => {
-    console.log('Unsubscribing from project:', projectId)
-  }, [])
+  const unsubscribeFromProject = useCallback(async (projectId: string) => {
+    if (!session?.user?.id) return
+    
+    try {
+      // Call the SSE unsubscription function from our API
+      const { unsubscribeFromProject } = await import('@/app/api/sse/route')
+      unsubscribeFromProject(session.user.id, projectId)
+      subscribedProjects.current.delete(projectId)
+      console.log(`📡 Unsubscribed from project ${projectId} via SSE`)
+    } catch (error) {
+      console.error('Failed to unsubscribe from project via SSE:', error)
+    }
+  }, [session?.user?.id])
 
   const triggerSync = useCallback(async (projectId: string): Promise<void> => {
-    console.log('Triggering sync for project:', projectId)
-  }, [])
+    if (!session?.user?.id) return
+    
+    try {
+      // Send HTTP request to trigger sync
+      const response = await fetch('/api/sync/trigger', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ projectId, userId: session.user.id }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to trigger sync')
+      }
+      
+      console.log(`🔄 Triggered sync for project ${projectId}`)
+    } catch (error) {
+      console.error('Failed to trigger sync:', error)
+    }
+  }, [session?.user?.id])
 
-  const getSyncStatus = useCallback((projectId: string) => {
-    console.log('Getting sync status for project:', projectId)
-  }, [])
+  const getSyncStatus = useCallback(async (projectId: string) => {
+    if (!session?.user?.id) return
+    
+    try {
+      // Get sync status via HTTP request
+      const response = await fetch(`/api/sync/status?projectId=${projectId}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to get sync status')
+      }
+      
+      const status = await response.json()
+      console.log(`📊 Sync status for project ${projectId}:`, status)
+      return status
+    } catch (error) {
+      console.error('Failed to get sync status:', error)
+    }
+  }, [session?.user?.id])
 
   const on = useCallback((event: string, callback: (data: any) => void) => {
     subscribe(event, callback)
@@ -134,19 +221,26 @@ export function useWebSocket(): UseWebSocketReturn {
   }, [unsubscribe])
 
   useEffect(() => {
-    // Temporarily disable WebSocket connections to prevent errors
-    // TODO: Re-enable when WebSocket server is properly implemented
-    console.log('WebSocket connections temporarily disabled')
+    if (session?.user?.id) {
+      console.log('🚀 Starting SSE connection for authenticated user')
+      connect()
+    } else {
+      console.log('⚠️ No authenticated session, skipping SSE connection')
+      setIsConnected(false)
+    }
     
     return () => {
-      if (ws.current) {
-        ws.current.close()
+      if (eventSource.current) {
+        console.log('🔌 Closing SSE connection')
+        eventSource.current.close()
+        eventSource.current = null
+        setIsConnected(false)
       }
     }
-  }, [connect])
+  }, [connect, session?.user?.id])
 
   return {
-    socket: ws.current,
+    socket: eventSource.current,
     state: { connected: isConnected },
     subscribeToProject,
     unsubscribeFromProject,
