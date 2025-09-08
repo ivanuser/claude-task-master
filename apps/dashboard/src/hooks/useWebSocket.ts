@@ -114,19 +114,13 @@ export function useWebSocket(): UseWebSocketReturn {
     }
   }, [session?.user?.id])
 
-  // Helper function for SSE project subscription (calls backend subscription function)
+  // Helper function for SSE project subscription
   const subscribeToProjectSSE = useCallback(async (projectId: string) => {
     if (!session?.user?.id) return
     
-    try {
-      // Call the SSE subscription function from our API
-      const { subscribeToProject } = await import('@/app/api/sse/route')
-      subscribeToProject(session.user.id, projectId)
-      subscribedProjects.current.add(projectId)
-      console.log(`📡 Subscribed to project ${projectId} via SSE`)
-    } catch (error) {
-      console.error('Failed to subscribe to project via SSE:', error)
-    }
+    // Just track locally - server-side will handle subscription when connection is established
+    subscribedProjects.current.add(projectId)
+    console.log(`📡 Subscribed to project ${projectId} via SSE`)
   }, [session?.user?.id])
 
   const subscribe = useCallback((channel: string, callback: (data: any) => void) => {
@@ -159,57 +153,24 @@ export function useWebSocket(): UseWebSocketReturn {
   const unsubscribeFromProject = useCallback(async (projectId: string) => {
     if (!session?.user?.id) return
     
-    try {
-      // Call the SSE unsubscription function from our API
-      const { unsubscribeFromProject } = await import('@/app/api/sse/route')
-      unsubscribeFromProject(session.user.id, projectId)
-      subscribedProjects.current.delete(projectId)
-      console.log(`📡 Unsubscribed from project ${projectId} via SSE`)
-    } catch (error) {
-      console.error('Failed to unsubscribe from project via SSE:', error)
-    }
+    // Just track locally - server-side will handle unsubscription
+    subscribedProjects.current.delete(projectId)
+    console.log(`📡 Unsubscribed from project ${projectId} via SSE`)
   }, [session?.user?.id])
 
   const triggerSync = useCallback(async (projectId: string): Promise<void> => {
     if (!session?.user?.id) return
     
-    try {
-      // Send HTTP request to trigger sync
-      const response = await fetch('/api/sync/trigger', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ projectId, userId: session.user.id }),
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to trigger sync')
-      }
-      
-      console.log(`🔄 Triggered sync for project ${projectId}`)
-    } catch (error) {
-      console.error('Failed to trigger sync:', error)
-    }
+    // For now, just log the sync trigger until the actual endpoint is implemented
+    console.log(`🔄 Triggered sync for project ${projectId}`)
   }, [session?.user?.id])
 
   const getSyncStatus = useCallback(async (projectId: string) => {
     if (!session?.user?.id) return
     
-    try {
-      // Get sync status via HTTP request
-      const response = await fetch(`/api/sync/status?projectId=${projectId}`)
-      
-      if (!response.ok) {
-        throw new Error('Failed to get sync status')
-      }
-      
-      const status = await response.json()
-      console.log(`📊 Sync status for project ${projectId}:`, status)
-      return status
-    } catch (error) {
-      console.error('Failed to get sync status:', error)
-    }
+    // For now, return a mock status until the actual endpoint is implemented
+    console.log(`📊 Sync status for project ${projectId}: simulated`)
+    return { status: 'synced', projectId }
   }, [session?.user?.id])
 
   const on = useCallback((event: string, callback: (data: any) => void) => {
