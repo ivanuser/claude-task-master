@@ -8133,11 +8133,85 @@
         ],
         "priority": "medium",
         "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement file watcher service to monitor .taskmaster/tasks/tasks.json for changes",
+        "description": "Create a file system watcher service that monitors the .taskmaster/tasks/tasks.json file for modifications and triggers WebSocket sync events to notify connected clients of task changes in real-time.",
+        "details": "Implementation steps:\n1. Install and configure chokidar library for robust file system watching across platforms\n2. Create /lib/services/fileWatcher.ts service class with methods to start/stop watching specific project directories\n3. Implement file change detection specifically for .taskmaster/tasks/tasks.json with debouncing (300ms) to prevent multiple rapid fire events\n4. Add file content validation to ensure changes are legitimate JSON updates, not temporary writes or corruption\n5. Integrate with existing WebSocket infrastructure from Task 1 to broadcast 'task-file-changed' events to subscribed clients\n6. Create project-specific watcher instances that can be started when users connect and subscribe to a project\n7. Implement cleanup mechanisms to stop watchers when no clients are subscribed to prevent resource leaks\n8. Add error handling for file access permissions, missing files, and invalid JSON content\n9. Create singleton FileWatcherManager to coordinate multiple project watchers and prevent duplicate instances\n10. Add logging for watcher lifecycle events and file change detection for debugging purposes",
+        "testStrategy": "1. Unit tests for FileWatcher class including start/stop functionality and event emission on file changes\n2. Test file change detection by programmatically modifying tasks.json and verifying events are triggered\n3. Integration tests with WebSocket server to ensure file changes properly broadcast to connected clients\n4. Test debouncing behavior by making rapid file changes and verifying only single events are emitted\n5. Verify cleanup functionality when clients disconnect and no subscribers remain for a project\n6. Test error handling scenarios including missing files, permission errors, and invalid JSON content\n7. Performance tests with multiple concurrent watchers to ensure resource usage remains reasonable\n8. Test cross-platform compatibility on Windows, macOS, and Linux file systems",
+        "status": "pending",
+        "dependencies": [
+          1,
+          3
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Create sync API endpoints that fetch and merge task data from remote servers when changes are detected",
+        "description": "Implement REST API endpoints for fetching task data from remote servers and merging it with local data when file changes are detected, with conflict resolution and event broadcasting.",
+        "details": "Implementation steps:\n1. Create /app/api/sync/fetch/route.ts endpoint that accepts projectId and remoteServerUrl parameters\n2. Implement HTTP client service to fetch tasks.json from remote servers with proper authentication headers and timeout handling\n3. Create data merging logic in /lib/services/syncMerger.ts that compares remote and local task data using timestamps and version fields\n4. Implement conflict resolution strategies: last-write-wins for simple fields, merge arrays for subtasks, preserve local status for in-progress tasks\n5. Add validation layer to ensure merged data maintains task integrity (valid IDs, dependency consistency, required fields)\n6. Create /app/api/sync/merge/route.ts endpoint for manual merge operations with dry-run capability\n7. Integrate with file watcher service to automatically trigger fetch-merge cycle when local changes are detected\n8. Add transaction support to ensure atomic updates to local tasks.json file\n9. Implement rollback mechanism for failed merge operations\n10. Add detailed logging for sync operations including source, conflicts detected, and resolution actions taken\n11. Create rate limiting and caching for remote server requests to prevent abuse\n12. Broadcast sync completion events via WebSocket to notify connected clients of successful merges",
+        "testStrategy": "1. Unit tests for HTTP client service including timeout handling, authentication, and error responses from remote servers\n2. Comprehensive tests for merge logic covering various conflict scenarios: concurrent edits, deleted vs modified tasks, dependency conflicts\n3. Test conflict resolution strategies with mock data scenarios representing real-world sync conflicts\n4. Integration tests for fetch endpoint with mock remote servers returning different data structures and error conditions\n5. Test merge endpoint dry-run functionality to preview changes without applying them\n6. End-to-end tests simulating file changes triggering automatic fetch-merge cycles\n7. Test transaction rollback scenarios when merge operations fail partway through\n8. Verify WebSocket event broadcasting notifies connected clients of successful sync operations\n9. Load testing for rate limiting and performance with large task datasets\n10. Test authentication and authorization for accessing remote server endpoints",
+        "status": "pending",
+        "dependencies": [
+          1,
+          3,
+          4
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement SSE broadcast system to push real-time updates to connected clients when task changes occur",
+        "description": "Create a Server-Sent Events broadcasting system that pushes real-time task updates to all connected clients when task changes are detected, with proper event filtering and client subscription management.",
+        "details": "Implementation steps:\n1. Create /lib/services/sseBroadcaster.ts service class to manage SSE connections and broadcasting events to subscribed clients\n2. Implement connection registry using Map<connectionId, {response: Response, projectIds: Set<string>}> to track active SSE connections and their project subscriptions\n3. Create broadcast methods: broadcastTaskUpdate(projectId, taskData), broadcastProjectSync(projectId, status), broadcastError(projectId, error)\n4. Integrate with file watcher service to automatically broadcast task changes when .taskmaster/tasks/tasks.json is modified\n5. Add event filtering logic to ensure clients only receive updates for projects they're subscribed to\n6. Implement proper SSE message formatting with event types: 'task-update', 'project-sync', 'sync-error', 'heartbeat'\n7. Add connection cleanup on client disconnect and periodic heartbeat messages every 30 seconds\n8. Create middleware to handle client subscription/unsubscription requests via POST to /api/sse/subscribe and /api/sse/unsubscribe\n9. Implement error handling and retry logic for failed broadcasts\n10. Add logging for broadcast events and connection metrics for monitoring",
+        "testStrategy": "1. Unit tests for SSEBroadcaster class including connection management, event broadcasting, and subscription filtering\n2. Integration tests with file watcher service to verify task changes trigger proper broadcasts to subscribed clients\n3. Test event filtering by subscribing clients to different projects and verifying they only receive relevant updates\n4. Test connection cleanup by simulating client disconnects and verifying connections are properly removed from registry\n5. Test heartbeat functionality and verify clients receive periodic keep-alive messages\n6. Load testing with multiple concurrent SSE connections to ensure broadcast performance\n7. Test error scenarios including malformed task data and verify proper error broadcasts\n8. End-to-end testing with frontend SSE client to verify complete real-time update flow from file change to UI update",
+        "status": "pending",
+        "dependencies": [
+          1,
+          2,
+          4
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Update React components to listen for SSE events and automatically refresh task/project data",
+        "description": "Modify existing React components to subscribe to Server-Sent Events and automatically update UI when task changes are received from the SSE broadcast system.",
+        "details": "Implementation steps:\n1. Update task list components (TaskList, TaskCard, TaskDetails) to subscribe to SSE events using useRealtimeSync hook with project-specific filtering\n2. Implement automatic data refresh logic in useTasksQuery and useProjectsQuery hooks to refetch data when 'task-updated', 'project-synced', or 'sync-error' events are received\n3. Add optimistic UI updates for task status changes before server confirmation, with rollback capability on error events\n4. Create event-driven cache invalidation in React Query to ensure stale data is properly refreshed when SSE events indicate changes\n5. Implement loading states and error handling for SSE-triggered refreshes to provide visual feedback during automatic updates\n6. Add debouncing mechanism (500ms) to prevent excessive re-renders when multiple rapid SSE events are received\n7. Update TaskForm and ProjectForm components to emit local optimistic updates while waiting for SSE confirmation\n8. Ensure proper cleanup of SSE subscriptions when components unmount to prevent memory leaks",
+        "testStrategy": "1. Unit tests for component SSE subscription lifecycle including mount, unmount, and event handling scenarios\n2. Test automatic data refresh triggers by simulating SSE events and verifying components refetch appropriate data\n3. Verify optimistic UI updates work correctly with rollback functionality when SSE error events are received\n4. Test debouncing mechanism by sending rapid SSE events and ensuring components don't over-render\n5. Integration tests with mock SSE server to verify end-to-end event flow from server broadcast to component update\n6. Test error handling scenarios including SSE connection failures and malformed event data\n7. Verify proper cleanup of subscriptions by mounting/unmounting components and checking for memory leaks",
+        "status": "pending",
+        "dependencies": [
+          2,
+          6
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement conflict resolution system for handling simultaneous updates from multiple sources",
+        "description": "Create a comprehensive conflict resolution system that detects, analyzes, and resolves conflicts when task updates occur simultaneously from CLI tools, web dashboard, and remote servers.",
+        "details": "Implementation steps:\n1. Create /lib/services/conflictResolver.ts service class with conflict detection algorithms that compare timestamps, version fields, and content hashes to identify simultaneous updates\n2. Implement conflict resolution strategies: automatic merge for non-conflicting fields, last-write-wins with timestamp comparison, user-prompted resolution for complex conflicts, and field-level granular merging\n3. Add conflict queue system using Redis or in-memory Map to temporarily store conflicting updates while resolution is in progress\n4. Create conflict notification system that broadcasts conflict events via SSE to notify all connected clients about conflicts requiring user intervention\n5. Implement resolution APIs at /app/api/conflicts/resolve/route.ts for manual conflict resolution with options to accept local, remote, or custom merged versions\n6. Add conflict logging and audit trail in database to track resolution decisions and patterns\n7. Integrate with existing sync APIs (Task 5) to automatically trigger conflict detection during merge operations\n8. Create conflict prevention mechanisms like optimistic locking with version numbers and pre-commit validation\n9. Implement rollback capabilities to undo faulty conflict resolutions\n10. Add conflict resolution UI components for displaying conflicts and resolution options to users",
+        "testStrategy": "1. Unit tests for conflict detection algorithms with various scenarios: concurrent edits to same task, dependency conflicts, status conflicts, and timestamp edge cases\n2. Test conflict resolution strategies with simulated multi-source updates including CLI modifications during web dashboard edits\n3. Integration tests with sync APIs to verify conflicts are properly detected during remote server synchronization\n4. Test conflict queue management including queuing, processing, and cleanup of resolved conflicts\n5. Verify SSE broadcasts reach all connected clients when conflicts occur and require user intervention\n6. Test manual resolution APIs with various resolution choices and validate final merged state\n7. Performance tests with high-frequency concurrent updates to ensure conflict detection doesn't impact system responsiveness\n8. Test rollback functionality by intentionally creating bad merges and verifying successful restoration\n9. End-to-end tests simulating real-world scenarios: CLI task updates while dashboard is open, remote sync during local editing sessions",
+        "status": "pending",
+        "dependencies": [
+          1,
+          4,
+          5,
+          6
+        ],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-09-08T03:34:47.872Z",
-      "updated": "2025-09-08T14:42:38.372Z",
+      "updated": "2025-09-09T01:24:16.508Z",
       "description": "=Real-time WebSocket implementation for multi-user collaboration"
     }
   }
