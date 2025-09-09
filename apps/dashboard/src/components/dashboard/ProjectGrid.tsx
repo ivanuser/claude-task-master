@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 interface ProjectGridProps {
   projects: Project[];
   onProjectUpdate: () => void;
-  syncState: RealtimeSyncState;
+  syncState?: RealtimeSyncState;
   enableInfiniteScroll?: boolean;
   loadMore?: () => Promise<void>;
   hasMore?: boolean;
@@ -36,8 +36,8 @@ export function ProjectGrid({
           <ProjectCard
             key={project.id}
             project={project}
-            isSyncing={syncState.syncStatuses.get(project.id)?.isRunning || false}
-            lastSync={syncState.syncStatuses.get(project.id)?.lastSync || null}
+            isSyncing={syncState?.syncStatuses?.get(project.id)?.isRunning || false}
+            lastSync={syncState?.syncStatuses?.get(project.id)?.lastSync || null}
             onUpdate={onProjectUpdate}
             className="h-full"
           />

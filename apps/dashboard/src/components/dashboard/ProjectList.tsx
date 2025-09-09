@@ -24,7 +24,7 @@ import {
 interface ProjectListProps {
   projects: Project[];
   onProjectUpdate: () => void;
-  syncState: RealtimeSyncState;
+  syncState?: RealtimeSyncState;
   enableInfiniteScroll?: boolean;
   loadMore?: () => Promise<void>;
   hasMore?: boolean;
@@ -91,8 +91,8 @@ export function ProjectList({
           </thead>
           <tbody className="bg-card divide-y divide-border">
             {projects.map((project) => {
-              const isSyncing = syncState.syncStatuses.get(project.id)?.isRunning || false;
-              const lastSync = syncState.syncStatuses.get(project.id)?.lastSync || null;
+              const isSyncing = syncState?.syncStatuses?.get(project.id)?.isRunning || false;
+              const lastSync = syncState?.syncStatuses?.get(project.id)?.lastSync || null;
               const health = getHealthIcon(project);
               const HealthIcon = health.icon;
               const completionPercentage = project.totalTasks > 0
