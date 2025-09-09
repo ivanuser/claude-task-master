@@ -69,6 +69,7 @@ model User {
   syncStates    SyncState[]
   userSessions  UserSession[]
   eventLogs     EventLog[]
+  conflictResolutions ConflictResolution[]
   
   @@map("users")
 }
@@ -188,6 +189,8 @@ model Project {
   notifications Notification[]
   syncStates   SyncState[]
   eventLogs   EventLog[]
+  conflictLogs ConflictLog[]
+  conflictResolutions ConflictResolution[]
   
   // Unique constraint for tag per server (allows same tag on different servers)
   @@unique([serverId, tag])
@@ -1240,4 +1243,47 @@ enum EventSeverity {
   CRITICAL
   
   @@map("event_severity")
+}
+
+// Conflict tracking model
+model ConflictLog {
+  id            String   @id @default(cuid())
+  conflictId    String   @unique
+  projectId     String
+  taskId        String
+  conflictType  String
+  localVersion  Json
+  remoteVersion Json
+  baseVersion   Json?
+  detectedBy    String
+  detectedAt    DateTime @default(now())
+  resolved      Boolean  @default(false)
+  resolvedAt    DateTime?
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([taskId])
+  @@index([resolved])
+  @@map("conflict_logs")
+}
+
+// Conflict resolution tracking model
+model ConflictResolution {
+  id           String   @id @default(cuid())
+  conflictId   String
+  projectId    String
+  userId       String
+  strategy     String
+  resolvedData Json?
+  notes        String?
+  resolvedAt   DateTime @default(now())
+  
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+  
+  @@index([projectId])
+  @@index([userId])
+  @@index([conflictId])
+  @@map("conflict_resolutions")
 }
