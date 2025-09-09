@@ -5,6 +5,13 @@ interface UseWebSocketState {
   connected: boolean
 }
 
+export interface SSEEventData {
+  type: string
+  projectId?: string
+  data?: any
+  timestamp?: string
+}
+
 interface UseWebSocketReturn {
   socket: EventSource | null
   state: UseWebSocketState
@@ -18,6 +25,9 @@ interface UseWebSocketReturn {
   unsubscribe: (channel: string, callback: (data: any) => void) => void
   isConnected: boolean
   send: (message: any) => void
+  onTaskUpdate: (callback: (data: SSEEventData) => void) => () => void
+  onSyncComplete: (callback: (data: SSEEventData) => void) => () => void
+  onError: (callback: (data: SSEEventData) => void) => () => void
 }
 
 export function useWebSocket(): UseWebSocketReturn {
@@ -182,6 +192,57 @@ export function useWebSocket(): UseWebSocketReturn {
     unsubscribe(event, callback)
   }, [unsubscribe])
 
+  // Convenience methods for common event types
+  const onTaskUpdate = useCallback((callback: (data: SSEEventData) => void) => {
+    const handler = (data: SSEEventData) => {
+      if (data.type === 'task-update' || data.type === 'task-added' || data.type === 'task-removed') {
+        callback(data)
+      }
+    }
+    subscribe('task-update', handler)
+    subscribe('task-added', handler)
+    subscribe('task-removed', handler)
+    
+    // Return unsubscribe function
+    return () => {
+      unsubscribe('task-update', handler)
+      unsubscribe('task-added', handler)
+      unsubscribe('task-removed', handler)
+    }
+  }, [subscribe, unsubscribe])
+
+  const onSyncComplete = useCallback((callback: (data: SSEEventData) => void) => {
+    const handler = (data: SSEEventData) => {
+      if (data.type === 'sync-completed' || data.type === 'merge-completed') {
+        callback(data)
+      }
+    }
+    subscribe('sync-completed', handler)
+    subscribe('merge-completed', handler)
+    
+    return () => {
+      unsubscribe('sync-completed', handler)
+      unsubscribe('merge-completed', handler)
+    }
+  }, [subscribe, unsubscribe])
+
+  const onError = useCallback((callback: (data: SSEEventData) => void) => {
+    const handler = (data: SSEEventData) => {
+      if (data.type === 'error' || data.type === 'sync-failed' || data.type === 'merge-failed') {
+        callback(data)
+      }
+    }
+    subscribe('error', handler)
+    subscribe('sync-failed', handler)
+    subscribe('merge-failed', handler)
+    
+    return () => {
+      unsubscribe('error', handler)
+      unsubscribe('sync-failed', handler)
+      unsubscribe('merge-failed', handler)
+    }
+  }, [subscribe, unsubscribe])
+
   useEffect(() => {
     if (session?.user?.id) {
       console.log('🚀 Starting SSE connection for authenticated user')
@@ -214,5 +275,8 @@ export function useWebSocket(): UseWebSocketReturn {
     unsubscribe,
     isConnected,
     send,
+    onTaskUpdate,
+    onSyncComplete,
+    onError,
   }
 }

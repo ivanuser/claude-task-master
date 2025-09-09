@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { 
   Card, 
   CardContent, 
@@ -61,6 +61,7 @@ import { projectService } from '@/services/project-service'
 import { useAuth } from '@/hooks/useAuth'
 import { formatDistanceToNow } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 type ViewMode = 'grid' | 'list'
 type SortField = 'name' | 'updatedAt' | 'createdAt' | 'status' | 'progress'
@@ -70,6 +71,7 @@ export function ProjectsList() {
   const router = useRouter()
   const { user } = useAuth()
   const { toast } = useToast()
+  const { onTaskUpdate, onSyncComplete, onError, subscribeToProject } = useWebSocket()
   
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
@@ -81,12 +83,88 @@ export function ProjectsList() {
   const [showArchived, setShowArchived] = useState(false)
   const [selectedProjects, setSelectedProjects] = useState<Set<string>>(new Set())
   const [favoriteProjects, setFavoriteProjects] = useState<Set<string>>(new Set())
+  
+  // Debounce timer for SSE events
+  const refreshDebounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const [isAutoRefreshing, setIsAutoRefreshing] = useState(false)
 
   // Load projects
   useEffect(() => {
     loadProjects()
     loadFavorites()
   }, [user])
+  
+  // Subscribe to SSE events for real-time updates
+  useEffect(() => {
+    // Subscribe to task update events
+    const unsubscribeTaskUpdate = onTaskUpdate((event) => {
+      console.log('📝 Task update event received:', event)
+      
+      // Debounce the refresh to avoid excessive re-renders
+      if (refreshDebounceTimer.current) {
+        clearTimeout(refreshDebounceTimer.current)
+      }
+      
+      refreshDebounceTimer.current = setTimeout(() => {
+        setIsAutoRefreshing(true)
+        loadProjects().finally(() => {
+          setIsAutoRefreshing(false)
+        })
+        
+        // Show toast notification
+        toast({
+          title: 'Tasks Updated',
+          description: `Project tasks have been ${event.data?.changeType || 'updated'}`,
+          duration: 3000,
+        })
+      }, 500) // 500ms debounce
+    })
+    
+    // Subscribe to sync complete events
+    const unsubscribeSyncComplete = onSyncComplete((event) => {
+      console.log('✅ Sync complete event received:', event)
+      
+      // Refresh projects after successful sync
+      setIsAutoRefreshing(true)
+      loadProjects().finally(() => {
+        setIsAutoRefreshing(false)
+      })
+      
+      toast({
+        title: 'Sync Completed',
+        description: `Project ${event.projectId} has been synchronized`,
+        duration: 3000,
+      })
+    })
+    
+    // Subscribe to error events
+    const unsubscribeError = onError((event) => {
+      console.error('❌ Error event received:', event)
+      
+      toast({
+        title: 'Sync Error',
+        description: event.data?.error || 'An error occurred during synchronization',
+        variant: 'destructive',
+        duration: 5000,
+      })
+    })
+    
+    // Subscribe to all project updates
+    projects.forEach(project => {
+      subscribeToProject(project.id)
+    })
+    
+    // Cleanup
+    return () => {
+      unsubscribeTaskUpdate()
+      unsubscribeSyncComplete()
+      unsubscribeError()
+      
+      if (refreshDebounceTimer.current) {
+        clearTimeout(refreshDebounceTimer.current)
+      }
+    }
+  }, [projects, onTaskUpdate, onSyncComplete, onError, subscribeToProject, toast])
 
   const loadProjects = async () => {
     try {
