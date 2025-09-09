@@ -8207,11 +8207,40 @@
         ],
         "priority": "medium",
         "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Create comprehensive database sync verification test suite",
+        "description": "Develop automated test suite to verify database synchronization functionality across all sync endpoints, data integrity validation, and conflict resolution scenarios.",
+        "details": "Implementation steps:\n1. Create /tests/integration/sync/database-sync-verification.test.js test suite using Jest framework with database mocking via mock-fs package\n2. Implement test cases for sync status endpoint verification including valid project/user combinations, invalid parameters handling, and database state consistency checks\n3. Create test scenarios for manual sync trigger functionality with various project states: empty projects, projects with conflicts, projects with missing remote data, and successful sync completion\n4. Add data integrity validation tests that verify task data consistency between local tasks.json and database records after sync operations, including field validation, dependency preservation, and metadata accuracy\n5. Implement conflict resolution testing scenarios including simultaneous updates from CLI and dashboard, timestamp-based conflict resolution, and field-level merge validation\n6. Create performance tests for sync operations with large datasets (1000+ tasks) to ensure acceptable response times and memory usage\n7. Add error handling verification for network failures, database connection issues, invalid remote server responses, and authentication failures\n8. Implement test fixtures in /tests/fixtures/sync-test-data.js with various project states, conflict scenarios, and edge cases for comprehensive coverage",
+        "testStrategy": "1. Unit tests for individual sync verification functions including data validation helpers, conflict detection algorithms, and error handling logic\n2. Integration tests with actual database using test database instance to verify end-to-end sync workflows and data persistence\n3. Mock external API calls to remote servers using Jest mocks to test various response scenarios without network dependencies\n4. Performance benchmarking tests to ensure sync operations complete within acceptable timeframes (< 5 seconds for typical projects)\n5. Stress testing with concurrent sync requests to verify system stability under load\n6. Regression tests to ensure existing sync functionality remains intact after verification system implementation\n7. Test database cleanup and isolation to prevent test interference and ensure reproducible results",
+        "status": "pending",
+        "dependencies": [
+          3,
+          5,
+          8
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Test file watcher synchronization",
+        "description": "Develop comprehensive test suite to verify file watcher integration with SSE broadcasting system and database synchronization functionality.",
+        "details": "Implementation steps:\n1. Create /apps/dashboard/src/__tests__/integration/file-watcher-sync.test.js test suite using Jest framework with database mocking via Prisma test client and mock-fs for file system operations\n2. Implement test scenarios for file watcher event detection including chokidar watcher initialization, file modification triggers, debouncing behavior validation, and event emission verification\n3. Create database synchronization tests with importTasksToDatabase function validation, task status mapping verification (pending/in-progress/done/blocked/cancelled), priority mapping tests, and metadata preservation checks\n4. Implement SSE integration tests by mocking broadcastSSEEvent function, verifying event payload structure includes type/projectId/data fields, and testing error handling when database operations fail\n5. Add end-to-end workflow tests that simulate complete file change → database import → SSE broadcast pipeline with realistic tasks.json modifications\n6. Create performance tests for debouncing mechanism with rapid file changes, concurrent file modifications across multiple projects, and memory leak prevention during long-running watch sessions\n7. Implement error scenario testing including file deletion handling, malformed JSON parsing, database connection failures, and SSE broadcasting errors",
+        "testStrategy": "1. Unit tests for individual components: FileWatcherService event handling, importTasksToDatabase function with various task structures, status/priority mapping functions, and debouncing timer management\n2. Integration tests with real file system operations using temporary directories, actual chokidar watchers, and Prisma test database to verify complete synchronization workflow\n3. Mock-based tests for SSE broadcasting using jest.mock() to intercept broadcastSSEEvent calls and verify payload correctness\n4. Performance tests measuring debounce effectiveness, memory usage during extended watching, and database transaction efficiency with large task sets\n5. Error handling tests with intentionally corrupted files, network failures, and database constraint violations to ensure graceful degradation",
+        "status": "in-progress",
+        "dependencies": [
+          4,
+          6
+        ],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-09-08T03:34:47.872Z",
-      "updated": "2025-09-09T02:25:04.265Z",
+      "updated": "2025-09-09T02:57:53.748Z",
       "description": "=Real-time WebSocket implementation for multi-user collaboration"
     }
   }

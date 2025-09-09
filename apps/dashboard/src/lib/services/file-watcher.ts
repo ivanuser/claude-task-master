@@ -84,7 +84,12 @@ export class FileWatcherService extends EventEmitter {
         // Only read file if it wasn't removed
         if (changeType !== 'removed') {
           const content = await fs.readFile(filePath, 'utf-8');
-          tasks = JSON.parse(content);
+          const tasksFile = JSON.parse(content);
+          
+          // Extract tasks based on project tag - get from database
+          // For now, we'll need to pass the project tag context
+          // This will be resolved in the event handler
+          tasks = tasksFile;
         }
 
         const event: TaskChangeEvent = {
