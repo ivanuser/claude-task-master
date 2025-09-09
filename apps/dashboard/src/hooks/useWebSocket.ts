@@ -48,6 +48,8 @@ export function useWebSocket(): UseWebSocketReturn {
       // EventSource doesn't fire onopen immediately, we need to listen for the first message
       eventSource.current.addEventListener('open', () => {
         console.log('✅ SSE connection opened')
+        // Set connected immediately when connection opens
+        setIsConnected(true)
       })
 
       eventSource.current.onmessage = (event) => {
@@ -57,13 +59,25 @@ export function useWebSocket(): UseWebSocketReturn {
           
           // Handle different message types
           if (data.type === 'connected') {
-            console.log('🎉 SSE connection established')
+            console.log('🎉 SSE connection established, setting isConnected to true')
             setIsConnected(true)
             
             // Re-subscribe to projects after reconnection
             subscribedProjects.current.forEach(projectId => {
               subscribeToProjectSSE(projectId)
             })
+            
+            // Also trigger the callbacks for the 'connected' event
+            const connectedCallbacks = callbacks.current.get('connected')
+            if (connectedCallbacks) {
+              connectedCallbacks.forEach(callback => {
+                try {
+                  callback(data)
+                } catch (error) {
+                  console.error('Connected callback error:', error)
+                }
+              })
+            }
             return
           }
           
@@ -105,19 +119,21 @@ export function useWebSocket(): UseWebSocketReturn {
       }
 
       eventSource.current.onerror = (error) => {
-        console.log('❌ SSE connection error, reconnecting...')
-        setIsConnected(false)
+        // SSE will auto-reconnect, don't close the connection manually
+        // The browser handles reconnection automatically for EventSource
+        console.log('⚠️ SSE connection error (browser will auto-reconnect)')
         
-        // Close current connection
-        if (eventSource.current) {
-          eventSource.current.close()
+        // Only set disconnected if readyState is CLOSED
+        if (eventSource.current?.readyState === EventSource.CLOSED) {
+          console.log('❌ SSE connection closed, will reconnect...')
+          setIsConnected(false)
           eventSource.current = null
+          
+          // Attempt to reconnect after 5 seconds
+          setTimeout(() => {
+            connect()
+          }, 5000)
         }
-        
-        // Attempt to reconnect after 5 seconds
-        setTimeout(() => {
-          connect()
-        }, 5000)
       }
     } catch (error) {
       console.error('SSE connection failed:', error)
@@ -245,7 +261,7 @@ export function useWebSocket(): UseWebSocketReturn {
 
   useEffect(() => {
     if (session?.user?.id) {
-      console.log('🚀 Starting SSE connection for authenticated user')
+      console.log('🚀 Starting SSE connection for authenticated user:', session.user.id)
       connect()
     } else {
       console.log('⚠️ No authenticated session, skipping SSE connection')
@@ -254,7 +270,7 @@ export function useWebSocket(): UseWebSocketReturn {
     
     return () => {
       if (eventSource.current) {
-        console.log('🔌 Closing SSE connection')
+        console.log('🔌 Closing SSE connection on cleanup')
         eventSource.current.close()
         eventSource.current = null
         setIsConnected(false)

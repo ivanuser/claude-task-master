@@ -61,6 +61,13 @@ async function importTasksToDatabase(projectId: string, tasksData: any) {
       // Map task status to database enum
       const dbStatus = mapTaskStatus(task.status);
       
+      // Store the complete task data in the data field
+      const taskData = {
+        ...task,
+        dependencies: task.dependencies || [],
+        subtasks: task.subtasks || []
+      };
+      
       await prisma.task.create({
         data: {
           projectId,
@@ -69,21 +76,18 @@ async function importTasksToDatabase(projectId: string, tasksData: any) {
           description: task.description || '',
           status: dbStatus,
           priority: mapPriority(task.priority),
+          complexity: task.complexity || null,
           details: task.details || null,
-          dependencies: task.dependencies || [],
-          parentId: null, // Handle subtasks separately if needed
-          metadata: {
-            testStrategy: task.testStrategy,
-            subtasks: task.subtasks || [],
-            originalStatus: task.status
-          },
-          createdAt: new Date(),
-          updatedAt: new Date()
+          testStrategy: task.testStrategy || null,
+          data: taskData // Store complete task object here
         }
       });
       importedCount++;
     } catch (error) {
       console.error(`Failed to import task ${task.id}:`, error);
+      if (error instanceof Error) {
+        console.error('Error details:', error.message);
+      }
     }
   }
 

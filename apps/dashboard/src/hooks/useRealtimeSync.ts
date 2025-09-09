@@ -52,13 +52,14 @@ export function useRealtimeSync(): UseRealtimeSyncReturn {
 
   const eventCleanupRef = useRef<NodeJS.Timeout>();
 
-  // Update connection status
+  // Update connection status from WebSocket
   useEffect(() => {
+    console.log('🔄 Updating connection status:', wsState?.connected)
     setState(prev => ({ 
       ...prev, 
       isConnected: wsState?.connected || false
     }));
-  }, [wsState?.connected]);
+  }, [wsState]);
 
   // Subscribe to project with local tracking
   const subscribeToProject = useCallback(async (projectId: string): Promise<void> => {
