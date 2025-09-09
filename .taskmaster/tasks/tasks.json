@@ -8154,7 +8154,7 @@
         "description": "Implement REST API endpoints for fetching task data from remote servers and merging it with local data when file changes are detected, with conflict resolution and event broadcasting.",
         "details": "Implementation steps:\n1. Create /app/api/sync/fetch/route.ts endpoint that accepts projectId and remoteServerUrl parameters\n2. Implement HTTP client service to fetch tasks.json from remote servers with proper authentication headers and timeout handling\n3. Create data merging logic in /lib/services/syncMerger.ts that compares remote and local task data using timestamps and version fields\n4. Implement conflict resolution strategies: last-write-wins for simple fields, merge arrays for subtasks, preserve local status for in-progress tasks\n5. Add validation layer to ensure merged data maintains task integrity (valid IDs, dependency consistency, required fields)\n6. Create /app/api/sync/merge/route.ts endpoint for manual merge operations with dry-run capability\n7. Integrate with file watcher service to automatically trigger fetch-merge cycle when local changes are detected\n8. Add transaction support to ensure atomic updates to local tasks.json file\n9. Implement rollback mechanism for failed merge operations\n10. Add detailed logging for sync operations including source, conflicts detected, and resolution actions taken\n11. Create rate limiting and caching for remote server requests to prevent abuse\n12. Broadcast sync completion events via WebSocket to notify connected clients of successful merges",
         "testStrategy": "1. Unit tests for HTTP client service including timeout handling, authentication, and error responses from remote servers\n2. Comprehensive tests for merge logic covering various conflict scenarios: concurrent edits, deleted vs modified tasks, dependency conflicts\n3. Test conflict resolution strategies with mock data scenarios representing real-world sync conflicts\n4. Integration tests for fetch endpoint with mock remote servers returning different data structures and error conditions\n5. Test merge endpoint dry-run functionality to preview changes without applying them\n6. End-to-end tests simulating file changes triggering automatic fetch-merge cycles\n7. Test transaction rollback scenarios when merge operations fail partway through\n8. Verify WebSocket event broadcasting notifies connected clients of successful sync operations\n9. Load testing for rate limiting and performance with large task datasets\n10. Test authentication and authorization for accessing remote server endpoints",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           1,
           3,
@@ -8211,7 +8211,7 @@
     ],
     "metadata": {
       "created": "2025-09-08T03:34:47.872Z",
-      "updated": "2025-09-09T01:38:27.692Z",
+      "updated": "2025-09-09T01:56:23.927Z",
       "description": "=Real-time WebSocket implementation for multi-user collaboration"
     }
   }

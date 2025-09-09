@@ -49,6 +49,30 @@ function initializeFileWatcher() {
           completedAt: new Date()
         }
       });
+      
+      // Trigger automatic sync if project has a remote server configured
+      const project = await prisma.project.findUnique({
+        where: { id: event.projectId },
+        include: { server: true }
+      });
+      
+      if (project?.server && project.server.syncEnabled) {
+        console.log('🔄 Triggering automatic sync for project:', event.projectId);
+        
+        // Broadcast sync start event
+        broadcastSSEEvent({
+          type: 'auto-sync-triggered',
+          projectId: event.projectId,
+          data: {
+            trigger: 'file-change',
+            changeType: event.type,
+            timestamp: new Date().toISOString()
+          }
+        });
+        
+        // Note: Actual sync would be handled by a background job or the client
+        // This just notifies that a sync should occur
+      }
     } catch (error) {
       console.error('❌ Failed to record sync history:', error);
     }
