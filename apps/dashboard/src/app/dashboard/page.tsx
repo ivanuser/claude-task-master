@@ -35,26 +35,16 @@ export default function DashboardPage() {
   });
 
   const { projects, isLoading, error, refetch } = useProjects(filters);
-  const { state: syncState, subscribeToProject } = useRealtimeSync();
-  const subscribedProjectsRef = useRef<Set<string>>(new Set());
+  const { state: syncState } = useRealtimeSync();
+  const initRef = useRef(false);
 
-  // Subscribe to all projects for real-time updates and start file watchers
+  // Initialize file watchers once on mount for projects with local paths
   useEffect(() => {
-    if (!projects || projects.length === 0) return;
+    if (initRef.current || !projects || projects.length === 0) return;
+    initRef.current = true;
     
+    // Start file watchers for projects with local paths
     projects.forEach(async (project) => {
-      // Skip if already subscribed
-      if (subscribedProjectsRef.current.has(project.id)) return;
-      subscribedProjectsRef.current.add(project.id);
-      
-      // Subscribe to SSE updates
-      try {
-        await subscribeToProject(project.id);
-      } catch (error) {
-        console.error(`Failed to subscribe to project ${project.id}:`, error);
-      }
-      
-      // Start file watcher for the project (only for projects with local paths)
       if (project.settings?.localPath) {
         try {
           const response = await fetch(`/api/projects/${project.id}/watch`, {
@@ -64,16 +54,13 @@ export default function DashboardPage() {
           if (response.ok) {
             const data = await response.json();
             console.log(`📁 File watcher started for ${project.name}:`, data);
-          } else if (response.status !== 403 && response.status !== 501) {
-            // Only log errors for unexpected status codes
-            console.error(`Failed to start file watcher for ${project.id}: ${response.status}`);
           }
         } catch (error) {
-          console.error(`Failed to start file watcher for ${project.id}:`, error);
+          // Silently ignore errors for projects without access
         }
       }
     });
-  }, [projects, subscribeToProject]); // Safe to depend on these now with the ref tracking
+  }, [projects]); // Run once when projects load
 
   const handleFilterChange = (newFilters: Partial<FilterOptions>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
