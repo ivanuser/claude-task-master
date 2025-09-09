@@ -7,7 +7,7 @@ import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
 import { ProjectFilters } from '@/components/dashboard/ProjectFilters';
 import { useProjects } from '@/hooks/useProjects';
-import { useRealtimeSync } from '@/hooks/useRealtimeSync';
+// import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 // import { RealtimeSyncGlobalIndicator } from '@/components/sync/RealtimeSyncIndicator';
 import { SimpleConnectionStatus } from '@/components/sync/SimpleConnectionStatus';
 import { Loader2 } from 'lucide-react';
@@ -35,7 +35,7 @@ export default function DashboardPage() {
   });
 
   const { projects, isLoading, error, refetch } = useProjects(filters);
-  const { state: syncState } = useRealtimeSync();
+  // Removed useRealtimeSync to prevent infinite re-renders
   const initRef = useRef(false);
 
   // Initialize file watchers once on mount for projects with local paths
@@ -123,13 +123,11 @@ export default function DashboardPage() {
               <ProjectGrid 
                 projects={projects}
                 onProjectUpdate={handleProjectUpdate}
-                syncState={syncState}
               />
             ) : (
               <ProjectList 
                 projects={projects}
                 onProjectUpdate={handleProjectUpdate}
-                syncState={syncState}
               />
             )}
           </div>
