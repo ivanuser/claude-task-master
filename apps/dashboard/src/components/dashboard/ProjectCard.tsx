@@ -93,9 +93,27 @@ export function ProjectCard({
             {showMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setShowMenu(false);
-                    onUpdate();
+                    try {
+                      const response = await fetch(`/api/projects/${project.id}/sync`, {
+                        method: 'POST',
+                        credentials: 'include',
+                      });
+                      
+                      if (response.ok) {
+                        const data = await response.json();
+                        console.log('✅ Manual sync completed:', data);
+                        onUpdate(); // Refresh the UI after sync
+                      } else {
+                        const error = await response.json();
+                        console.error('❌ Sync failed:', error);
+                        alert(`Sync failed: ${error.error}`);
+                      }
+                    } catch (error) {
+                      console.error('❌ Sync request failed:', error);
+                      alert('Sync request failed. Please try again.');
+                    }
                   }}
                   className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
