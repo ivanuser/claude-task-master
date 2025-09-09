@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ProjectGrid } from '@/components/dashboard/ProjectGrid';
 import { ProjectList } from '@/components/dashboard/ProjectList';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
@@ -8,7 +8,8 @@ import { DashboardStats } from '@/components/dashboard/DashboardStats';
 import { ProjectFilters } from '@/components/dashboard/ProjectFilters';
 import { useProjects } from '@/hooks/useProjects';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
-import { RealtimeSyncGlobalIndicator } from '@/components/sync/RealtimeSyncIndicator';
+// import { RealtimeSyncGlobalIndicator } from '@/components/sync/RealtimeSyncIndicator';
+import { SimpleConnectionStatus } from '@/components/sync/SimpleConnectionStatus';
 import { Loader2 } from 'lucide-react';
 
 export type ViewMode = 'grid' | 'list';
@@ -35,15 +36,26 @@ export default function DashboardPage() {
 
   const { projects, isLoading, error, refetch } = useProjects(filters);
   const { state: syncState, subscribeToProject } = useRealtimeSync();
+  const subscribedProjectsRef = useRef<Set<string>>(new Set());
 
   // Subscribe to all projects for real-time updates and start file watchers
   useEffect(() => {
-    if (projects && projects.length > 0) {
-      projects.forEach(async (project) => {
-        // Subscribe to SSE updates
-        subscribeToProject(project.id).catch(console.error);
-        
-        // Start file watcher for the project
+    if (!projects || projects.length === 0) return;
+    
+    projects.forEach(async (project) => {
+      // Skip if already subscribed
+      if (subscribedProjectsRef.current.has(project.id)) return;
+      subscribedProjectsRef.current.add(project.id);
+      
+      // Subscribe to SSE updates
+      try {
+        await subscribeToProject(project.id);
+      } catch (error) {
+        console.error(`Failed to subscribe to project ${project.id}:`, error);
+      }
+      
+      // Start file watcher for the project (only for projects with local paths)
+      if (project.settings?.localPath) {
         try {
           const response = await fetch(`/api/projects/${project.id}/watch`, {
             method: 'POST',
@@ -52,15 +64,16 @@ export default function DashboardPage() {
           if (response.ok) {
             const data = await response.json();
             console.log(`📁 File watcher started for ${project.name}:`, data);
-          } else {
+          } else if (response.status !== 403 && response.status !== 501) {
+            // Only log errors for unexpected status codes
             console.error(`Failed to start file watcher for ${project.id}: ${response.status}`);
           }
         } catch (error) {
           console.error(`Failed to start file watcher for ${project.id}:`, error);
         }
-      });
-    }
-  }, [projects, subscribeToProject]);
+      }
+    });
+  }, [projects, subscribeToProject]); // Safe to depend on these now with the ref tracking
 
   const handleFilterChange = (newFilters: Partial<FilterOptions>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -98,7 +111,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Real-time Sync Indicator */}
         <div className="mb-6 flex justify-end">
-          <RealtimeSyncGlobalIndicator />
+          <SimpleConnectionStatus />
         </div>
 
         {/* Dashboard Statistics */}

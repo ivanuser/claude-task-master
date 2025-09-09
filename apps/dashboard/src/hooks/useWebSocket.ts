@@ -36,11 +36,17 @@ export function useWebSocket(): UseWebSocketReturn {
   const [isConnected, setIsConnected] = useState<boolean>(false)
   const { data: session } = useSession()
   const subscribedProjects = useRef<Set<string>>(new Set())
+  const connectingRef = useRef<boolean>(false)
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const connect = useCallback(() => {
+    // Prevent multiple simultaneous connection attempts
+    if (connectingRef.current) return
     if (eventSource.current?.readyState === EventSource.OPEN) return
     if (!session?.user?.id) return
 
+    connectingRef.current = true
+    
     try {
       console.log('🔌 Connecting to SSE...')
       eventSource.current = new EventSource('/api/sse')
@@ -50,6 +56,7 @@ export function useWebSocket(): UseWebSocketReturn {
         console.log('✅ SSE connection opened')
         // Set connected immediately when connection opens
         setIsConnected(true)
+        connectingRef.current = false
       })
 
       eventSource.current.onmessage = (event) => {
@@ -61,6 +68,13 @@ export function useWebSocket(): UseWebSocketReturn {
           if (data.type === 'connected') {
             console.log('🎉 SSE connection established, setting isConnected to true')
             setIsConnected(true)
+            connectingRef.current = false
+            
+            // Clear any pending reconnect timeout
+            if (reconnectTimeoutRef.current) {
+              clearTimeout(reconnectTimeoutRef.current)
+              reconnectTimeoutRef.current = null
+            }
             
             // Re-subscribe to projects after reconnection
             subscribedProjects.current.forEach(projectId => {
@@ -128,9 +142,16 @@ export function useWebSocket(): UseWebSocketReturn {
           console.log('❌ SSE connection closed, will reconnect...')
           setIsConnected(false)
           eventSource.current = null
+          connectingRef.current = false
+          
+          // Clear any existing reconnect timeout
+          if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current)
+          }
           
           // Attempt to reconnect after 5 seconds
-          setTimeout(() => {
+          reconnectTimeoutRef.current = setTimeout(() => {
+            reconnectTimeoutRef.current = null
             connect()
           }, 5000)
         }
@@ -138,8 +159,9 @@ export function useWebSocket(): UseWebSocketReturn {
     } catch (error) {
       console.error('SSE connection failed:', error)
       setIsConnected(false)
+      connectingRef.current = false
     }
-  }, [session?.user?.id])
+  }, [session?.user?.id]) // Remove dependency on functions to prevent loops
 
   // Helper function for SSE project subscription
   const subscribeToProjectSSE = useCallback(async (projectId: string) => {
@@ -269,14 +291,21 @@ export function useWebSocket(): UseWebSocketReturn {
     }
     
     return () => {
+      // Clear any pending reconnect timeout
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current)
+        reconnectTimeoutRef.current = null
+      }
+      
       if (eventSource.current) {
         console.log('🔌 Closing SSE connection on cleanup')
         eventSource.current.close()
         eventSource.current = null
         setIsConnected(false)
+        connectingRef.current = false
       }
     }
-  }, [connect, session?.user?.id])
+  }, [session?.user?.id, connect]) // Include connect but it's stable due to useCallback
 
   return {
     socket: eventSource.current,
