@@ -36,11 +36,28 @@ export default function DashboardPage() {
   const { projects, isLoading, error, refetch } = useProjects(filters);
   const { state: syncState, subscribeToProject } = useRealtimeSync();
 
-  // Subscribe to all projects for real-time updates
+  // Subscribe to all projects for real-time updates and start file watchers
   useEffect(() => {
     if (projects && projects.length > 0) {
-      projects.forEach(project => {
+      projects.forEach(async (project) => {
+        // Subscribe to SSE updates
         subscribeToProject(project.id).catch(console.error);
+        
+        // Start file watcher for the project
+        try {
+          const response = await fetch(`/api/projects/${project.id}/watch`, {
+            method: 'POST',
+            credentials: 'include',
+          });
+          if (response.ok) {
+            const data = await response.json();
+            console.log(`📁 File watcher started for ${project.name}:`, data);
+          } else {
+            console.error(`Failed to start file watcher for ${project.id}: ${response.status}`);
+          }
+        } catch (error) {
+          console.error(`Failed to start file watcher for ${project.id}:`, error);
+        }
       });
     }
   }, [projects, subscribeToProject]);

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/database'
+import { getFileWatcher, type TaskChangeEvent } from '@/lib/services/file-watcher'
 
 // Store active SSE connections
 interface SSEConnection {
