@@ -45,12 +45,30 @@ export async function POST(
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 404 })
     }
 
-    // Check if project has a local path configured
-    const localPath = project.settings?.localPath
-    if (!localPath) {
+    // Check if this is a remote server project or local project
+    if (project.server) {
       return NextResponse.json({ 
-        error: 'No local path configured for this project. Configure it in project settings.' 
+        error: 'This is a remote server project. Sync from remote servers is not yet implemented.' 
       }, { status: 400 })
+    }
+    
+    // For local projects, check if path is configured
+    let localPath = project.settings?.localPath
+    
+    if (!localPath) {
+      // Only try auto-detect for local projects without configured path
+      // Try current Task Master project first (most likely case)
+      const currentProjectPath = '/home/ihoner/claude-task-master'
+      try {
+        const testPath = join(currentProjectPath, '.taskmaster/tasks/tasks.json')
+        await readFile(testPath, 'utf-8')
+        localPath = currentProjectPath
+        console.log(`🔍 Auto-detected current Task Master project at: ${localPath}`)
+      } catch {
+        return NextResponse.json({ 
+          error: 'No local path configured for this project. Please configure it in project settings.' 
+        }, { status: 400 })
+      }
     }
 
     console.log(`📁 Syncing tasks from ${localPath}`)
