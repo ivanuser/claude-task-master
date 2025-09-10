@@ -11,145 +11,134 @@ import {
 } from '@heroicons/react/24/outline';
 import { MetricCard } from '@/components/analytics/MetricCard';
 import { ChartWidget } from '@/components/analytics/ChartWidget';
-import { AnalyticsService } from '@/lib/services/analytics.service';
 import BackButton from '@/components/ui/BackButton';
-import { 
-  AnalyticsSummary,
-  ProjectMetrics,
-  TaskMetrics,
-  TeamMetrics,
-  VelocityData,
-  BurndownData,
-} from '@/types/analytics';
-import { Task } from '@/types/task';
-import { Project } from '@/types/project';
 
-// Mock data - in production, this would come from API
-const mockProjects: Project[] = [
-  {
-    id: '1',
-    name: 'Task Master Dashboard',
-    description: 'Web dashboard for Task Master projects',
-    status: 'active',
-    gitProvider: 'github',
-    gitUrl: 'https://github.com/user/task-master-dashboard',
-    gitBranch: 'main',
-    totalTasks: 25,
-    completedTasks: 16,
-    tags: ['dashboard', 'web', 'react'],
-    memberCount: 2,
-    lastActivity: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    owner: {
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-    },
-    isTaskMasterProject: true,
-    hasCustomRules: true,
-    syncEnabled: true,
-  },
-  {
-    id: '2',
-    name: 'Task Master CLI',
-    description: 'Command-line interface for Task Master',
-    status: 'active',
-    gitProvider: 'github',
-    gitUrl: 'https://github.com/user/task-master-cli',
-    gitBranch: 'develop',
-    totalTasks: 42,
-    completedTasks: 38,
-    tags: ['cli', 'nodejs', 'typescript'],
-    memberCount: 3,
-    lastActivity: new Date(Date.now() - 86400000).toISOString(),
-    createdAt: new Date(Date.now() - 604800000).toISOString(),
-    updatedAt: new Date(Date.now() - 86400000).toISOString(),
-    owner: {
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-    },
-    isTaskMasterProject: true,
-    hasCustomRules: false,
-    syncEnabled: true,
-  },
-];
-
-const mockTasks: Task[] = [
-  // Generate mock tasks with various statuses and dates
-  ...Array.from({ length: 50 }, (_, i) => ({
-    id: `${i + 1}`,
-    projectId: i % 2 === 0 ? '1' : '2',
-    title: `Task ${i + 1}`,
-    description: `Description for task ${i + 1}`,
-    status: ['pending', 'in-progress', 'review', 'done', 'blocked'][i % 5] as any,
-    priority: ['low', 'medium', 'high', 'critical'][i % 4] as any,
-    dependencies: i % 3 === 0 ? [`${i}`] : [],
-    subtasks: [],
-    details: `Details for task ${i + 1}`,
-    testStrategy: `Test strategy for task ${i + 1}`,
-    assignedTo: `${(i % 3) + 1}`,
-    dueDate: new Date(Date.now() + (i - 25) * 86400000).toISOString(),
-    complexity: (i % 10) + 1,
-    createdAt: new Date(Date.now() - (50 - i) * 86400000).toISOString(),
-    updatedAt: new Date(Date.now() - (25 - i) * 86400000).toISOString(),
-  })),
-];
-
-const mockMembers = [
-  { id: '1', name: 'John Doe', email: 'john@example.com' },
-  { id: '2', name: 'Jane Smith', email: 'jane@example.com' },
-  { id: '3', name: 'Bob Johnson', email: 'bob@example.com' },
-];
+interface AnalyticsData {
+  summary: {
+    overview: {
+      totalProjects: number;
+      totalTasks: number;
+      completedTasks: number;
+      inProgressTasks: number;
+      teamMembers: number;
+    };
+    performance: {
+      completionRate: number;
+      averageVelocity: number;
+      blockedTasks: number;
+      overdueTasks: number;
+    };
+  };
+  projectMetrics: Array<{
+    id: string;
+    name: string;
+    totalTasks: number;
+    completedTasks: number;
+    completionRate: number;
+    healthScore: number;
+    memberCount: number;
+    lastActivity: string;
+    status: string;
+  }>;
+  taskMetrics: {
+    statusDistribution: Record<string, number>;
+    priorityDistribution: Record<string, number>;
+    averageComplexity: number;
+    totalTasks: number;
+  };
+  teamMetrics: {
+    totalMembers: number;
+    averageTasksPerMember: number;
+    topPerformers: Array<{
+      id: string;
+      name: string;
+      email: string;
+      tasksAssigned: number;
+      tasksCompleted: number;
+      completionRate: number;
+    }>;
+    members: Array<{
+      id: string;
+      name: string;
+      email: string;
+      tasksAssigned: number;
+      tasksCompleted: number;
+      completionRate: number;
+    }>;
+  };
+  velocityData: Array<{
+    period: string;
+    tasksCompleted: number;
+    velocity: number;
+  }>;
+  burndownData: Array<{
+    date: string;
+    planned: number;
+    actual: number;
+  }>;
+}
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month' | 'quarter' | 'year'>('month');
-  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
-  const [projectMetrics, setProjectMetrics] = useState<ProjectMetrics[]>([]);
-  const [taskMetrics, setTaskMetrics] = useState<TaskMetrics | null>(null);
-  const [teamMetrics, setTeamMetrics] = useState<TeamMetrics | null>(null);
-  const [velocityData, setVelocityData] = useState<VelocityData[]>([]);
-  const [burndownData, setBurndownData] = useState<BurndownData[]>([]);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Calculate all analytics data
-    const summary = AnalyticsService.generateAnalyticsSummary(
-      mockProjects,
-      mockTasks,
-      mockMembers
-    );
-    setSummary(summary);
-
-    const projectMetrics = mockProjects.map(project =>
-      AnalyticsService.calculateProjectMetrics(project, mockTasks)
-    );
-    setProjectMetrics(projectMetrics);
-
-    const taskMetrics = AnalyticsService.calculateTaskMetrics(mockTasks);
-    setTaskMetrics(taskMetrics);
-
-    const teamMetrics = AnalyticsService.calculateTeamMetrics(mockTasks, mockMembers);
-    setTeamMetrics(teamMetrics);
-
-    const velocityData = AnalyticsService.generateVelocityData(mockTasks, 'week');
-    setVelocityData(velocityData);
-
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 30);
-    const burndownData = AnalyticsService.generateBurndownData(
-      mockTasks,
-      startDate,
-      endDate
-    );
-    setBurndownData(burndownData);
+    fetchAnalyticsData();
   }, [timeRange]);
 
-  if (!summary || !taskMetrics || !teamMetrics) {
-    return <div>Loading analytics...</div>;
+  const fetchAnalyticsData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(`/api/analytics?timeRange=${timeRange}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics data');
+      }
+      
+      const data = await response.json();
+      setAnalyticsData(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load analytics');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading analytics data...</p>
+        </div>
+      </div>
+    );
   }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={fetchAnalyticsData}
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!analyticsData) {
+    return <div>No analytics data available</div>;
+  }
+
+  const { summary, projectMetrics, taskMetrics, teamMetrics, velocityData, burndownData } = analyticsData;
 
   return (
     <div className="space-y-6 p-6">
@@ -165,13 +154,21 @@ export default function AnalyticsPage() {
           </p>
         </div>
         <div className="flex space-x-3">
+          {/* Time Range Selector */}
+          <select 
+            value={timeRange} 
+            onChange={(e) => setTimeRange(e.target.value as any)}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          >
+            <option value="day">Last 24 Hours</option>
+            <option value="week">Last Week</option>
+            <option value="month">Last Month</option>
+            <option value="quarter">Last Quarter</option>
+            <option value="year">Last Year</option>
+          </select>
           <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
             <DocumentArrowDownIcon className="w-4 h-4 mr-2" />
             Export Report
-          </button>
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-            <AdjustmentsHorizontalIcon className="w-4 h-4 mr-2" />
-            Customize
           </button>
         </div>
       </div>
@@ -181,16 +178,16 @@ export default function AnalyticsPage() {
         <MetricCard
           title="Total Projects"
           value={summary.overview.totalProjects}
-          change={12}
-          trend="up"
+          change={0}
+          trend="neutral"
           icon={<ChartBarIcon className="w-8 h-8" />}
           color="blue"
         />
         <MetricCard
           title="Completion Rate"
           value={`${summary.performance.completionRate.toFixed(1)}%`}
-          change={5.2}
-          trend="up"
+          change={0}
+          trend="neutral"
           icon={<ClipboardDocumentListIcon className="w-8 h-8" />}
           color="green"
         />
@@ -203,9 +200,10 @@ export default function AnalyticsPage() {
           color="purple"
         />
         <MetricCard
-          title="Active Members"
-          value={teamMetrics.activeMembers}
-          changeLabel={`of ${teamMetrics.teamSize} total`}
+          title="Team Members"
+          value={teamMetrics.totalMembers}
+          change={0}
+          trend="neutral"
           icon={<UserGroupIcon className="w-8 h-8" />}
           color="yellow"
         />
@@ -216,7 +214,21 @@ export default function AnalyticsPage() {
         <ChartWidget
           title="Task Distribution by Status"
           description="Current status of all tasks across projects"
-          data={AnalyticsService.generateChartData('taskStatus', taskMetrics)}
+          data={{
+            labels: Object.keys(taskMetrics.statusDistribution),
+            datasets: [{
+              data: Object.values(taskMetrics.statusDistribution),
+              backgroundColor: [
+                '#10b981', // green for DONE
+                '#3b82f6', // blue for IN_PROGRESS
+                '#fbbf24', // yellow for PENDING
+                '#ef4444', // red for BLOCKED
+                '#8b5cf6', // purple for REVIEW
+                '#6b7280', // gray for CANCELLED
+                '#f59e0b', // orange for DEFERRED
+              ],
+            }]
+          }}
           config={{
             chartType: 'doughnut',
             showLegend: true,
@@ -225,7 +237,18 @@ export default function AnalyticsPage() {
         <ChartWidget
           title="Task Priority Breakdown"
           description="Distribution of tasks by priority level"
-          data={AnalyticsService.generateChartData('taskPriority', taskMetrics)}
+          data={{
+            labels: Object.keys(taskMetrics.priorityDistribution),
+            datasets: [{
+              data: Object.values(taskMetrics.priorityDistribution),
+              backgroundColor: [
+                '#10b981', // green for LOW
+                '#3b82f6', // blue for MEDIUM
+                '#f59e0b', // orange for HIGH
+                '#ef4444', // red for CRITICAL
+              ],
+            }]
+          }}
           config={{
             chartType: 'pie',
             showLegend: true,
@@ -238,7 +261,16 @@ export default function AnalyticsPage() {
         <ChartWidget
           title="Team Velocity"
           description="Tasks completed over time"
-          data={AnalyticsService.generateChartData('velocity', velocityData)}
+          data={{
+            labels: velocityData.map(d => d.period),
+            datasets: [{
+              label: 'Tasks Completed',
+              data: velocityData.map(d => d.tasksCompleted),
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderColor: '#3b82f6',
+              fill: true,
+            }]
+          }}
           config={{
             chartType: 'area',
             showLegend: false,
@@ -248,7 +280,17 @@ export default function AnalyticsPage() {
         <ChartWidget
           title="Project Health Scores"
           description="Overall health of active projects"
-          data={AnalyticsService.generateChartData('projectHealth', projectMetrics)}
+          data={{
+            labels: projectMetrics.map(p => p.name),
+            datasets: [{
+              label: 'Health Score',
+              data: projectMetrics.map(p => p.healthScore),
+              backgroundColor: projectMetrics.map(p => 
+                p.healthScore >= 80 ? '#10b981' : 
+                p.healthScore >= 60 ? '#fbbf24' : '#ef4444'
+              ),
+            }]
+          }}
           config={{
             chartType: 'bar',
             showLegend: false,
@@ -258,9 +300,26 @@ export default function AnalyticsPage() {
 
       {/* Burndown Chart */}
       <ChartWidget
-        title="Sprint Burndown"
-        description="Track progress towards sprint completion"
-        data={AnalyticsService.generateChartData('burndown', burndownData)}
+        title="Progress Tracking"
+        description="Track task completion over time"
+        data={{
+          labels: burndownData.map(d => d.date),
+          datasets: [
+            {
+              label: 'Planned',
+              data: burndownData.map(d => d.planned),
+              borderColor: '#6b7280',
+              backgroundColor: 'transparent',
+              borderDash: [5, 5],
+            },
+            {
+              label: 'Actual',
+              data: burndownData.map(d => d.actual),
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            }
+          ]
+        }}
         config={{
           chartType: 'line',
           showLegend: true,
@@ -269,37 +328,70 @@ export default function AnalyticsPage() {
         className="col-span-full"
       />
 
-      {/* Insights Section */}
+      {/* Project Overview */}
       <div className="bg-card rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold mb-4">Key Insights</h2>
-        <div className="space-y-4">
-          {summary.insights.map(insight => (
-            <div
-              key={insight.id}
-              className={`p-4 rounded-lg border-l-4 ${
-                insight.type === 'positive'
-                  ? 'bg-green-50 border-green-500'
-                  : insight.type === 'negative'
-                  ? 'bg-red-50 border-red-500'
-                  : 'bg-blue-50 border-blue-500'
-              }`}
-            >
-              <h3 className="font-medium text-foreground">{insight.title}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{insight.description}</p>
-              {insight.value && (
-                <div className="mt-2">
-                  <span className="text-2xl font-bold text-foreground">
-                    {insight.value}
-                  </span>
-                  {insight.metric && (
-                    <span className="text-sm text-muted-foreground ml-2">{insight.metric}</span>
-                  )}
+        <h2 className="text-xl font-semibold mb-4">Project Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {projectMetrics.map(project => (
+            <div key={project.id} className="border rounded-lg p-4">
+              <h3 className="font-medium text-foreground">{project.name}</h3>
+              <div className="mt-2 space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span>Tasks:</span>
+                  <span>{project.completedTasks}/{project.totalTasks}</span>
                 </div>
-              )}
+                <div className="flex justify-between text-sm">
+                  <span>Completion:</span>
+                  <span>{project.completionRate.toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Health:</span>
+                  <span className={`font-medium ${
+                    project.healthScore >= 80 ? 'text-green-600' :
+                    project.healthScore >= 60 ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {project.healthScore}%
+                  </span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Team Performance */}
+      {teamMetrics.members.length > 0 && (
+        <div className="bg-card rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4">Team Performance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {teamMetrics.members.map(member => (
+              <div key={member.id} className="border rounded-lg p-4">
+                <h3 className="font-medium text-foreground">{member.name}</h3>
+                <p className="text-sm text-muted-foreground">{member.email}</p>
+                <div className="mt-2 space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>Assigned:</span>
+                    <span>{member.tasksAssigned}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Completed:</span>
+                    <span>{member.tasksCompleted}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Rate:</span>
+                    <span className={`font-medium ${
+                      member.completionRate >= 80 ? 'text-green-600' :
+                      member.completionRate >= 60 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {member.completionRate.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recommendations Section */}
       <div className="bg-card rounded-lg shadow-sm p-6">
