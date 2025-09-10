@@ -1,80 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/database'
 import { TeamInvitation } from '@/types/team'
-
-// Mock invitations data
-const mockInvitations: TeamInvitation[] = [
-  {
-    id: '1',
-    teamId: '1',
-    email: 'alex@company.com',
-    role: 'member',
-    invitedBy: '1',
-    status: 'pending',
-    token: 'abc123def456',
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    message: 'Welcome to the product development team!',
-    team: {
-      id: '1',
-      name: 'Product Development',
-      description: 'Core product development team',
-      slug: 'product-development',
-      avatar: null,
-      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date().toISOString(),
-      ownerId: '1',
-      memberCount: 8,
-      projectCount: 12,
-      plan: 'pro',
-      billingEmail: 'billing@company.com',
-      isActive: true,
-      settings: {
-        allowMemberInvites: true,
-        requireApproval: false,
-        defaultRole: 'member',
-        notificationPreferences: {
-          taskAssigned: true,
-          taskUpdated: true,
-          taskComment: true,
-          taskDue: true,
-          teamUpdates: true,
-          weeklyReport: true,
-          emailDigest: 'daily',
-          pushEnabled: true,
-        },
-        integrations: {},
-      },
-    },
-    invitedByUser: {
-      id: '1',
-      email: 'john@company.com',
-      name: 'John Doe',
-      avatar: null,
-      username: 'john.doe',
-      bio: 'Product lead and team owner',
-      location: 'San Francisco, CA',
-      timezone: 'America/Los_Angeles',
-      createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date().toISOString(),
-      emailVerified: true,
-      twoFactorEnabled: true,
-      preferences: {
-        theme: 'dark',
-        language: 'en',
-        emailNotifications: true,
-        pushNotifications: true,
-        weeklyDigest: true,
-      },
-    },
-  }
-]
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
+    // Get authenticated user
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const teamId = params.id
-    const teamInvitations = mockInvitations.filter(invitation => invitation.teamId === teamId)
+    const userId = session.user.id
+
+    // Handle personal workspace (no invitations)
+    if (teamId.startsWith('personal-')) {
+      return NextResponse.json({ invitations: [] })
+    }
+
+    // Verify user has access to this team/project
+    const project = await prisma.project.findFirst({
+      where: {
+        id: teamId,
+        members: {
+          some: { userId }
+        }
+      }
+    })
+
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found or access denied' }, { status: 404 })
+    }
+
+    // For now, return empty array as invitation functionality is not fully implemented
+    // In a full implementation, you would query a project_invitations table
+    const invitations: TeamInvitation[] = []
+
+    /* TODO: Future implementation
+    const projectInvitations = await prisma.projectInvitation.findMany({
+      where: {
+        projectId: teamId
+      },
+      include: {
+        invitedBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true
+          }
+        },
+        project: {
+          select: {
+            id: true,
+            name: true,
+            description: true
+          }
+        }
+      }
+    })
+
+    const invitations: TeamInvitation[] = projectInvitations.map(invitation => ({
+      id: invitation.id,
+      teamId: invitation.projectId,
+      email: invitation.email,
+      role: invitation.role.toLowerCase(),
+      invitedBy: invitation.invitedById,
+      status: invitation.status.toLowerCase(),
+      token: invitation.token,
+      expiresAt: invitation.expiresAt.toISOString(),
+      createdAt: invitation.createdAt.toISOString(),
+      message: invitation.message,
+      team: {
+        // Convert project to team format
+      },
+      invitedByUser: {
+        // Convert user to team user format
+      }
+    }))
+    */
     
-    return NextResponse.json({ invitations: teamInvitations })
+    return NextResponse.json({ invitations })
   } catch (error) {
     console.error('Error fetching team invitations:', error)
     return NextResponse.json({ error: 'Failed to fetch team invitations' }, { status: 500 })
