@@ -95,15 +95,15 @@ export default function ProjectDetailPage() {
   const getStatusColor = (status: string) => {
     switch (status.toUpperCase()) {
       case 'DONE':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400';
       case 'IN_PROGRESS':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400';
       case 'BLOCKED':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400';
       case 'REVIEW':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-400';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-gray-400';
     }
   };
 
@@ -111,22 +111,22 @@ export default function ProjectDetailPage() {
     switch (priority.toUpperCase()) {
       case 'HIGH':
       case 'CRITICAL':
-        return 'text-red-600';
+        return 'text-red-600 dark:text-red-400';
       case 'LOW':
-        return 'text-gray-500';
+        return 'text-gray-500 dark:text-gray-400';
       default:
-        return 'text-yellow-600';
+        return 'text-yellow-600 dark:text-yellow-400';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status.toUpperCase()) {
       case 'DONE':
-        return <CheckCircleIcon className="h-5 w-5 text-green-600" />;
+        return <CheckCircleIcon className="h-5 w-5 text-green-600 dark:text-green-400" />;
       case 'IN_PROGRESS':
-        return <ClockIcon className="h-5 w-5 text-blue-600" />;
+        return <ClockIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
       case 'BLOCKED':
-        return <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />;
+        return <ExclamationTriangleIcon className="h-5 w-5 text-red-600 dark:text-red-400" />;
       default:
         return null;
     }
@@ -172,11 +172,11 @@ export default function ProjectDetailPage() {
       <div className="mb-6">
         <BackButton href="/projects" label="Back to Projects" className="mb-4" />
         
-        <div className="bg-white rounded-lg shadow px-6 py-4">
+        <div className="bg-card rounded-lg shadow border border-border px-6 py-4">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{project.name}</h1>
-              <p className="text-gray-600">{project.description}</p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">{project.name}</h1>
+              <p className="text-muted-foreground">{project.description}</p>
             </div>
             
             {/* Tag Selector */}
@@ -190,7 +190,7 @@ export default function ProjectDetailPage() {
           </div>
           
           {project.gitUrl && (
-            <div className="flex items-center text-sm text-gray-500 mb-4">
+            <div className="flex items-center text-sm text-muted-foreground mb-4">
               <span className="mr-4">
                 <strong>Repository:</strong> {project.gitUrl}
               </span>
@@ -203,36 +203,36 @@ export default function ProjectDetailPage() {
           {/* Statistics */}
           <div className="grid grid-cols-5 gap-4 mt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{taskStats.total}</div>
-              <div className="text-sm text-gray-600">Total Tasks</div>
+              <div className="text-2xl font-bold text-foreground">{taskStats.total}</div>
+              <div className="text-sm text-muted-foreground">Total Tasks</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{taskStats.done}</div>
-              <div className="text-sm text-gray-600">Completed</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{taskStats.done}</div>
+              <div className="text-sm text-muted-foreground">Completed</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{taskStats.inProgress}</div>
-              <div className="text-sm text-gray-600">In Progress</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{taskStats.inProgress}</div>
+              <div className="text-sm text-muted-foreground">In Progress</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">{taskStats.pending}</div>
-              <div className="text-sm text-gray-600">Pending</div>
+              <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{taskStats.pending}</div>
+              <div className="text-sm text-muted-foreground">Pending</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{taskStats.blocked}</div>
-              <div className="text-sm text-gray-600">Blocked</div>
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">{taskStats.blocked}</div>
+              <div className="text-sm text-muted-foreground">Blocked</div>
             </div>
           </div>
 
           {/* Progress Bar */}
           <div className="mt-4">
-            <div className="flex justify-between text-sm text-gray-600 mb-1">
+            <div className="flex justify-between text-sm text-muted-foreground mb-1">
               <span>Progress</span>
               <span>{Math.round((taskStats.done / taskStats.total) * 100)}% Complete</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-secondary rounded-full h-2">
               <div 
-                className="bg-green-600 h-2 rounded-full transition-all"
+                className="bg-green-600 dark:bg-green-400 h-2 rounded-full transition-all"
                 style={{ width: `${(taskStats.done / taskStats.total) * 100}%` }}
               ></div>
             </div>
@@ -241,7 +241,7 @@ export default function ProjectDetailPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-border mb-6">
         <nav className="-mb-px flex space-x-8">
           {['all', 'PENDING', 'IN_PROGRESS', 'DONE', 'BLOCKED'].map((status) => (
             <button
@@ -250,13 +250,13 @@ export default function ProjectDetailPage() {
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${statusFilter === status
-                  ? 'border-taskmaster-500 text-taskmaster-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }
               `}
             >
               {status === 'all' ? 'All Tasks' : status.replace('_', ' ')}
-              <span className="ml-2 text-gray-400">
+              <span className="ml-2 text-muted-foreground">
                 ({status === 'all' ? taskStats.total : 
                   tasks.filter(t => t.status === status).length})
               </span>
@@ -269,26 +269,26 @@ export default function ProjectDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Task List */}
         <div>
-          <h2 className="text-lg font-semibold mb-4">Tasks</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">Tasks</h2>
           <div className="space-y-3">
             {filteredTasks.map((task) => (
               <div
                 key={task.id}
                 onClick={() => setSelectedTask(task)}
                 className={`
-                  bg-white rounded-lg shadow p-4 cursor-pointer transition-all
-                  ${selectedTask?.id === task.id ? 'ring-2 ring-taskmaster-500' : 'hover:shadow-md'}
+                  bg-card rounded-lg shadow border border-border p-4 cursor-pointer transition-all
+                  ${selectedTask?.id === task.id ? 'ring-2 ring-primary' : 'hover:shadow-md'}
                 `}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center">
                       {getStatusIcon(task.status)}
-                      <h3 className="ml-2 text-sm font-medium text-gray-900">
+                      <h3 className="ml-2 text-sm font-medium text-foreground">
                         Task {task.taskId}: {task.title}
                       </h3>
                     </div>
-                    <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
                       {task.description}
                     </p>
                     <div className="mt-2 flex items-center space-x-4">
@@ -299,18 +299,18 @@ export default function ProjectDetailPage() {
                         {task.priority} Priority
                       </span>
                       {task.complexity && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                           Complexity: {task.complexity}
                         </span>
                       )}
                       {task.data?.dependencies && task.data.dependencies.length > 0 && (
-                        <span className="text-xs text-blue-600" title={`Depends on: ${task.data.dependencies.join(', ')}`}>
+                        <span className="text-xs text-blue-600 dark:text-blue-400" title={`Depends on: ${task.data.dependencies.join(', ')}`}>
                           📌 {task.data.dependencies.length} dep{task.data.dependencies.length > 1 ? 's' : ''}
                         </span>
                       )}
                     </div>
                   </div>
-                  <ChevronRightIcon className="h-5 w-5 text-gray-400 ml-2" />
+                  <ChevronRightIcon className="h-5 w-5 text-muted-foreground ml-2" />
                 </div>
               </div>
             ))}
@@ -319,46 +319,46 @@ export default function ProjectDetailPage() {
 
         {/* Task Detail */}
         <div>
-          <h2 className="text-lg font-semibold mb-4">Task Details</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">Task Details</h2>
           {selectedTask ? (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <div className="bg-card rounded-lg shadow border border-border p-6">
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 Task {selectedTask.taskId}: {selectedTask.title}
               </h3>
               
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700">Description</h4>
-                  <p className="mt-1 text-sm text-gray-600">{selectedTask.description}</p>
+                  <h4 className="text-sm font-medium text-foreground">Description</h4>
+                  <p className="mt-1 text-sm text-muted-foreground">{selectedTask.description}</p>
                 </div>
 
                 {selectedTask.details && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700">Implementation Details</h4>
-                    <p className="mt-1 text-sm text-gray-600 whitespace-pre-wrap">{selectedTask.details}</p>
+                    <h4 className="text-sm font-medium text-foreground">Implementation Details</h4>
+                    <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{selectedTask.details}</p>
                   </div>
                 )}
 
                 {selectedTask.testStrategy && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700">Test Strategy</h4>
-                    <p className="mt-1 text-sm text-gray-600 whitespace-pre-wrap">{selectedTask.testStrategy}</p>
+                    <h4 className="text-sm font-medium text-foreground">Test Strategy</h4>
+                    <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{selectedTask.testStrategy}</p>
                   </div>
                 )}
 
                 {selectedTask.data?.subtasks && selectedTask.data.subtasks.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Subtasks</h4>
+                    <h4 className="text-sm font-medium text-foreground mb-2">Subtasks</h4>
                     <div className="space-y-2">
                       {selectedTask.data.subtasks.map((subtask: any) => (
-                        <div key={subtask.id} className="border-l-2 border-gray-200 pl-3">
+                        <div key={subtask.id} className="border-l-2 border-border pl-3">
                           <div className="flex items-center">
                             {subtask.status === 'done' ? (
-                              <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2" />
+                              <CheckCircleIcon className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
                             ) : (
-                              <div className="h-4 w-4 rounded-full border-2 border-gray-300 mr-2" />
+                              <div className="h-4 w-4 rounded-full border-2 border-muted mr-2" />
                             )}
-                            <span className={`text-sm ${subtask.status === 'done' ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
+                            <span className={`text-sm ${subtask.status === 'done' ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                               {subtask.id}: {subtask.title}
                             </span>
                           </div>
@@ -370,7 +370,7 @@ export default function ProjectDetailPage() {
 
                 {selectedTask.data?.dependencies && selectedTask.data.dependencies.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700">Dependencies</h4>
+                    <h4 className="text-sm font-medium text-foreground">Dependencies</h4>
                     <div className="mt-1 flex flex-wrap gap-2">
                       {selectedTask.data.dependencies.map((depId: number) => {
                         const depTask = tasks.find(t => t.data?.id === depId);
@@ -378,7 +378,7 @@ export default function ProjectDetailPage() {
                           <button
                             key={depId}
                             onClick={() => depTask && setSelectedTask(depTask)}
-                            className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded cursor-pointer transition-colors"
+                            className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 hover:bg-blue-200 dark:hover:bg-blue-800/30 text-blue-700 dark:text-blue-400 text-xs rounded cursor-pointer transition-colors"
                             title={depTask?.title || `Task ${depId}`}
                           >
                             Task {depId}: {depTask?.title || 'Unknown'}
@@ -398,13 +398,13 @@ export default function ProjectDetailPage() {
                   );
                   return dependentTasks.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700">Dependent Tasks</h4>
+                      <h4 className="text-sm font-medium text-foreground">Dependent Tasks</h4>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {dependentTasks.map((task) => (
                           <button
                             key={task.id}
                             onClick={() => setSelectedTask(task)}
-                            className="px-2 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs rounded cursor-pointer transition-colors"
+                            className="px-2 py-1 bg-purple-100 dark:bg-purple-900/20 hover:bg-purple-200 dark:hover:bg-purple-800/30 text-purple-700 dark:text-purple-400 text-xs rounded cursor-pointer transition-colors"
                             title={task.title}
                           >
                             Task {task.data?.id}: {task.title}
@@ -417,7 +417,7 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+            <div className="bg-card rounded-lg shadow border border-border p-6 text-center text-muted-foreground">
               Select a task to view details
             </div>
           )}

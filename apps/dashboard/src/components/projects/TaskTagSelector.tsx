@@ -84,7 +84,7 @@ export function TaskTagSelector({
   if (loading) {
     return (
       <div className={cn("animate-pulse", className)}>
-        <div className="h-10 bg-gray-200 rounded-md w-48"></div>
+        <div className="h-10 bg-secondary rounded-md w-48"></div>
       </div>
     )
   }
@@ -95,37 +95,37 @@ export function TaskTagSelector({
     <div className={cn("relative", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground border border-primary rounded-lg hover:bg-primary/90 transition-colors"
       >
         {showAll ? (
           <>
-            <FolderIcon className="h-5 w-5 text-gray-500" />
+            <FolderIcon className="h-5 w-5" />
             <span className="font-medium">All Tags</span>
-            <span className="text-sm text-gray-500">({totalTasks} tasks)</span>
+            <span className="text-sm opacity-80">({totalTasks} tasks)</span>
           </>
         ) : selectedTag ? (
           <>
-            <HashtagIcon className="h-5 w-5 text-taskmaster-500" />
+            <HashtagIcon className="h-5 w-5" />
             <span className="font-medium">{selectedTag.name}</span>
-            <span className="text-sm text-gray-500">({selectedTag.taskCount} tasks)</span>
+            <span className="text-sm opacity-80">({selectedTag.taskCount} tasks)</span>
           </>
         ) : (
           <>
-            <TagIcon className="h-5 w-5 text-gray-500" />
+            <TagIcon className="h-5 w-5" />
             <span className="font-medium">Select Tag</span>
           </>
         )}
         <ChevronDownIcon className={cn(
-          "h-4 w-4 text-gray-400 transition-transform",
+          "h-4 w-4 opacity-80 transition-transform",
           isOpen && "rotate-180"
         )} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">Task Tags</h3>
-            <p className="text-xs text-gray-500 mt-1">
+        <div className="absolute z-10 mt-2 w-80 bg-card rounded-lg shadow-lg border border-border">
+          <div className="p-4 border-b border-border">
+            <h3 className="text-sm font-semibold text-foreground">Task Tags</h3>
+            <p className="text-xs text-muted-foreground mt-1">
               Organize tasks by context or branch
             </p>
           </div>
@@ -135,41 +135,41 @@ export function TaskTagSelector({
             <button
               onClick={() => handleTagSelect('all')}
               className={cn(
-                "w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left",
-                showAll && "bg-taskmaster-50"
+                "w-full px-4 py-3 hover:bg-accent transition-colors text-left",
+                showAll && "bg-primary/10"
               )}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <FolderIcon className="h-5 w-5 text-gray-500" />
+                  <FolderIcon className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">All Tags</p>
-                    <p className="text-xs text-gray-500">View all tasks across tags</p>
+                    <p className="text-sm font-medium text-foreground">All Tags</p>
+                    <p className="text-xs text-muted-foreground">View all tasks across tags</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{totalTasks}</p>
+                  <p className="text-sm font-medium text-foreground">{totalTasks}</p>
                   <div className="flex items-center space-x-1">
-                    <div className="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-green-500 transition-all"
+                        className="h-full bg-green-500 dark:bg-green-400 transition-all"
                         style={{ width: `${overallCompletion}%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-500">{overallCompletion}%</span>
+                    <span className="text-xs text-muted-foreground">{overallCompletion}%</span>
                   </div>
                 </div>
               </div>
             </button>
 
-            <div className="border-t border-gray-100">
+            <div className="border-t border-border">
               {tags.length === 0 ? (
                 <div className="px-4 py-8 text-center">
-                  <TagIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">No tags available</p>
+                  <TagIcon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No tags available</p>
                   <button
                     onClick={onCreateTag}
-                    className="mt-3 text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium"
+                    className="mt-3 text-sm text-primary hover:text-primary/80 font-medium"
                   >
                     Create first tag
                   </button>
@@ -182,47 +182,47 @@ export function TaskTagSelector({
                       key={tag.name}
                       onClick={() => handleTagSelect(tag.name)}
                       className={cn(
-                        "w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left",
-                        currentTag === tag.name && !showAll && "bg-taskmaster-50"
+                        "w-full px-4 py-3 hover:bg-accent transition-colors text-left",
+                        currentTag === tag.name && !showAll && "bg-primary/10"
                       )}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <HashtagIcon className={cn(
                             "h-5 w-5",
-                            tag.isCurrent ? "text-taskmaster-500" : "text-gray-400"
+                            tag.isCurrent ? "text-primary" : "text-muted-foreground"
                           )} />
                           <div>
                             <div className="flex items-center space-x-2">
-                              <p className="text-sm font-medium text-gray-900">{tag.name}</p>
+                              <p className="text-sm font-medium text-foreground">{tag.name}</p>
                               {tag.isCurrent && (
-                                <span className="text-xs bg-taskmaster-100 text-taskmaster-700 px-1.5 py-0.5 rounded">
+                                <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
                                   Active
                                 </span>
                               )}
                             </div>
                             {tag.description && (
-                              <p className="text-xs text-gray-500 truncate max-w-[180px]">
+                              <p className="text-xs text-muted-foreground truncate max-w-[180px]">
                                 {tag.description}
                               </p>
                             )}
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-medium text-gray-900">{tag.taskCount}</p>
+                          <p className="text-sm font-medium text-foreground">{tag.taskCount}</p>
                           <div className="flex items-center space-x-1">
-                            <div className="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
                               <div 
-                                className="h-full bg-green-500 transition-all"
+                                className="h-full bg-green-500 dark:bg-green-400 transition-all"
                                 style={{ width: `${completion}%` }}
                               />
                             </div>
-                            <span className="text-xs text-gray-500">{completion}%</span>
+                            <span className="text-xs text-muted-foreground">{completion}%</span>
                           </div>
                         </div>
                       </div>
                       {currentTag === tag.name && !showAll && (
-                        <CheckIcon className="h-4 w-4 text-taskmaster-600 absolute right-4" />
+                        <CheckIcon className="h-4 w-4 text-primary absolute right-4" />
                       )}
                     </button>
                   )
@@ -232,13 +232,13 @@ export function TaskTagSelector({
           </div>
 
           {tags.length > 0 && (
-            <div className="p-3 border-t border-gray-200">
+            <div className="p-3 border-t border-border">
               <button
                 onClick={() => {
                   setIsOpen(false)
                   onCreateTag?.()
                 }}
-                className="w-full flex items-center justify-center space-x-2 px-3 py-2 text-sm font-medium text-taskmaster-600 hover:bg-taskmaster-50 rounded-md transition-colors"
+                className="w-full flex items-center justify-center space-x-2 px-3 py-2 text-sm font-medium text-primary hover:bg-primary/10 rounded-md transition-colors"
               >
                 <PlusIcon className="h-4 w-4" />
                 <span>Create New Tag</span>
