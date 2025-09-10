@@ -122,17 +122,17 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="bg-card rounded-lg shadow-sm border border-border">
+      <div className="px-6 py-4 border-b border-border">
         <div className="flex items-center">
-          <BellIcon className="h-5 w-5 text-gray-400 mr-2" />
-          <h3 className="text-lg font-medium text-gray-900">Notification Management</h3>
+          <BellIcon className="h-5 w-5 text-muted-foreground mr-2" />
+          <h3 className="text-lg font-medium text-foreground">Notification Management</h3>
         </div>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage team notifications and activity history
         </p>
         {!isAdmin && (
-          <p className="mt-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded">
+          <p className="mt-2 text-sm text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
             Only team admins can perform bulk operations
           </p>
         )}
@@ -142,11 +142,11 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
         {/* Mark All as Read */}
         <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
-            <CheckCircleIcon className="h-6 w-6 text-green-500" />
+            <CheckCircleIcon className="h-6 w-6 text-green-500 dark:text-green-400" />
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-medium text-gray-900">Mark All as Read</h4>
-            <p className="text-sm text-gray-500 mt-1">
+            <h4 className="text-sm font-medium text-foreground">Mark All as Read</h4>
+            <p className="text-sm text-muted-foreground mt-1">
               Mark all team notifications as read for all members
             </p>
             <button
@@ -155,8 +155,8 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
               className={cn(
                 'mt-3 px-4 py-2 text-sm font-medium rounded-md',
                 isAdmin && !processing
-                  ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600'
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
               )}
             >
               {processing && selectedAction === 'mark-read' 
@@ -169,11 +169,11 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
         {/* Delete Old Notifications */}
         <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
-            <TrashIcon className="h-6 w-6 text-orange-500" />
+            <TrashIcon className="h-6 w-6 text-orange-500 dark:text-orange-400" />
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-medium text-gray-900">Delete Old Notifications</h4>
-            <p className="text-sm text-gray-500 mt-1">
+            <h4 className="text-sm font-medium text-foreground">Delete Old Notifications</h4>
+            <p className="text-sm text-muted-foreground mt-1">
               Remove notifications older than specified days
             </p>
             <div className="mt-3 flex items-center space-x-3">
@@ -182,7 +182,7 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
                 onChange={(e) => setDeleteOlderThan(parseInt(e.target.value))}
                 disabled={!isAdmin || processing}
                 className={cn(
-                  'rounded-md border-gray-300 text-sm',
+                  'rounded-md border-border bg-background text-foreground text-sm',
                   !isAdmin && 'opacity-50 cursor-not-allowed'
                 )}
               >
@@ -198,8 +198,8 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
                 className={cn(
                   'px-4 py-2 text-sm font-medium rounded-md',
                   isAdmin && !processing
-                    ? 'bg-orange-600 text-white hover:bg-orange-700'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? 'bg-orange-600 text-white hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600'
+                    : 'bg-muted text-muted-foreground cursor-not-allowed'
                 )}
               >
                 {processing && selectedAction === 'delete' 
@@ -213,14 +213,14 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
         {/* Clear All Activity */}
         <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
-            <ExclamationTriangleIcon className="h-6 w-6 text-red-500" />
+            <ExclamationTriangleIcon className="h-6 w-6 text-red-500 dark:text-red-400" />
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-medium text-gray-900">Clear All Activity</h4>
-            <p className="text-sm text-gray-500 mt-1">
+            <h4 className="text-sm font-medium text-foreground">Clear All Activity</h4>
+            <p className="text-sm text-muted-foreground mt-1">
               Permanently delete all team notifications and activity history
             </p>
-            <p className="text-xs text-red-600 mt-1">
+            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
               Warning: This action cannot be undone
             </p>
             <button
@@ -229,8 +229,8 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
               className={cn(
                 'mt-3 px-4 py-2 text-sm font-medium rounded-md',
                 isAdmin && !processing
-                  ? 'bg-red-600 text-white hover:bg-red-700'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600'
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
               )}
             >
               Clear All Activity
@@ -241,11 +241,11 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
         {/* Archive Settings */}
         <div className="flex items-start space-x-4">
           <div className="flex-shrink-0">
-            <ArchiveBoxIcon className="h-6 w-6 text-gray-500" />
+            <ArchiveBoxIcon className="h-6 w-6 text-muted-foreground" />
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-medium text-gray-900">Auto-Archive</h4>
-            <p className="text-sm text-gray-500 mt-1">
+            <h4 className="text-sm font-medium text-foreground">Auto-Archive</h4>
+            <p className="text-sm text-muted-foreground mt-1">
               Automatically archive notifications older than 90 days
             </p>
             <div className="mt-3">
@@ -254,13 +254,13 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
                   type="checkbox"
                   disabled={!isAdmin}
                   className={cn(
-                    'rounded border-gray-300 text-taskmaster-600 focus:ring-taskmaster-500',
+                    'rounded border-border text-primary focus:ring-primary',
                     !isAdmin && 'opacity-50 cursor-not-allowed'
                   )}
                 />
                 <span className={cn(
                   'ml-2 text-sm',
-                  isAdmin ? 'text-gray-700' : 'text-gray-500'
+                  isAdmin ? 'text-foreground' : 'text-muted-foreground'
                 )}>
                   Enable auto-archive
                 </span>
@@ -271,20 +271,20 @@ export function TeamNotificationManager({ projectId, isAdmin }: TeamNotification
       </div>
 
       {/* Statistics */}
-      <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">Activity Statistics</h4>
+      <div className="px-6 py-4 bg-secondary/50 dark:bg-secondary/20 border-t border-border">
+        <h4 className="text-sm font-medium text-foreground mb-3">Activity Statistics</h4>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <p className="text-2xl font-semibold text-gray-900">--</p>
-            <p className="text-xs text-gray-500">Total Notifications</p>
+            <p className="text-2xl font-semibold text-foreground">--</p>
+            <p className="text-xs text-muted-foreground">Total Notifications</p>
           </div>
           <div>
-            <p className="text-2xl font-semibold text-gray-900">--</p>
-            <p className="text-xs text-gray-500">Unread</p>
+            <p className="text-2xl font-semibold text-foreground">--</p>
+            <p className="text-xs text-muted-foreground">Unread</p>
           </div>
           <div>
-            <p className="text-2xl font-semibold text-gray-900">--</p>
-            <p className="text-xs text-gray-500">This Week</p>
+            <p className="text-2xl font-semibold text-foreground">--</p>
+            <p className="text-xs text-muted-foreground">This Week</p>
           </div>
         </div>
       </div>

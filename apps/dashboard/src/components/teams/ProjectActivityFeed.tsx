@@ -98,24 +98,24 @@ export function ProjectActivityFeed({ projectId, className }: ProjectActivityFee
   }
 
   const getActivityColor = (priority: string, type: string) => {
-    if (type === 'SYSTEM' || priority === 'CRITICAL') return 'text-red-600 bg-red-50'
-    if (priority === 'HIGH') return 'text-orange-600 bg-orange-50'
-    if (priority === 'MEDIUM') return 'text-yellow-600 bg-yellow-50'
-    return 'text-blue-600 bg-blue-50'
+    if (type === 'SYSTEM' || priority === 'CRITICAL') return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
+    if (priority === 'HIGH') return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+    if (priority === 'MEDIUM') return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20'
+    return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
   }
 
   if (loading) {
     return (
-      <div className={cn('bg-white rounded-lg shadow p-6', className)}>
-        <h3 className="text-lg font-semibold mb-4">Project Activity</h3>
+      <div className={cn('bg-card rounded-lg shadow-sm border border-border p-6', className)}>
+        <h3 className="text-lg font-semibold mb-4 text-foreground">Project Activity</h3>
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="flex items-start space-x-3">
-                <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                <div className="w-10 h-10 bg-secondary rounded-full"></div>
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-secondary rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-secondary rounded w-1/2"></div>
                 </div>
               </div>
             </div>
@@ -126,31 +126,31 @@ export function ProjectActivityFeed({ projectId, className }: ProjectActivityFee
   }
 
   return (
-    <div className={cn('bg-white rounded-lg shadow', className)}>
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-lg font-semibold">Project Activity</h3>
-        <p className="text-sm text-gray-500 mt-1">
+    <div className={cn('bg-card rounded-lg shadow-sm border border-border', className)}>
+      <div className="p-6 border-b border-border">
+        <h3 className="text-lg font-semibold text-foreground">Project Activity</h3>
+        <p className="text-sm text-muted-foreground mt-1">
           Recent updates and notifications
         </p>
       </div>
 
       <div className="max-h-96 overflow-y-auto">
         {activities.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">
-            <BellIcon className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+          <div className="p-6 text-center text-muted-foreground">
+            <BellIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
             <p>No activity yet</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-muted-foreground/75 mt-1">
               Team activities will appear here
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {activities.map((activity) => (
               <div
                 key={activity.id}
                 className={cn(
-                  'p-4 hover:bg-gray-50 transition-colors',
-                  !activity.read && 'bg-blue-50'
+                  'p-4 hover:bg-accent transition-colors',
+                  !activity.read && 'bg-blue-50 dark:bg-blue-900/20'
                 )}
               >
                 <div className="flex items-start space-x-3">
@@ -161,13 +161,13 @@ export function ProjectActivityFeed({ projectId, className }: ProjectActivityFee
                     {getActivityIcon(activity.metadata)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-foreground">
                       {activity.title}
                     </p>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {activity.message}
                     </p>
-                    <div className="flex items-center mt-2 text-xs text-gray-500">
+                    <div className="flex items-center mt-2 text-xs text-muted-foreground">
                       {activity.user && (
                         <>
                           <span>{activity.user.name || activity.user.email}</span>
@@ -189,10 +189,10 @@ export function ProjectActivityFeed({ projectId, className }: ProjectActivityFee
       </div>
 
       {hasMore && activities.length > 0 && (
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-border">
           <button
             onClick={loadMore}
-            className="w-full text-sm text-taskmaster-600 hover:text-taskmaster-700 font-medium"
+            className="w-full text-sm text-primary hover:text-primary/90 font-medium"
           >
             Load more activities
           </button>

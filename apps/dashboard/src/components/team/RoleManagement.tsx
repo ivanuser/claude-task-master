@@ -19,8 +19,8 @@ export function RoleManagement({ team, members, actions }: RoleManagementProps) 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium text-gray-900">Role Management</h3>
-        <p className="text-sm text-gray-500">
+        <h3 className="text-lg font-medium text-foreground">Role Management</h3>
+        <p className="text-sm text-muted-foreground">
           Configure team roles and permissions
         </p>
       </div>
@@ -28,9 +28,9 @@ export function RoleManagement({ team, members, actions }: RoleManagementProps) 
       {/* Role Distribution */}
       <div className="grid grid-cols-4 gap-4">
         {Object.entries(roleStats).map(([role, count]) => (
-          <div key={role} className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-gray-900">{count}</div>
-            <div className="text-sm text-gray-500 capitalize">{role}s</div>
+          <div key={role} className="bg-card rounded-lg border border-border p-4">
+            <div className="text-2xl font-bold text-foreground">{count}</div>
+            <div className="text-sm text-muted-foreground capitalize">{role}s</div>
           </div>
         ))}
       </div>
@@ -38,16 +38,16 @@ export function RoleManagement({ team, members, actions }: RoleManagementProps) 
       {/* Role Permissions */}
       <div className="space-y-4">
         {Object.entries(rolePermissions).map(([role, permissions]) => (
-          <div key={role} className="bg-white rounded-lg border border-gray-200 p-6">
+          <div key={role} className="bg-card rounded-lg border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium text-gray-900 capitalize">{role}</h4>
-              <span className="text-sm text-gray-500">
+              <h4 className="text-lg font-medium text-foreground capitalize">{role}</h4>
+              <span className="text-sm text-muted-foreground">
                 {permissions.length} permissions
               </span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {permissions.map((permission) => (
-                <div key={permission.id} className="text-sm text-gray-600">
+                <div key={permission.id} className="text-sm text-muted-foreground">
                   ✓ {permission.name}
                 </div>
               ))}

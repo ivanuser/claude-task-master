@@ -148,8 +148,8 @@ export default function AnalyticsPage() {
       {/* Page Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
             Track productivity, project health, and team performance
           </p>
         </div>
@@ -158,7 +158,7 @@ export default function AnalyticsPage() {
           <select 
             value={timeRange} 
             onChange={(e) => setTimeRange(e.target.value as any)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="px-3 py-2 border border-border bg-background text-foreground rounded-lg text-sm"
           >
             <option value="day">Last 24 Hours</option>
             <option value="week">Last Week</option>
@@ -166,7 +166,7 @@ export default function AnalyticsPage() {
             <option value="quarter">Last Quarter</option>
             <option value="year">Last Year</option>
           </select>
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button className="inline-flex items-center px-4 py-2 border border-primary rounded-lg text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 transition-colors">
             <DocumentArrowDownIcon className="w-4 h-4 mr-2" />
             Export Report
           </button>
@@ -330,25 +330,25 @@ export default function AnalyticsPage() {
 
       {/* Project Overview */}
       <div className="bg-card rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold mb-4">Project Overview</h2>
+        <h2 className="text-xl font-semibold mb-4 text-foreground">Project Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {projectMetrics.map(project => (
-            <div key={project.id} className="border rounded-lg p-4">
+            <div key={project.id} className="bg-secondary/50 dark:bg-secondary/20 border border-border rounded-lg p-4">
               <h3 className="font-medium text-foreground">{project.name}</h3>
               <div className="mt-2 space-y-1">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Tasks:</span>
-                  <span>{project.completedTasks}/{project.totalTasks}</span>
+                  <span className="text-foreground">{project.completedTasks}/{project.totalTasks}</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Completion:</span>
-                  <span>{project.completionRate.toFixed(1)}%</span>
+                  <span className="text-foreground">{project.completionRate.toFixed(1)}%</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Health:</span>
                   <span className={`font-medium ${
-                    project.healthScore >= 80 ? 'text-green-600' :
-                    project.healthScore >= 60 ? 'text-yellow-600' : 'text-red-600'
+                    project.healthScore >= 80 ? 'text-green-600 dark:text-green-400' :
+                    project.healthScore >= 60 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
                   }`}>
                     {project.healthScore}%
                   </span>
@@ -401,12 +401,12 @@ export default function AnalyticsPage() {
             <div key={rec.id} className="border-l-4 border-border pl-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">{rec.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{rec.description}</p>
+                  <h3 className="font-medium text-foreground">{rec.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{rec.description}</p>
                   {rec.actionItems && rec.actionItems.length > 0 && (
                     <ul className="mt-2 space-y-1">
                       {rec.actionItems.map((item, idx) => (
-                        <li key={idx} className="text-sm text-gray-600">
+                        <li key={idx} className="text-sm text-muted-foreground">
                           • {item}
                         </li>
                       ))}
@@ -421,10 +421,10 @@ export default function AnalyticsPage() {
                 <span
                   className={`px-2 py-1 text-xs font-medium rounded ${
                     rec.priority === 'high'
-                      ? 'bg-red-100 text-red-800'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                       : rec.priority === 'medium'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-100 text-gray-800'
+                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                      : 'bg-secondary text-secondary-foreground'
                   }`}
                 >
                   {rec.priority} priority
@@ -441,15 +441,15 @@ export default function AnalyticsPage() {
           <h2 className="text-xl font-semibold mb-4">Top Performers</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {teamMetrics.topPerformers.slice(0, 3).map(member => (
-              <div key={member.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-lg font-medium text-gray-600">
+              <div key={member.id} className="flex items-center space-x-4 p-4 bg-secondary/50 dark:bg-secondary/20 rounded-lg">
+                <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+                  <span className="text-lg font-medium text-secondary-foreground">
                     {member.name.split(' ').map(n => n[0]).join('')}
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{member.name}</h4>
-                  <p className="text-sm text-gray-500">
+                  <h4 className="font-medium text-foreground">{member.name}</h4>
+                  <p className="text-sm text-muted-foreground">
                     {member.tasksCompleted} tasks completed
                   </p>
                   <div className="flex items-center mt-1">

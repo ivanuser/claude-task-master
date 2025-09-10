@@ -30,10 +30,10 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
 
   const getStatusBadge = (status: TeamInvitation['status']) => {
     const colors = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      accepted: 'bg-green-100 text-green-800',
-      declined: 'bg-red-100 text-red-800',
-      expired: 'bg-gray-100 text-gray-800',
+      pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400',
+      accepted: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400',
+      declined: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400',
+      expired: 'bg-secondary text-secondary-foreground',
     }
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status]}`}>
@@ -50,14 +50,14 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Team Invitations</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="text-lg font-medium text-foreground">Team Invitations</h3>
+          <p className="text-sm text-muted-foreground">
             Manage pending invitations and invite new members
           </p>
         </div>
         <button
           onClick={() => setShowInviteForm(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-primary/90"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -68,61 +68,61 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-yellow-600">{pendingInvitations.length}</div>
-          <div className="text-sm text-gray-500">Pending</div>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{pendingInvitations.length}</div>
+          <div className="text-sm text-muted-foreground">Pending</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-red-600">{expiredInvitations.length}</div>
-          <div className="text-sm text-gray-500">Expired</div>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <div className="text-2xl font-bold text-red-600 dark:text-red-400">{expiredInvitations.length}</div>
+          <div className="text-sm text-muted-foreground">Expired</div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="text-2xl font-bold text-gray-900">{invitations.length}</div>
-          <div className="text-sm text-gray-500">Total Sent</div>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <div className="text-2xl font-bold text-foreground">{invitations.length}</div>
+          <div className="text-sm text-muted-foreground">Total Sent</div>
         </div>
       </div>
 
       {/* Invitations List */}
-      <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+      <div className="bg-card shadow-sm border border-border rounded-lg overflow-hidden">
         {invitations.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-secondary/50 dark:bg-secondary/20">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Invited By
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {invitations.map((invitation) => (
-                  <tr key={invitation.id} className="hover:bg-gray-50">
+                  <tr key={invitation.id} className="hover:bg-accent">
                     <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">{invitation.email}</div>
+                      <div className="text-sm font-medium text-foreground">{invitation.email}</div>
                       {invitation.message && (
-                        <div className="text-xs text-gray-500 mt-1">{invitation.message}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{invitation.message}</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        invitation.role === 'admin' ? 'bg-blue-100 text-blue-800' :
-                        invitation.role === 'member' ? 'bg-green-100 text-green-800' :
-                        'bg-gray-100 text-gray-800'
+                        invitation.role === 'admin' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400' :
+                        invitation.role === 'member' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400' :
+                        'bg-secondary text-secondary-foreground'
                       }`}>
                         {invitation.role}
                       </span>
@@ -130,10 +130,10 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
                     <td className="px-6 py-4">
                       {getStatusBadge(invitation.status)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-foreground">
                       {invitation.invitedByUser?.name || 'Unknown'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-foreground">
                       {new Date(invitation.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
@@ -142,13 +142,13 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
                           <>
                             <button
                               onClick={() => actions.resendInvitation(invitation.id)}
-                              className="text-xs text-blue-600 hover:text-blue-800"
+                              className="text-xs text-primary hover:text-primary/80"
                             >
                               Resend
                             </button>
                             <button
                               onClick={() => actions.cancelInvitation(invitation.id)}
-                              className="text-xs text-red-600 hover:text-red-800"
+                              className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
                             >
                               Cancel
                             </button>
@@ -171,11 +171,11 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
           </div>
         ) : (
           <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="mx-auto h-12 w-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 2.26a2 2 0 001.22 0L20 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No invitations sent</h3>
-            <p className="mt-1 text-sm text-gray-500">Get started by inviting team members.</p>
+            <h3 className="mt-2 text-sm font-medium text-foreground">No invitations sent</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Get started by inviting team members.</p>
           </div>
         )}
       </div>
@@ -183,12 +183,12 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
       {/* Invite Form Modal */}
       {showInviteForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="bg-card rounded-lg p-6 w-full max-w-md mx-4 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Invite Team Member</h3>
+              <h3 className="text-lg font-semibold text-foreground">Invite Team Member</h3>
               <button
                 onClick={() => setShowInviteForm(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -198,23 +198,23 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
 
             <form onSubmit={handleInvite} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Email Address *</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-border bg-background text-foreground rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   placeholder="member@example.com"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Role</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as TeamRole)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-border bg-background text-foreground rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 >
                   <option value="viewer">Viewer</option>
                   <option value="member">Member</option>
@@ -223,11 +223,11 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Personal Message (Optional)</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Personal Message (Optional)</label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-border bg-background text-foreground rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   rows={3}
                   placeholder="Welcome to our team!"
                 />
@@ -237,14 +237,14 @@ export function TeamInvitations({ team, invitations, actions }: TeamInvitationsP
                 <button
                   type="button"
                   onClick={() => setShowInviteForm(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  className="px-4 py-2 text-sm font-medium text-secondary-foreground bg-secondary rounded-lg hover:bg-secondary/80"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actions.loading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {actions.loading ? 'Sending...' : 'Send Invitation'}
                 </button>

@@ -122,7 +122,7 @@ export default function ProjectTeamPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-taskmaster-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     )
   }
@@ -133,7 +133,7 @@ export default function ProjectTeamPage() {
       <div className="mb-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+          className="flex items-center text-muted-foreground hover:text-foreground mb-4"
         >
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
           Back to Project
@@ -141,22 +141,22 @@ export default function ProjectTeamPage() {
         
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Team Management</h1>
-            <p className="text-gray-600 mt-2">Manage team members and notifications</p>
+            <h1 className="text-3xl font-bold text-foreground">Team Management</h1>
+            <p className="text-muted-foreground mt-2">Manage team members and notifications</p>
           </div>
           
           {isAdmin && (
             <div className="flex space-x-3">
               <button
                 onClick={() => setShowInviteModal(true)}
-                className="flex items-center px-4 py-2 bg-taskmaster-600 text-white rounded-lg hover:bg-taskmaster-700"
+                className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
               >
                 <UserPlusIcon className="h-5 w-5 mr-2" />
                 Invite Members
               </button>
               <button
                 onClick={() => setShowAnnouncementModal(true)}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
               >
                 <MegaphoneIcon className="h-5 w-5 mr-2" />
                 Send Announcement
@@ -167,14 +167,14 @@ export default function ProjectTeamPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-border mb-6">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('members')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'members'
-                ? 'border-taskmaster-500 text-taskmaster-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >
             <UsersIcon className="h-5 w-5 inline mr-2" />
@@ -184,8 +184,8 @@ export default function ProjectTeamPage() {
             onClick={() => setActiveTab('activity')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'activity'
-                ? 'border-taskmaster-500 text-taskmaster-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >
             <BellIcon className="h-5 w-5 inline mr-2" />
@@ -195,8 +195,8 @@ export default function ProjectTeamPage() {
             onClick={() => setActiveTab('settings')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'settings'
-                ? 'border-taskmaster-500 text-taskmaster-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
             }`}
           >
             <CogIcon className="h-5 w-5 inline mr-2" />
@@ -211,11 +211,11 @@ export default function ProjectTeamPage() {
           <>
             <div className="lg:col-span-2">
               {/* Members List */}
-              <div className="bg-white rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-900">Team Members</h3>
+              <div className="bg-card rounded-lg shadow-sm border border-border">
+                <div className="px-6 py-4 border-b border-border">
+                  <h3 className="text-lg font-medium text-foreground">Team Members</h3>
                 </div>
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-border">
                   {members.map((member) => (
                     <div key={member.id} className="px-6 py-4">
                       <div className="flex items-center justify-between">
@@ -227,17 +227,17 @@ export default function ProjectTeamPage() {
                               className="h-10 w-10 rounded-full"
                             />
                           ) : (
-                            <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                              <span className="text-gray-600 font-medium">
+                            <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
+                              <span className="text-secondary-foreground font-medium">
                                 {(member.user.name || member.user.email)[0].toUpperCase()}
                               </span>
                             </div>
                           )}
                           <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-foreground">
                               {member.user.name || member.user.email}
                             </p>
-                            <p className="text-sm text-gray-500">{member.user.email}</p>
+                            <p className="text-sm text-muted-foreground">{member.user.email}</p>
                           </div>
                         </div>
                         
@@ -247,7 +247,7 @@ export default function ProjectTeamPage() {
                               <select
                                 value={member.role}
                                 onChange={(e) => handleRoleChange(member.userId, e.target.value)}
-                                className="text-sm border-gray-300 rounded-md"
+                                className="text-sm border-border rounded-md bg-background text-foreground"
                               >
                                 <option value="MEMBER">Member</option>
                                 <option value="ADMIN">Admin</option>
@@ -261,7 +261,7 @@ export default function ProjectTeamPage() {
                               </button>
                             </>
                           ) : (
-                            <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                            <span className="px-3 py-1 text-xs font-medium rounded-full bg-secondary text-secondary-foreground">
                               {member.role}
                             </span>
                           )}

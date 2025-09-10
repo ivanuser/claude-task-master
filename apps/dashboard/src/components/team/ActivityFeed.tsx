@@ -38,19 +38,19 @@ const activityIcons: Record<ActivityType, React.ElementType> = {
 };
 
 const activityColors: Record<ActivityType, string> = {
-  task_created: 'bg-blue-100 text-blue-600',
-  task_updated: 'bg-yellow-100 text-yellow-600',
-  task_completed: 'bg-green-100 text-green-600',
-  task_deleted: 'bg-red-100 text-red-600',
-  task_assigned: 'bg-purple-100 text-purple-600',
-  task_comment: 'bg-indigo-100 text-indigo-600',
-  project_created: 'bg-blue-100 text-blue-600',
-  project_updated: 'bg-yellow-100 text-yellow-600',
-  project_archived: 'bg-gray-100 text-gray-600',
-  member_joined: 'bg-green-100 text-green-600',
-  member_left: 'bg-red-100 text-red-600',
-  member_role_changed: 'bg-purple-100 text-purple-600',
-  team_settings_updated: 'bg-gray-100 text-gray-600',
+  task_created: 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
+  task_updated: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400',
+  task_completed: 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
+  task_deleted: 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400',
+  task_assigned: 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+  task_comment: 'bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400',
+  project_created: 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
+  project_updated: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400',
+  project_archived: 'bg-secondary text-secondary-foreground',
+  member_joined: 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
+  member_left: 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400',
+  member_role_changed: 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+  team_settings_updated: 'bg-secondary text-secondary-foreground',
 };
 
 export function ActivityFeed({
@@ -285,28 +285,28 @@ export function ActivityFeed({
         <div
           key={activity.id}
           className={`flex items-center space-x-2 py-2 px-3 ${
-            !activity.isRead ? 'bg-blue-50' : ''
-          } hover:bg-gray-50 transition-colors`}
+            !activity.isRead ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+          } hover:bg-accent transition-colors`}
         >
           <div className={`p-1 rounded ${colorClass}`}>
             <Icon className="w-4 h-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-gray-900 truncate">
+            <p className="text-sm text-foreground truncate">
               <span className="font-medium">{activity.user.name}</span>
               {' '}
-              <span className="text-gray-600">{activity.action}</span>
+              <span className="text-muted-foreground">{activity.action}</span>
               {activity.target && (
                 <>
                   {' '}
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-foreground">
                     {activity.target.name}
                   </span>
                 </>
               )}
             </p>
           </div>
-          <time className="text-xs text-gray-500 whitespace-nowrap">
+          <time className="text-xs text-muted-foreground whitespace-nowrap">
             {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
           </time>
         </div>
@@ -317,8 +317,8 @@ export function ActivityFeed({
       <div
         key={activity.id}
         className={`flex space-x-3 p-4 ${
-          !activity.isRead ? 'bg-blue-50' : ''
-        } hover:bg-gray-50 transition-colors`}
+          !activity.isRead ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+        } hover:bg-accent transition-colors`}
       >
         <div className={`p-2 rounded-lg ${colorClass}`}>
           <Icon className="w-5 h-5" />
@@ -326,16 +326,16 @@ export function ActivityFeed({
         <div className="flex-1">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <p className="text-sm text-gray-900">
+              <p className="text-sm text-foreground">
                 <span className="font-medium">{activity.user.name}</span>
                 {' '}
-                <span className="text-gray-600">{activity.action}</span>
+                <span className="text-muted-foreground">{activity.action}</span>
                 {activity.target && (
                   <>
                     {' '}
                     <a
                       href={`/${activity.target.type}s/${activity.target.id}`}
-                      className="font-medium text-blue-600 hover:underline"
+                      className="font-medium text-primary hover:underline"
                     >
                       {activity.target.name}
                     </a>
@@ -343,12 +343,12 @@ export function ActivityFeed({
                 )}
               </p>
               {activity.metadata?.comment && (
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-muted-foreground">
                   &quot;{activity.metadata.comment}&quot;
                 </p>
               )}
             </div>
-            <time className="text-xs text-gray-500 whitespace-nowrap ml-2">
+            <time className="text-xs text-muted-foreground whitespace-nowrap ml-2">
               {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
             </time>
           </div>
@@ -359,15 +359,15 @@ export function ActivityFeed({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm">
+      <div className="bg-card rounded-lg shadow-sm border border-border">
         <div className="p-6">
           <div className="animate-pulse space-y-4">
             {[1, 2, 3].map(i => (
               <div key={i} className="flex space-x-3">
-                <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                <div className="w-10 h-10 bg-secondary rounded-lg"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-secondary rounded w-3/4"></div>
+                  <div className="h-3 bg-secondary rounded w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -378,16 +378,16 @@ export function ActivityFeed({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="px-4 py-3 border-b border-gray-200">
+    <div className="bg-card rounded-lg shadow-sm border border-border">
+      <div className="px-4 py-3 border-b border-border">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900">Activity Feed</h3>
+          <h3 className="text-lg font-medium text-foreground">Activity Feed</h3>
           <div className="flex items-center space-x-2">
             {showFilters && (
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value as ActivityType | 'all')}
-                className="text-sm border-gray-300 rounded-md"
+                className="text-sm border-border bg-background text-foreground rounded-md"
               >
                 <option value="all">All Activities</option>
                 <option value="task_created">Tasks Created</option>
@@ -399,12 +399,12 @@ export function ActivityFeed({
             )}
             <button
               onClick={handleRefresh}
-              className="p-1 text-gray-400 hover:text-gray-600"
+              className="p-1 text-muted-foreground hover:text-foreground"
               title="Refresh"
             >
               <ArrowPathIcon className="w-5 h-5" />
             </button>
-            <label className="flex items-center text-sm text-gray-600">
+            <label className="flex items-center text-sm text-muted-foreground">
               <input
                 type="checkbox"
                 checked={autoRefresh}
@@ -417,9 +417,9 @@ export function ActivityFeed({
         </div>
       </div>
       
-      <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+      <div className="divide-y divide-border max-h-96 overflow-y-auto">
         {filteredActivities.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-muted-foreground">
             No activities to display
           </div>
         ) : (
@@ -428,8 +428,8 @@ export function ActivityFeed({
       </div>
       
       {activities.length > limit && (
-        <div className="px-4 py-3 border-t border-gray-200 text-center">
-          <button className="text-sm text-blue-600 hover:text-blue-700">
+        <div className="px-4 py-3 border-t border-border text-center">
+          <button className="text-sm text-primary hover:text-primary/80">
             View all activities →
           </button>
         </div>
