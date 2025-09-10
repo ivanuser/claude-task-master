@@ -67,7 +67,7 @@ interface Team {
   id: string;
   name: string;
   description: string | null;
-  slug: string;
+  tag: string;
   status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
   visibility: 'PUBLIC' | 'PRIVATE' | 'INTERNAL';
   createdAt: string;
@@ -105,7 +105,7 @@ export default function AdminTeamsPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    slug: '',
+    tag: '',
     ownerId: '',
     visibility: 'PRIVATE',
     members: [] as string[]
@@ -174,7 +174,7 @@ export default function AdminTeamsPage() {
         setFormData({
           name: '',
           description: '',
-          slug: '',
+          tag: '',
           ownerId: '',
           visibility: 'PRIVATE',
           members: []
@@ -253,10 +253,10 @@ export default function AdminTeamsPage() {
   const filteredTeams = teams.filter(team =>
     team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     team.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    team.slug.toLowerCase().includes(searchQuery.toLowerCase())
+    team.tag.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const generateSlug = (name: string) => {
+  const generateTag = (name: string) => {
     return name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').trim('-');
   };
 
@@ -305,7 +305,7 @@ export default function AdminTeamsPage() {
                       setFormData(prev => ({
                         ...prev,
                         name: e.target.value,
-                        slug: generateSlug(e.target.value)
+                        tag: generateTag(e.target.value)
                       }));
                     }}
                     placeholder="Enter team name"
@@ -314,12 +314,12 @@ export default function AdminTeamsPage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="slug">Team Slug</Label>
+                  <Label htmlFor="tag">Team Tag</Label>
                   <Input
-                    id="slug"
-                    value={formData.slug}
-                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    placeholder="team-slug"
+                    id="tag"
+                    value={formData.tag}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tag: e.target.value }))}
+                    placeholder="team-tag"
                   />
                 </div>
               </div>
@@ -488,7 +488,7 @@ export default function AdminTeamsPage() {
                       <div className="font-medium text-foreground">{team.name}</div>
                       <div className="text-sm text-muted-foreground flex items-center gap-1">
                         <Hash className="w-3 h-3" />
-                        {team.slug}
+                        {team.tag}
                       </div>
                       {team.description && (
                         <div className="text-xs text-muted-foreground truncate max-w-xs mt-1">
@@ -605,8 +605,8 @@ export default function AdminTeamsPage() {
                   <div className="text-foreground">{selectedTeam.name}</div>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">Slug</Label>
-                  <div className="text-foreground">{selectedTeam.slug}</div>
+                  <Label className="text-sm font-medium text-muted-foreground">Tag</Label>
+                  <div className="text-foreground">{selectedTeam.tag}</div>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Status</Label>

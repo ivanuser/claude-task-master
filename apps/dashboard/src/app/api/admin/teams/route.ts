@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { slug: { contains: search, mode: 'insensitive' } }
+        { tag: { contains: search, mode: 'insensitive' } }
       ]
     }
 
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
           id: true,
           name: true,
           description: true,
-          slug: true,
+          tag: true, // Using tag as slug
           status: true,
           visibility: true,
           createdAt: true,
@@ -58,18 +58,11 @@ export async function GET(request: NextRequest) {
               tasks: true
             }
           },
-          owner: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          },
           members: {
             select: {
               id: true,
               role: true,
-              joinedAt: true,
+              createdAt: true,
               user: {
                 select: {
                   id: true,
@@ -123,26 +116,29 @@ export async function POST(request: NextRequest) {
     }
 
     const teamData = await request.json()
-    const { name, description, slug, ownerId, visibility = 'PRIVATE', members = [] } = teamData
+    const { name, description, tag, ownerId, visibility = 'PRIVATE', members = [] } = teamData
 
     // Validate required fields
     if (!name) {
       return NextResponse.json({ error: 'Team name is required' }, { status: 400 })
     }
 
-    // Generate slug if not provided
-    let teamSlug = slug
-    if (!teamSlug) {
-      teamSlug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').trim('-')
+    // Generate tag if not provided
+    let teamTag = tag
+    if (!teamTag) {
+      teamTag = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').trim('-')
     }
 
-    // Check if slug already exists
-    const existingProject = await prisma.project.findUnique({
-      where: { slug: teamSlug }
+    // Check if tag already exists (globally since no serverId)
+    const existingProject = await prisma.project.findFirst({
+      where: { 
+        tag: teamTag,
+        serverId: null // Only check null serverId projects (local teams)
+      }
     })
 
     if (existingProject) {
-      return NextResponse.json({ error: 'Team slug already exists' }, { status: 400 })
+      return NextResponse.json({ error: 'Team tag already exists' }, { status: 400 })
     }
 
     // Validate owner exists
@@ -159,27 +155,19 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         description: description || null,
-        slug: teamSlug,
-        ownerId: owner.id,
+        tag: teamTag,
         visibility: visibility || 'PRIVATE',
         status: 'ACTIVE',
+        serverId: null, // Local team, no server
         // Add owner as admin member
         members: {
           create: {
             userId: owner.id,
-            role: 'ADMIN',
-            joinedAt: new Date()
+            role: 'ADMIN'
           }
         }
       },
       include: {
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
         members: {
           include: {
             user: {
@@ -205,8 +193,7 @@ export async function POST(request: NextRequest) {
       const memberData = members.map((memberId: string) => ({
         projectId: newTeam.id,
         userId: memberId,
-        role: 'MEMBER',
-        joinedAt: new Date()
+        role: 'MEMBER'
       }))
 
       await prisma.projectMember.createMany({
