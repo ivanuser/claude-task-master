@@ -141,6 +141,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const userId = session.user.id
     const updates = await request.json()
 
+    console.log('📝 Team update request:', { teamId, userId, updates })
+
     // Handle personal workspace (no updates allowed)
     if (teamId.startsWith('personal-')) {
       return NextResponse.json({ error: 'Personal workspace cannot be modified' }, { status: 400 })
@@ -181,6 +183,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         ...updates.settings
       }
     }
+
+    console.log('📝 Updating project with data:', updateData)
 
     // Update the project
     const updatedProject = await prisma.project.update({
