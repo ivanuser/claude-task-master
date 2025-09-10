@@ -27,7 +27,7 @@ export default function BackButton({
   return (
     <button
       onClick={handleClick}
-      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary-foreground bg-primary border border-primary rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-colors ${className}`}
     >
       <ArrowLeftIcon className="w-4 h-4" />
       {label}
