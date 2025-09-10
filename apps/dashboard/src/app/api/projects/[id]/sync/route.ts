@@ -16,6 +16,7 @@ export async function POST(
     // Get session to authenticate the user
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
+      console.log('❌ No session found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -42,33 +43,88 @@ export async function POST(
     })
 
     if (!project) {
+      console.log('❌ Project not found or access denied')
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 404 })
     }
 
-    // Check if this is a remote server project or local project
-    if (project.server) {
-      return NextResponse.json({ 
-        error: 'This is a remote server project. Sync from remote servers is not yet implemented.' 
-      }, { status: 400 })
-    }
-    
-    // For local projects, check if path is configured
+    console.log(`📋 Project found: ${project.name} (has server: ${!!project.server})`)
+    console.log(`📋 Project settings:`, project.settings)
+
+    // First check if there's a local path configured (even for server projects, they might have local copies)
     let localPath = project.settings?.localPath
     
+    // If no local path configured, try to auto-detect for known projects
     if (!localPath) {
-      // Only try auto-detect for local projects without configured path
-      // Try current Task Master project first (most likely case)
-      const currentProjectPath = '/home/ihoner/claude-task-master'
-      try {
-        const testPath = join(currentProjectPath, '.taskmaster/tasks/tasks.json')
-        await readFile(testPath, 'utf-8')
-        localPath = currentProjectPath
-        console.log(`🔍 Auto-detected current Task Master project at: ${localPath}`)
-      } catch {
-        return NextResponse.json({ 
-          error: 'No local path configured for this project. Please configure it in project settings.' 
-        }, { status: 400 })
+      console.log(`🔍 No local path configured, checking if this is a local Task Master project...`)
+      console.log(`🔍 Project name: "${project.name}"`)
+      
+      // Check for various Task Master project naming patterns
+      const projectNameLower = project.name.toLowerCase()
+      const isTaskMasterProject = 
+        projectNameLower.includes('task-master') || 
+        projectNameLower.includes('taskmaster') ||
+        projectNameLower.includes('tag-master') ||  // Your specific project
+        projectNameLower.includes('task master')
+      
+      if (isTaskMasterProject && !project.server) {
+        // This is a local Task Master project
+        const currentProjectPath = '/home/ihoner/claude-task-master'
+        try {
+          const testPath = join(currentProjectPath, '.taskmaster/tasks/tasks.json')
+          await readFile(testPath, 'utf-8')
+          localPath = currentProjectPath
+          console.log(`✅ Auto-detected Task Master project at: ${localPath}`)
+        } catch (error) {
+          console.log(`⚠️ Could not auto-detect at ${currentProjectPath}:`, error.message)
+        }
+      } else if (!project.server) {
+        console.log(`❌ Not a recognized Task Master project name: "${project.name}"`)
       }
+    }
+    
+    // If still no local path and this is a server project, use server sync
+    if (!localPath && project.server) {
+      console.log(`🌐 Remote server project "${project.name}" - redirecting to server sync`)
+      
+      // Redirect to the server sync endpoint
+      const serverSyncUrl = `/api/servers/${project.serverId}/sync`
+      const serverSyncResponse = await fetch(`${request.nextUrl.origin}${serverSyncUrl}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          cookie: request.headers.get('cookie') || '',
+        },
+      })
+      
+      if (!serverSyncResponse.ok) {
+        const error = await serverSyncResponse.json()
+        return NextResponse.json({ 
+          error: error.error || `Failed to sync from remote server: ${project.server.name}` 
+        }, { status: serverSyncResponse.status })
+      }
+      
+      const syncResult = await serverSyncResponse.json()
+      console.log(`✅ Remote sync completed for project ${project.name}`, syncResult)
+      
+      // Update project's lastSyncAt
+      await prisma.project.update({
+        where: { id: projectId },
+        data: { lastSyncAt: new Date() }
+      })
+      
+      return NextResponse.json({
+        success: true,
+        message: `Tasks synced from remote server ${project.server.name}`,
+        ...syncResult
+      })
+    }
+    
+    // If still no local path, return error
+    if (!localPath) {
+      console.log(`❌ Local project "${project.name}" without configured path`)
+      return NextResponse.json({ 
+        error: `No local path configured for "${project.name}". This appears to be a local project but needs a path configured in settings.` 
+      }, { status: 400 })
     }
 
     console.log(`📁 Syncing tasks from ${localPath}`)
