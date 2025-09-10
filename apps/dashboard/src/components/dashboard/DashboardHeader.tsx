@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ViewMode } from '@/app/dashboard/page';
-import { Grid, List, Plus } from 'lucide-react';
+import { Grid, List, Plus, ShieldCheck } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 interface DashboardHeaderProps {
@@ -12,6 +13,24 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ viewMode, onViewModeChange, totalProjects }: DashboardHeaderProps) {
+  const { data: session } = useSession();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/admin/stats');
+          setIsAdmin(response.ok && response.status !== 403);
+        } catch {
+          setIsAdmin(false);
+        }
+      }
+    };
+    
+    checkAdminStatus();
+  }, [session]);
+
   return (
     <div className="bg-card border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,6 +70,18 @@ export function DashboardHeader({ viewMode, onViewModeChange, totalProjects }: D
                 <span className="ml-2 text-sm font-medium hidden sm:inline">List</span>
               </button>
             </div>
+
+            {/* Admin Button */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center px-3 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors shadow-sm"
+                title="Admin Dashboard"
+              >
+                <ShieldCheck className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
 
             {/* New Project Button */}
             <Link

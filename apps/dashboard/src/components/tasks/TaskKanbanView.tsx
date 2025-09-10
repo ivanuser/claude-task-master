@@ -16,7 +16,7 @@ export function TaskKanbanView({
 }: TaskKanbanViewProps) {
   const columns = [
     { id: 'pending', title: 'To Do', status: 'pending' as const },
-    { id: 'in-progress', title: 'In Progress', status: 'in-progress' as const },
+    { id: 'in_progress', title: 'In Progress', status: 'in_progress' as const },
     { id: 'review', title: 'Review', status: 'review' as const },
     { id: 'done', title: 'Done', status: 'done' as const },
   ]

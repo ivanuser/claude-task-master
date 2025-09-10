@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Task, Project } from '@/types'
 import { TaskListView } from '@/components/tasks/TaskListView'
 import { TaskKanbanView } from '@/components/tasks/TaskKanbanView'
+import { TaskTimelineView } from '@/components/tasks/TaskTimelineView'
 import { TaskFilters } from '@/components/tasks/TaskFilters'
 import { TaskSearch } from '@/components/tasks/TaskSearch'
 import { TaskBulkActions } from '@/components/tasks/TaskBulkActions'
@@ -359,9 +360,11 @@ export default function TasksPage() {
               />
             )}
             {viewMode === 'timeline' && (
-              <div className="p-8 text-center text-gray-500">
-                Timeline view coming soon...
-              </div>
+              <TaskTimelineView
+                tasks={filteredTasks}
+                projects={projects}
+                onTaskUpdate={updateTask}
+              />
             )}
           </>
         )}
