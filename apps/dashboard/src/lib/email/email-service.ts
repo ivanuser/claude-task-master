@@ -4,6 +4,8 @@ import { prisma } from '@/lib/database';
 import { EmailType, EmailStatus } from '@prisma/client';
 import { TaskAssignedEmail } from './templates/task-assigned';
 import { DailyDigestEmail } from './templates/daily-digest';
+import { TeamInvitationEmail } from './templates/team-invitation';
+import { SystemNotificationEmail } from './templates/system-notification';
 
 // Create reusable transporter
 const createTransporter = () => {
@@ -159,6 +161,14 @@ export class EmailService {
       case EmailType.WEEKLY_REPORT:
       case EmailType.MONTHLY_DIGEST:
         emailComponent = DailyDigestEmail(data);
+        break;
+
+      case 'TEAM_INVITATION' as any:
+        emailComponent = TeamInvitationEmail(data);
+        break;
+
+      case 'SYSTEM_NOTIFICATION' as any:
+        emailComponent = SystemNotificationEmail(data);
         break;
 
       // Add more templates as needed

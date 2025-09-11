@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/database';
+import { emailService } from '@/lib/email/email-service';
 import type { 
   Notification, 
   NotificationPreference,
@@ -350,7 +351,7 @@ export class NotificationService {
       
       case 'EMAIL':
         // Send email notification
-        // await this.sendEmailNotification(notification);
+        await this.sendEmailNotification(queueItem);
         break;
       
       case 'PUSH':
@@ -381,6 +382,208 @@ export class NotificationService {
       default:
         throw new Error(`Unknown notification channel: ${channel}`);
     }
+  }
+
+  // Send email notification
+  private async sendEmailNotification(queueItem: any): Promise<void> {
+    const { notification } = queueItem;
+    
+    try {
+      // Get user details
+      const user = await prisma.user.findUnique({
+        where: { id: notification.userId },
+        include: {
+          emailPreferences: true
+        }
+      });
+
+      if (!user || !user.email) {
+        throw new Error('User not found or no email address');
+      }
+
+      // Determine email type based on notification type
+      let emailType = 'TASK_ASSIGNED'; // default
+      switch (notification.type) {
+        case 'TASK_ASSIGNED':
+        case 'TASK_UPDATED':
+        case 'TASK_COMPLETED':
+          emailType = 'TASK_ASSIGNED';
+          break;
+        case 'TEAM_INVITATION':
+          emailType = 'TEAM_INVITATION';
+          break;
+        case 'SYNC_COMPLETED':
+        case 'SYNC_FAILED':
+          emailType = 'SYSTEM_NOTIFICATION';
+          break;
+        default:
+          emailType = 'TASK_ASSIGNED';
+      }
+
+      // Prepare email data
+      const emailData = {
+        userName: user.name || 'there',
+        notificationTitle: notification.title,
+        notificationMessage: notification.message,
+        actionUrl: `${process.env.NEXTAUTH_URL}/notifications/${notification.id}`,
+        ...notification.metadata
+      };
+
+      // Send the email
+      await emailService.sendEmail({
+        to: user.email,
+        subject: notification.title,
+        template: emailType as any,
+        data: emailData,
+        userId: user.id,
+        unsubscribeToken: user.emailPreferences?.unsubscribeToken
+      });
+
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
+      throw error;
+    }
+  }
+
+  // Send push notification
+  private async sendPushNotification(queueItem: any): Promise<void> {
+    const { notification } = queueItem;
+    
+    try {
+      // Get user's push subscriptions
+      const subscriptions = await prisma.webPushSubscription.findMany({
+        where: {
+          userId: notification.userId,
+          isActive: true
+        }
+      });
+
+      if (subscriptions.length === 0) {
+        throw new Error('No active push subscriptions found');
+      }
+
+      // Import web-push dynamically
+      const webpush = await import('web-push');
+      
+      // Configure web-push
+      webpush.setVapidDetails(
+        `mailto:${process.env.SMTP_FROM || 'noreply@taskmaster.dev'}`,
+        process.env.VAPID_PUBLIC_KEY || '',
+        process.env.VAPID_PRIVATE_KEY || ''
+      );
+
+      const payload = JSON.stringify({
+        title: notification.title,
+        body: notification.message,
+        icon: '/icon-192x192.png',
+        badge: '/badge-72x72.png',
+        data: {
+          notificationId: notification.id,
+          url: `/notifications/${notification.id}`,
+          ...notification.metadata
+        }
+      });
+
+      // Send to all subscriptions
+      const pushPromises = subscriptions.map(async (subscription) => {
+        try {
+          await webpush.sendNotification(
+            {
+              endpoint: subscription.endpoint,
+              keys: {
+                p256dh: subscription.p256dh,
+                auth: subscription.auth
+              }
+            },
+            payload,
+            {
+              urgency: notification.priority === 'HIGH' ? 'high' : 'normal'
+            }
+          );
+        } catch (error: any) {
+          console.error('Failed to send push notification:', error);
+          
+          // If subscription is invalid, mark as inactive
+          if (error.statusCode === 410 || error.statusCode === 404) {
+            await prisma.webPushSubscription.update({
+              where: { id: subscription.id },
+              data: { isActive: false }
+            });
+          }
+        }
+      });
+
+      await Promise.allSettled(pushPromises);
+
+    } catch (error) {
+      console.error('Failed to send push notification:', error);
+      throw error;
+    }
+  }
+
+  // Create convenience methods for common notification types
+  async sendTaskAssignedNotification(
+    userId: string,
+    taskTitle: string,
+    taskDescription: string,
+    assignedBy: string,
+    taskUrl: string
+  ): Promise<Notification> {
+    return this.createNotification(
+      userId,
+      'TASK_ASSIGNED',
+      'New Task Assigned',
+      `You have been assigned a new task: ${taskTitle}`,
+      'MEDIUM',
+      {
+        taskTitle,
+        taskDescription,
+        assignedBy,
+        taskUrl
+      }
+    );
+  }
+
+  async sendTeamInvitationNotification(
+    userId: string,
+    teamName: string,
+    invitedBy: string,
+    invitationUrl: string
+  ): Promise<Notification> {
+    return this.createNotification(
+      userId,
+      'TEAM_INVITATION',
+      'Team Invitation',
+      `${invitedBy} invited you to join ${teamName}`,
+      'MEDIUM',
+      {
+        teamName,
+        invitedBy,
+        invitationUrl
+      }
+    );
+  }
+
+  async sendSyncCompletedNotification(
+    userId: string,
+    projectName: string,
+    tasksAdded: number,
+    tasksUpdated: number
+  ): Promise<Notification> {
+    const message = `Project ${projectName} synced successfully. ${tasksAdded} tasks added, ${tasksUpdated} tasks updated.`;
+    
+    return this.createNotification(
+      userId,
+      'SYNC_COMPLETED',
+      'Sync Completed',
+      message,
+      'LOW',
+      {
+        projectName,
+        tasksAdded,
+        tasksUpdated
+      }
+    );
   }
 }
 

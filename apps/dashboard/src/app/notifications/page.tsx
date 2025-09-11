@@ -5,6 +5,7 @@ import { NotificationList } from '@/components/notifications/NotificationList'
 import { NotificationFilters } from '@/components/notifications/NotificationFilters'
 import { NotificationStats } from '@/components/notifications/NotificationStats'
 import { NotificationPreferencesModal } from '@/components/notifications/NotificationPreferencesModal'
+import { NotificationSettings } from '@/components/notifications/NotificationSettings'
 import { useNotifications } from '@/hooks/useNotifications'
 import { NotificationType } from '@/types/team'
 import BackButton from '@/components/ui/BackButton'
@@ -46,6 +47,7 @@ export default function NotificationsPage() {
   
   const [showPreferencesModal, setShowPreferencesModal] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [activeTab, setActiveTab] = useState('notifications')
 
   // Filter notifications based on current filters
   const filteredNotifications = notifications.filter(notification => {
@@ -182,28 +184,48 @@ export default function NotificationsPage() {
                 Filters
               </button>
 
-              {/* Preferences */}
-              <button
-                onClick={() => setShowPreferencesModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Preferences
-              </button>
+              {/* Tab buttons */}
+              <div className="flex rounded-lg border border-border overflow-hidden">
+                <button
+                  onClick={() => setActiveTab('notifications')}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'notifications'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-foreground hover:bg-accent'
+                  }`}
+                >
+                  <Bell className="w-4 h-4 mr-2 inline" />
+                  Notifications
+                </button>
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'settings'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-foreground hover:bg-accent'
+                  }`}
+                >
+                  <Settings className="w-4 h-4 mr-2 inline" />
+                  Settings
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Stats Sidebar */}
-          <div className="lg:col-span-1">
-            <NotificationStats stats={stats} />
-          </div>
+        {activeTab === 'settings' ? (
+          <NotificationSettings />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Stats Sidebar */}
+            <div className="lg:col-span-1">
+              <NotificationStats stats={stats} />
+            </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
+            {/* Main Content */}
+            <div className="lg:col-span-3">
             {/* Filters */}
             {showFilters && (
               <div className="mb-6">
@@ -256,8 +278,9 @@ export default function NotificationsPage() {
                 )}
               </div>
             )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Preferences Modal */}
