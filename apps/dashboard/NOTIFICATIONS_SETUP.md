@@ -33,7 +33,7 @@ The Task Master notification system now supports **email notifications**, **push
 ## 📧 Email Setup
 
 ### 1. Environment Variables
-Add these to your `.env` file:
+Add these to your `.env.local` file:
 
 ```bash
 # SMTP Configuration
@@ -42,10 +42,10 @@ SMTP_PORT=587
 SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-app-password
-SMTP_FROM="Task Master <noreply@taskmaster.dev>"
+SMTP_FROM="Task Master" <noreply@taskmaster.dev>
 
 # App URL
-NEXTAUTH_URL=http://localhost:3001
+NEXTAUTH_URL=https://taskmanagerai.honercloud.com
 ```
 
 ### 2. Gmail Setup (Example)
@@ -67,13 +67,13 @@ npx web-push generate-vapid-keys
 ```
 
 ### 2. Environment Variables
-Add to your `.env`:
+Add to your `.env.local`:
 
 ```bash
-# VAPID Keys for Push Notifications
-VAPID_PUBLIC_KEY=your-public-key
-VAPID_PRIVATE_KEY=your-private-key
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-public-key
+# VAPID Keys for Push Notifications (Example keys - generate your own!)
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=BIFmwlNyXxmZbsVJkM8IFxHN4I1PMrPalwVzuf-nK3YlEQ23wn9phWr4HdZgxB7KoJBMr-2oZDwpfVe-fQ4hi0Y
+VAPID_PRIVATE_KEY=YotWV1GobCNsH7gOVJrzbsFSi6dg0pKg_Rg9E7Vst9o
+VAPID_SUBJECT=mailto:admin@taskmaster.dev
 ```
 
 ### 3. Test Push Notifications
@@ -105,14 +105,14 @@ The system queues notifications for delivery. To process the queue:
 
 #### Manual Processing (for testing)
 ```bash
-curl -X POST http://localhost:3001/api/notifications/process-queue
+curl -X POST https://taskmanagerai.honercloud.com/api/notifications/process-queue
 ```
 
 #### Production Setup
 Set up a cron job to run every minute:
 ```bash
 # Add to crontab
-* * * * * curl -X POST https://yourdomain.com/api/notifications/process-queue
+* * * * * curl -X POST https://taskmanagerai.honercloud.com/api/notifications/process-queue
 ```
 
 Or use a service like Vercel Cron, GitHub Actions, or similar.
@@ -122,21 +122,21 @@ Or use a service like Vercel Cron, GitHub Actions, or similar.
 ### 1. Test Email Notifications
 ```bash
 # Send test email
-curl -X POST http://localhost:3001/api/notifications/test-email \
+curl -X POST https://taskmanagerai.honercloud.com/api/notifications/test-email \
   -H "Cookie: your-session-cookie"
 ```
 
 ### 2. Test Push Notifications
 ```bash
 # Send test push
-curl -X POST http://localhost:3001/api/notifications/test-push \
+curl -X POST https://taskmanagerai.honercloud.com/api/notifications/test-push \
   -H "Cookie: your-session-cookie"
 ```
 
 ### 3. Test Team Invitations
 ```bash
 # Send invitation
-curl -X POST http://localhost:3001/api/invitations \
+curl -X POST https://taskmanagerai.honercloud.com/api/invitations \
   -H "Content-Type: application/json" \
   -H "Cookie: your-session-cookie" \
   -d '{
@@ -153,7 +153,7 @@ View notification statistics at `/notifications` → Notifications tab.
 ## 🛠 Troubleshooting
 
 ### Email Not Sending
-1. Check SMTP credentials in `.env`
+1. Check SMTP credentials in `.env.local`
 2. Verify SMTP server settings
 3. Check email logs in database (`EmailLog` table)
 4. Test SMTP connection manually
