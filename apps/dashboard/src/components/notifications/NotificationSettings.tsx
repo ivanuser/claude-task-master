@@ -113,9 +113,17 @@ export function NotificationSettings() {
   };
 
   const checkPushSupport = async () => {
+    // Check if push notifications are enabled via feature flag
+    const pushEnabled = process.env.NEXT_PUBLIC_ENABLE_PUSH_NOTIFICATIONS !== 'false';
+
+    if (!pushEnabled) {
+      setPushSupported(false);
+      return;
+    }
+
     const supported = pushManager.isSupported();
     setPushSupported(supported);
-    
+
     if (supported) {
       const subscribed = await pushManager.isSubscribed();
       setPushSubscribed(subscribed);

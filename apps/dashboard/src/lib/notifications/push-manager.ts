@@ -16,7 +16,7 @@ export class PushNotificationManager {
 
     try {
       // Register service worker
-      this.serviceWorkerRegistration = await navigator.serviceWorker.register('/sw.js');
+      this.serviceWorkerRegistration = await navigator.serviceWorker.register('/service-worker.js');
       console.log('Service worker registered:', this.serviceWorkerRegistration);
 
       // Wait for service worker to be ready

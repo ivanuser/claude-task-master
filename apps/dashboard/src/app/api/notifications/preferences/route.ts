@@ -62,15 +62,48 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const preferences = await request.json();
+    const rawPreferences = await request.json();
+
+    // Map frontend preferences to database schema - ONLY include valid DB fields
+    const preferences = {
+      enabled: rawPreferences.enabled ?? true,
+      emailEnabled: rawPreferences.email ?? rawPreferences.emailEnabled ?? false,
+      pushEnabled: rawPreferences.push ?? rawPreferences.pushEnabled ?? false,
+      inAppEnabled: rawPreferences.inApp ?? rawPreferences.inAppEnabled ?? true,
+      smsEnabled: rawPreferences.sms ?? rawPreferences.smsEnabled ?? false,
+      taskAssigned: rawPreferences.notificationTypes?.TASK_ASSIGNED ?? rawPreferences.taskAssigned ?? true,
+      taskStatusChanged: rawPreferences.notificationTypes?.TASK_UPDATED ?? rawPreferences.taskStatusChanged ?? true,
+      taskCommented: rawPreferences.taskCommented ?? true,
+      taskMentioned: rawPreferences.taskMentioned ?? true,
+      taskDeadlines: rawPreferences.taskDeadlines ?? true,
+      projectUpdates: rawPreferences.projectUpdates ?? true,
+      syncNotifications: rawPreferences.notificationTypes?.SYNC_COMPLETED ?? rawPreferences.syncNotifications ?? true,
+      systemAnnouncements: rawPreferences.notificationTypes?.SYSTEM_NOTIFICATION ?? rawPreferences.systemAnnouncements ?? true,
+      securityAlerts: rawPreferences.securityAlerts ?? true,
+      quietHoursEnabled: rawPreferences.quietHoursEnabled ?? false,
+      quietHoursStart: rawPreferences.quietHoursStart,
+      quietHoursEnd: rawPreferences.quietHoursEnd,
+      quietHoursTimezone: rawPreferences.quietHoursTimezone || 'UTC',
+      soundEnabled: rawPreferences.soundEnabled ?? true,
+      soundVolume: rawPreferences.soundVolume || 50,
+      vibrationEnabled: rawPreferences.vibrationEnabled ?? true,
+      desktopBadge: rawPreferences.desktopBadge ?? true,
+      batchingEnabled: rawPreferences.batchingEnabled ?? false,
+      batchingInterval: rawPreferences.batchingInterval || 300,
+    };
+
+    // Filter out any undefined values
+    const cleanPreferences = Object.fromEntries(
+      Object.entries(preferences).filter(([_, value]) => value !== undefined)
+    );
 
     // Direct Prisma upsert to avoid dependency issues
     const updatedPreferences = await prisma.notificationPreference.upsert({
       where: { userId: session.user.id },
-      update: preferences,
+      update: cleanPreferences,
       create: {
         userId: session.user.id,
-        ...preferences
+        ...cleanPreferences
       }
     });
 

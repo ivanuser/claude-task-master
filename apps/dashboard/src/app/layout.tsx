@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import '../styles/theme.css'
+import '@/lib/fetch-override'
 import Providers from '@/components/providers/Providers'
 
 export const metadata: Metadata = {
