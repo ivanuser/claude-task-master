@@ -467,10 +467,10 @@ export class TeamNotificationService {
           path: '$.projectId',
           equals: projectId,
         },
-        read: false,
+        isRead: false,
       },
       data: {
-        read: true,
+        isRead: true,
       },
     });
   }

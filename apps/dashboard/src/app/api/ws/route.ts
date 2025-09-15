@@ -305,5 +305,5 @@ export async function GET(request: NextRequest) {
   })
 }
 
-// Export for use in other parts of the application
-export { connections, broadcastSyncEvent }
+// Export for use in other parts of the application - connections only (broadcastSyncEvent already exported above)
+export { connections }

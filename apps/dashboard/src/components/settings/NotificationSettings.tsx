@@ -76,7 +76,15 @@ export function NotificationSettings() {
       const response = await fetch('/api/user/notification-preferences')
       if (response.ok) {
         const data = await response.json()
-        setPreferences(data)
+        // Merge with defaults to ensure all fields exist
+        setPreferences(prev => ({
+          ...prev,
+          ...data.preferences,
+          notificationTypes: {
+            ...prev.notificationTypes,
+            ...(data.preferences?.notificationTypes || {})
+          }
+        }))
       }
     } catch (error) {
       console.error('Failed to fetch notification preferences:', error)
@@ -288,11 +296,11 @@ export function NotificationSettings() {
               <div key={type} className="flex items-center justify-between">
                 <label className="text-sm text-gray-700">{label}</label>
                 <Switch
-                  checked={preferences.notificationTypes[type as keyof typeof notificationTypeLabels]}
+                  checked={preferences.notificationTypes?.[type as keyof typeof notificationTypeLabels] ?? false}
                   onChange={(checked) => updateNotificationType(type as keyof typeof notificationTypeLabels, checked)}
                   disabled={!preferences.enabled}
                   className={cn(
-                    preferences.notificationTypes[type as keyof typeof notificationTypeLabels] && preferences.enabled
+                    preferences.notificationTypes?.[type as keyof typeof notificationTypeLabels] && preferences.enabled
                       ? 'bg-taskmaster-600'
                       : 'bg-gray-200',
                     'relative inline-flex h-6 w-11 items-center rounded-full transition-colors'
@@ -300,7 +308,7 @@ export function NotificationSettings() {
                 >
                   <span
                     className={cn(
-                      preferences.notificationTypes[type as keyof typeof notificationTypeLabels]
+                      preferences.notificationTypes?.[type as keyof typeof notificationTypeLabels]
                         ? 'translate-x-6'
                         : 'translate-x-1',
                       'inline-block h-4 w-4 transform rounded-full bg-white transition-transform'

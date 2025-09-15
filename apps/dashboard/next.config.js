@@ -15,6 +15,9 @@ const nextConfig = {
 		formats: ['image/avif', 'image/webp']
 	},
 	
+	// Allow dev origins for Cloudflare tunnel (recommended approach)
+	allowedDevOrigins: ['taskmanagerai.honercloud.com'],
+	
 	// Transpile packages from the monorepo
 	transpilePackages: ['task-master-ai'],
 
@@ -63,7 +66,7 @@ const nextConfig = {
 					},
 					{
 						key: 'Access-Control-Allow-Origin',
-						value: 'https://taskmanagerai.honercloud.com'
+						value: process.env.NODE_ENV === 'development' ? 'http://localhost:3002' : 'https://taskmanagerai.honercloud.com'
 					},
 					{
 						key: 'Access-Control-Allow-Methods',

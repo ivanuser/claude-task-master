@@ -37,7 +37,7 @@ export class NotificationService {
         message,
         priority,
         metadata: metadata || {},
-        read: false,
+        isRead: false,
       },
     });
 
@@ -166,7 +166,7 @@ export class NotificationService {
     return await prisma.notification.findMany({
       where: {
         userId,
-        read: false,
+        isRead: false,
       },
       orderBy: {
         createdAt: 'desc',
@@ -209,7 +209,7 @@ export class NotificationService {
   async markAsRead(notificationId: string): Promise<Notification> {
     return await prisma.notification.update({
       where: { id: notificationId },
-      data: { read: true },
+      data: { isRead: true },
     });
   }
 
@@ -218,9 +218,9 @@ export class NotificationService {
     await prisma.notification.updateMany({
       where: {
         userId,
-        read: false,
+        isRead: false,
       },
-      data: { read: true },
+      data: { isRead: true },
     });
   }
 
@@ -278,7 +278,7 @@ export class NotificationService {
 
     const stats = {
       total: notifications.length,
-      unread: notifications.filter(n => !n.read).length,
+      unread: notifications.filter(n => !n.isRead).length,
       byType: {} as Record<string, number>,
       byPriority: {} as Record<string, number>,
     };

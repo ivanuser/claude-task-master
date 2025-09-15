@@ -20,7 +20,7 @@ const createTransporter = () => {
     },
   };
 
-  return nodemailer.createTransporter(emailConfig);
+  return nodemailer.createTransport(emailConfig);
 };
 
 interface SendEmailOptions {
