@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { notificationService } from '@/lib/notifications/notification-service';
+import { prisma } from '@/lib/database';
 
 // GET /api/notifications - Get user notifications
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -20,30 +20,31 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20', 10);
     const unreadOnly = searchParams.get('unread') === 'true';
 
-    if (unreadOnly) {
-      const notifications = await notificationService.getUnreadNotifications(session.user.id);
-      return NextResponse.json({
-        notifications,
-        total: notifications.length,
-        pages: 1,
-        currentPage: 1,
-      });
-    }
+    // Direct Prisma queries to avoid dependency issues
+    const where = unreadOnly
+      ? { userId: session.user.id, isRead: false }
+      : { userId: session.user.id };
 
-    const result = await notificationService.getUserNotifications(
-      session.user.id,
-      page,
-      limit
-    );
+    const [notifications, total] = await Promise.all([
+      prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: unreadOnly ? 0 : (page - 1) * limit,
+        take: unreadOnly ? undefined : limit,
+      }),
+      prisma.notification.count({ where: { userId: session.user.id } })
+    ]);
 
     return NextResponse.json({
-      ...result,
+      notifications,
+      total: unreadOnly ? notifications.length : total,
+      pages: unreadOnly ? 1 : Math.ceil(total / limit),
       currentPage: page,
     });
   } catch (error: any) {
     console.error('Error fetching notifications:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch notifications' }, 
+      { error: error.message || 'Failed to fetch notifications' },
       { status: 500 }
     );
   }

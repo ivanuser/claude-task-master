@@ -138,7 +138,7 @@ export function NotificationSettings() {
     setSaving(true);
     try {
       const response = await fetch('/api/notifications/preferences', {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(preferences)
       });
