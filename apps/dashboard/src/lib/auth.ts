@@ -182,7 +182,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true, // Always use secure cookies since you're accessing via HTTPS
+        secure: process.env.NODE_ENV === 'production', // Only secure in production
         maxAge: 30 * 24 * 60 * 60 // 30 days
       }
     }

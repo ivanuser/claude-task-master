@@ -63,6 +63,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const rawPreferences = await request.json();
+    console.log('Raw preferences received:', JSON.stringify(rawPreferences, null, 2));
 
     // Map frontend preferences to database schema - ONLY include valid DB fields
     const preferences = {
@@ -81,8 +82,8 @@ export async function PUT(request: NextRequest) {
       systemAnnouncements: rawPreferences.notificationTypes?.SYSTEM_NOTIFICATION ?? rawPreferences.systemAnnouncements ?? true,
       securityAlerts: rawPreferences.securityAlerts ?? true,
       quietHoursEnabled: rawPreferences.quietHoursEnabled ?? false,
-      quietHoursStart: rawPreferences.quietHoursStart,
-      quietHoursEnd: rawPreferences.quietHoursEnd,
+      quietHoursStart: rawPreferences.quietHoursStart || null,
+      quietHoursEnd: rawPreferences.quietHoursEnd || null,
       quietHoursTimezone: rawPreferences.quietHoursTimezone || 'UTC',
       soundEnabled: rawPreferences.soundEnabled ?? true,
       soundVolume: rawPreferences.soundVolume || 50,
@@ -92,10 +93,19 @@ export async function PUT(request: NextRequest) {
       batchingInterval: rawPreferences.batchingInterval || 300,
     };
 
-    // Filter out any undefined values
+    console.log('Mapped preferences for DB:', JSON.stringify(preferences, null, 2));
+
+    // Filter out any undefined values and remove any invalid fields that might still exist
     const cleanPreferences = Object.fromEntries(
-      Object.entries(preferences).filter(([_, value]) => value !== undefined)
+      Object.entries(preferences)
+        .filter(([_, value]) => value !== undefined)
+        .filter(([key]) => ![
+          'inApp', 'email', 'push', 'sms', 'slack', 'discord', 'mobileApp',
+          'notificationTypes' // Remove any invalid fields that shouldn't go to DB
+        ].includes(key))
     );
+
+    console.log('Final clean preferences for DB:', JSON.stringify(cleanPreferences, null, 2));
 
     // Direct Prisma upsert to avoid dependency issues
     const updatedPreferences = await prisma.notificationPreference.upsert({
